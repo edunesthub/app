@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Chawp - Sleek Food Delivery">
+    <meta name="author" content="Askbootstrap">
+    <meta name="theme-color" content="#2c2c2c"> <!-- Swapped to #2c2c2c -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/png" href="img/fav.png">
+    <link rel="apple-touch-icon" href="img/icon-192x192.png">
+    <title>Chawp - Profile</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="vendor/sidebar/demo.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {background:#2c2c2c;} /* Swapped to #2c2c2c */
+        .profile-details .user-info { padding: 20px; text-align: center; }
+        .profile-details .btn-danger { background: #dc3545; border: none; padding: 10px 20px; border-radius: 50px; font-size: 1rem; font-weight: 600; transition: background 0.3s ease; }
+        .profile-details .btn-danger:hover { background: #c82333; }
+        .text-danger { color: #00c8ff !important; transition: color 0.3s ease, transform 0.2s ease; }
+        .text-danger:hover { color: #00c8ff !important; transform: scale(1.05); }
+        .osahan-profile { padding-bottom: 100px; }
+        html, body { -webkit-text-size-adjust: none; touch-action: manipulation; }
+        .bg-dark {background:#2c2c2c !important;} /* Swapped to #565656 */
+        .profile-details .user-info h5 {font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 5px; overflow-wrap: break-word; white-space: normal; max-height: 48px; line-height: 1.2;} /* Full names, adjusted */
+        .profile-details .user-info p {font-size: 0.9rem; color: #b0b0b0; margin-bottom: 0;} /* Adjusted email */
+    </style>
+</head>
+<body class="fixed-bottom-bar">
+    <div class="osahan-profile">
+        <div class="bg-transparent border-bottom p-3 d-flex align-items-center">
+            <a class="toggle togglew toggle-2" href="#"><span></span></a>
+            <h4 class="fw-bold m-0 text-white">Profile</h4>
+        </div>
+        <div class="container position-relative">
+            <div class="py-5 osahan-profile row">
+                <div class="col-md-4 mb-3">
+                    <div class="bg-dark rounded shadow-sm sticky_sidebar overflow-hidden">
+                        <div class="bg-dark profile-details">
+                            <div class="user-info border-bottom"><br>
+                                <i class="feather-user bg-danger text-white p-3 rounded-circle" style="font-size: 2rem;"></i><br><br>
+                                <h5 id="user-name" class="fw-bold mt-2 text-white">.</h5>
+                                <p id="user-email" class="text-white-50 small">.</p>
+                            </div>
+                            <a href="account.html" class="d-flex w-100 align-items-center border-bottom px-3 py-4">
+                                <div class="left me-3"><h6 class="fw-bold m-0 text-white"><i class="feather-user bg-danger text-white p-2 rounded-circle me-2"></i> My Account</h6></div>
+                                <div class="right ms-auto"><span class="fw-bold m-0"><i class="feather-chevron-right h6 m-0"></i></span></div>
+                            </a>
+                            <a href="contact-us.html" class="d-flex w-100 align-items-center border-bottom px-3 py-4">
+                                <div class="left me-3"><h6 class="fw-bold m-0 text-white"><i class="feather-phone bg-primary text-white p-2 rounded-circle me-2"></i> Contact Us</h6></div>
+                                <div class="right ms-auto"><span class="fw-bold m-0"><i class="feather-chevron-right h6 m-0"></i></span></div>
+                            </a>
+                            <a href="terms.html" class="d-flex w-100 align-items-center border-bottom px-3 py-4">
+                                <div class="left me-3"><h6 class="fw-bold m-0 text-white"><i class="feather-info bg-success text-white p-2 rounded-circle me-2"></i> Terms of Use</h6></div>
+                                <div class="right ms-auto"><span class="fw-bold m-0"><i class="feather-chevron-right h6 m-0"></i></span></div>
+                            </a>
+                            <a href="privacy.html" class="d-flex w-100 align-items-center px-3 py-4">
+                                <div class="left me-3"><h6 class="fw-bold m-0 text-white"><i class="feather-lock bg-warning text-white p-2 rounded-circle me-2"></i> Privacy Policy</h6></div>
+                                <div class="right ms-auto"><span class="fw-bold m-0"><i class="feather-chevron-right h6 m-0"></i></span></div>
+                            </a>
+                            <div class="text-center px-3 py-4">
+                                <button id="logout-btn" class="btn btn-danger w-100">Logout <i class="feather-log-out"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="osahan-menu-fotter fixed-bottom bg-darkerer px-3 py-2 text-center">
+            <div class="row">
+                <div class="col"><a href="index.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-map-pin"></i></p>Trending</a></div>
+                <div class="col"><a href="home.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-home text-white"></i></p>Home</a></div>
+                <div class="col"><a href="cart.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart</a></div>
+                <div class="col"><a href="orders.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders</a></div>
+                <div class="col selected"><a href="profile.html" class="text-danger small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-user"></i></p>Profile</a></div>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+            authDomain: "von600-7982d.firebaseapp.com",
+            projectId: "von600-7982d",
+            storageBucket: "von600-7982d.appspot.com",
+            messagingSenderId: "164591218045",
+            appId: "1:164591218045:web:afe17512e16573e7903014",
+            measurementId: "G-E69DMPLXBK"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const elements = {
+            userName: document.getElementById("user-name"),
+            userEmail: document.getElementById("user-email"),
+            logoutBtn: document.getElementById("logout-btn")
+        };
+    
+        const CACHE_KEY = "user-profile-cache";
+    
+        // Load profile data quickly, prioritizing cache but checking for updates
+        const loadUserProfileFast = (user) => {
+            const cachedData = localStorage.getItem(`${CACHE_KEY}-${user.uid}`);
+            if (cachedData) {
+                const { name, email } = JSON.parse(cachedData);
+                // Render cached data immediately
+                requestAnimationFrame(() => {
+                    elements.userName.textContent = name;
+                    elements.userEmail.textContent = email;
+                });
+            } else {
+                // Fallback to basic user data while fetching
+                requestAnimationFrame(() => {
+                    elements.userName.textContent = user.email.split("@")[0]; // Quick placeholder
+                    elements.userEmail.textContent = user.email;
+                });
+            }
+            // Always check Firestore for updates
+            updateProfileFromFirestore(user);
+        };
+    
+        // Fetch and update profile from Firestore, then cache it with smooth transition
+        const updateProfileFromFirestore = async (user) => {
+            try {
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+                const userData = userDoc.exists() ? userDoc.data() : { name: user.email.split("@")[0] };
+                const profileData = { name: userData.name, email: user.email };
+                
+                // Smoothly update UI if name has changed
+                if (elements.userName.textContent !== profileData.name) {
+                    elements.userName.style.transition = "opacity 0.3s ease";
+                    elements.userName.style.opacity = "0";
+                    setTimeout(() => {
+                        elements.userName.textContent = profileData.name;
+                        elements.userName.style.opacity = "1";
+                    }, 300); // Match transition duration
+                }
+                // Update email (no transition needed)
+                if (elements.userEmail.textContent !== profileData.email) {
+                    elements.userEmail.textContent = profileData.email;
+                }
+                
+                // Cache the result
+                localStorage.setItem(`${CACHE_KEY}-${user.uid}`, JSON.stringify(profileData));
+            } catch (e) {
+                console.error("Failed to fetch profile:", e);
+                requestAnimationFrame(() => {
+                    elements.userName.textContent = "Error";
+                    elements.userEmail.textContent = "Could not load";
+                });
+            }
+        };
+    
+        // Logout handler
+        elements.logoutBtn.onclick = () => {
+            signOut(auth).then(() => {
+                localStorage.removeItem(`${CACHE_KEY}-${auth.currentUser?.uid}`);
+                window.location.href = "login.html";
+            }).catch((error) => {
+                console.error("Logout failed:", error);
+            });
+        };
+    
+        // Immediate auth check
+        const user = auth.currentUser; // Try current user first
+        if (user) {
+            loadUserProfileFast(user);
+        } else {
+            // Fallback to auth state listener if no user is immediately available
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    loadUserProfileFast(user);
+                } else {
+                    window.location.href = "login.html";
+                }
+            });
+        }
+    </script>
+    <script defer src="vendor/jquery/jquery.min.js"></script>
+    <script defer src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script defer src="vendor/slick/slick/slick.min.js"></script>
+    <script defer src="vendor/sidebar/hc-offcanvas-nav.js"></script>
+    <script defer src="js/osahan.js"></script>
+    <script defer>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9271c4989a124511',t:'MTc0MzEwODcwOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'927776aacf8353d3',t:'MTc0MzE2ODQzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Login - Vendor Portal</title>
+    <style>
+        :root {
+            --primary-color: #ff5722;
+            --text-color: #1d1d1f;
+            --bg-color: #f5f5f7;
+            --card-bg: #fff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-container {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 { font-size: 24px; font-weight: 600; margin-bottom: 20px; }
+        form { display: grid; gap: 15px; }
+        input {
+            padding: 12px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover { background: #e64a19; }
+        .error-msg {
+            color: #ff3b30;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Vendor Portal Login</h1>
+        <p class="error-msg" id="error-msg">Incorrect password</p>
+        <form id="login-form">
+            <input type="password" id="password" placeholder="Enter password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        // 🔥 Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+            authDomain: "von600-7982d.firebaseapp.com",
+            projectId: "von600-7982d",
+            storageBucket: "von600-7982d.appspot.com",
+            messagingSenderId: "164591218045",
+            appId: "1:164591218045:web:afe17512e16573e7903014",
+            measurementId: "G-E69DMPLXBK"
+        };
+
+        // ✅ Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ✅ Check Password from Firestore
+        async function checkPassword(inputPassword) {
+    try {
+        console.log("🔍 Checking Firestore for password...");
+        const passwordDoc = await getDoc(doc(db, "settings", "vendorPortal"));
+
+        if (!passwordDoc.exists()) {
+            console.error("❌ ERROR: Firestore document 'vendorPortal' not found in 'settings' collection!");
+            return false;
+        }
+
+        const correctPassword = passwordDoc.data().password;
+        console.log("✅ Firestore Password Found:", correctPassword);
+        return inputPassword === correctPassword;
+    } catch (error) {
+        console.error("❌ Firestore Error:", error);
+        return false;
+    }
+}
+
+
+        // ✅ Handle Login
+        document.getElementById("login-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const passwordInput = document.getElementById("password").value;
+            const errorMsg = document.getElementById("error-msg");
+
+            if (await checkPassword(passwordInput)) {
+                localStorage.setItem("authenticated", "true");
+                window.location.href = "dashboard.html";
+            } else {
+                errorMsg.style.display = "block";
+            }
+        });
+
+        // ✅ Auto Redirect if Already Logged In
+        if (localStorage.getItem("authenticated") === "true") {
+            window.location.href = "dashboard.html";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Chawmp - Sleek Food Delivery">
+    <meta name="author" content="Askbootstrap">
+    <meta name="theme-color" content="#565656">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/png" href="img/fav.png">
+    <link rel="apple-touch-icon" href="img/icon-192x192.png">
+    <title>Chawmp - My Account</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="vendor/sidebar/demo.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        .account-container {
+    padding: 50px 20px 100px;
+    max-width: 450px;
+    margin-left: 5px; /* Aligns content to the left with some padding */
+}
+        .account-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+        .account-header h2 { font-size: 2rem; font-weight: 700; color: #fff; margin: 0; }
+        .back-btn-top { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; padding: 0; }
+        .back-btn-top:hover { color: #007bff; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { font-size: 0.95rem; color: #fff; opacity: 0.9; display: block; margin-bottom: 5px; }
+        .form-group input { background: #3a3a3a; border: none; color: #fff; padding: 10px; border-radius: 8px; width: 100%; font-size: 16px; outline: none; }
+        .form-group input[readonly] { background: #2a2a2a; opacity: 0.7; }
+        .btn-primary { background: #007bff; border: none; padding: 12px; border-radius: 50px; font-size: 1rem; font-weight: 600; width: 100%; transition: background 0.3s ease; }
+        .btn-primary:hover { background: #0056b3; }
+        .btn-secondary { background: #6c757d; border: none; padding: 12px; border-radius: 50px; font-size: 1rem; font-weight: 600; width: 100%; transition: background 0.3s ease; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn-danger { background: #dc3545; border: none; padding: 12px; border-radius: 50px; font-size: 1rem; font-weight: 600; width: 100%; transition: background 0.3s ease; }
+        .btn-danger:hover { background: #c82333; }
+        .options-section { margin-top: 40px; }
+        .options-section h5 { color: #fff; font-weight: 600; margin-bottom: 15px; }
+        html, body { -webkit-text-size-adjust: none; touch-action: manipulation; }
+    </style>
+</head>
+<body class="fixed-bottom-bar">
+    <div class="account-container">
+        <div class="account-header">
+            <button id="back-btn-top" class="back-btn-top"><i class="feather-arrow-left"></i></button>
+            <h2>My Account</h2>
+            <div style="width: 24px;"></div> <!-- Spacer to balance layout -->
+        </div>
+        <form id="account-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" readonly>
+            </div>
+            <div class="form-group">
+                <label for="name">Nickname</label>
+                <input type="text" id="name" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" placeholder="Your Phone Number" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="button" id="back-btn" class="btn btn-secondary mt-3">Back to Profile</button>
+        </form>
+
+        <div class="options-section">
+            <h5>Account Options</h5>
+            <button id="delete-account-btn" class="btn btn-danger">Delete Account</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="osahan-menu-fotter fixed-bottom bg-darker px-3 py-2 text-center">
+        <div class="row">
+            <div class="col"><a href="index.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-map-pin"></i></p>Trending</a></div>
+            <div class="col"><a href="home.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-home text-white"></i></p>Home</a></div>
+            <div class="col"><a href="cart.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart</a></div>
+            <div class="col"><a href="orders.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders</a></div>
+            <div class="col selected"><a href="profile.html" class="text-danger small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-user"></i></p>Profile</a></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+            authDomain: "von600-7982d.firebaseapp.com",
+            projectId: "von600-7982d",
+            storageBucket: "von600-7982d.appspot.com",
+            messagingSenderId: "164591218045",
+            appId: "1:164591218045:web:afe17512e16573e7903014",
+            measurementId: "G-E69DMPLXBK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const accountForm = document.getElementById("account-form");
+        const emailInput = document.getElementById("email");
+        const nameInput = document.getElementById("name");
+        const phoneInput = document.getElementById("phone");
+        const backBtn = document.getElementById("back-btn");
+        const backBtnTop = document.getElementById("back-btn-top");
+        const deleteAccountBtn = document.getElementById("delete-account-btn");
+        const CACHE_KEY = "user-account-cache";
+
+        // Load account data with caching
+        const loadAccountData = async (user) => {
+            const cachedData = localStorage.getItem(`${CACHE_KEY}-${user.uid}`);
+            if (cachedData) {
+                const { email, name, phone } = JSON.parse(cachedData);
+                requestAnimationFrame(() => {
+                    emailInput.value = email || user.email;
+                    nameInput.value = name || "";
+                    phoneInput.value = phone || "";
+                });
+            } else {
+                requestAnimationFrame(() => {
+                    emailInput.value = user.email;
+                    nameInput.value = user.email.split("@")[0];
+                    phoneInput.value = "";
+                });
+                await fetchAndCacheAccountData(user);
+            }
+        };
+
+        // Fetch from Firestore and cache
+        const fetchAndCacheAccountData = async (user) => {
+            try {
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+                const userData = userDoc.exists() ? userDoc.data() : { name: user.email.split("@")[0], phone: "" };
+                const accountData = { email: user.email, name: userData.name, phone: userData.phone || "" };
+                requestAnimationFrame(() => {
+                    emailInput.value = accountData.email;
+                    nameInput.value = accountData.name;
+                    phoneInput.value = accountData.phone;
+                });
+                localStorage.setItem(`${CACHE_KEY}-${user.uid}`, JSON.stringify(accountData));
+            } catch (error) {
+                console.error("Error loading account data:", error);
+                alert("Failed to load account data.");
+            }
+        };
+
+        // Save changes to Firestore
+        accountForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const updatedData = {
+                name: nameInput.value,
+                phone: phoneInput.value
+            };
+
+            try {
+                const userDocRef = doc(db, "users", user.uid);
+                await setDoc(userDocRef, updatedData, { merge: true });
+                const cachedData = JSON.parse(localStorage.getItem(`${CACHE_KEY}-${user.uid}`)) || {};
+                localStorage.setItem(`${CACHE_KEY}-${user.uid}`, JSON.stringify({ ...cachedData, ...updatedData }));
+                window.location.href = "profile.html";
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                alert(`Error: ${error.message}`);
+            }
+        });
+
+        // Back to profile (both buttons)
+        const goBack = () => window.location.href = "profile.html";
+        backBtn.addEventListener("click", goBack);
+        backBtnTop.addEventListener("click", goBack);
+
+        // Delete account
+        deleteAccountBtn.addEventListener("click", async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+                try {
+                    const userDocRef = doc(db, "users", user.uid);
+                    await deleteDoc(userDocRef);
+                    await deleteUser(user);
+                    localStorage.removeItem(`${CACHE_KEY}-${user.uid}`);
+                    window.location.href = "login.html";
+                } catch (error) {
+                    console.error("Error deleting account:", error);
+                    alert(`Error: ${error.message}. You may need to re-authenticate to delete your account.`);
+                }
+            }
+        });
+
+        // Initial load
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = auth.currentUser;
+            if (user) {
+                loadAccountData(user);
+            } else {
+                onAuthStateChanged(auth, (user) => {
+                    if (user) loadAccountData(user);
+                    else window.location.href = "login.html";
+                });
+            }
+        });
+    </script>
+    <script defer src="vendor/jquery/jquery.min.js"></script>
+    <script defer src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92771a195ea2bae0',t:'MTc0MzE2NDY0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

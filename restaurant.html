@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Restaurant Menu">
+    <title>Restaurant</title>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"></noscript>
+    <style>
+        body{font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,sans-serif;background:#2c2c2c;color:white;margin:0;padding:0;min-height:100vh;overflow-x:hidden}
+        .restaurant-header{position:relative;height:300px;display:flex;align-items:center;justify-content:center;color:white;text-align:center;overflow:hidden}
+        .restaurant-header img{width:100%;height:100%;object-fit:cover;filter:brightness(0.5)}
+        .restaurant-info{position:absolute;text-align:center}
+        .restaurant-info h1{font-size:2.5rem;font-weight:bold;margin-bottom:10px}
+        .restaurant-info p{font-size:1.2rem;opacity:0.8}
+        .menu-section{padding:50px 20px;max-width:600px;margin:auto;text-align:center}
+        .menu-list{background:#4a4a4a;padding:20px;border-radius:12px;box-shadow:0 10px 20px rgba(0,0,0,0.1)}
+        .menu-item{background:#3f3f3f;padding:15px;border-radius:12px;box-shadow:0 10px 20px rgba(0,0,0,0.05);margin-bottom:15px;display:flex;align-items:center;justify-content:space-between;transition:transform 0.2s ease-in-out;cursor:pointer}
+        .menu-item:hover{transform:scale(1.02)}
+        .menu-item h4{margin:0;font-size:1.2rem;font-weight:600;color:white}
+        .menu-item p{margin:0;font-size:1rem;opacity:0.7;color:#fff}
+        .add-to-cart{border:none;background:white;color:black;padding:8px 15px;border-radius:8px;font-size:1rem;transition:background 0.2s}
+        .add-to-cart:hover{background:#ddd}
+        .options-panel{position:fixed;bottom:-100%;left:0;width:100%;background:#3f3f3f;padding:20px;border-radius:20px 20px 0 0;box-shadow:0 -5px 15px rgba(0,0,0,0.3);transition:bottom 0.3s ease;z-index:10}
+        .options-panel.show{bottom:0}
+        .options-panel h5{font-size:1.2rem;font-weight:600;margin-bottom:15px}
+        .close-btn{position:absolute;top:10px;right:10px;background:#2c2c2e;padding:5px 10px;border-radius:50%;cursor:pointer}
+        .option-group{margin-bottom:15px}
+        .option-group label{display:block;margin:5px 0;font-size:0.9rem}
+        .quantity-controls{display:flex;align-items:center;gap:10px;margin:15px 0}
+        .quantity-btn{background:#2c2c2e;padding:5px 10px;border-radius:5px;cursor:pointer}
+        .note-input{width:100%;background:#2c2c2e;border:none;color:#fff;padding:10px;border-radius:8px;margin-bottom:15px}
+        .confirm-btn{background:#007aff;color:white;padding:10px;border-radius:12px;width:100%;border:none}
+        .confirm-btn:hover{background:#0062cc}
+        .toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:white;padding:12px 20px;border-radius:12px;font-size:1rem;font-weight:500;display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transition:opacity 0.4s ease,transform 0.4s ease}
+        .toast-container.show{opacity:1;transform:translateX(-50%) translateY(10px);pointer-events:auto}
+        .view-cart-btn{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:black;color:white;padding:16px 50px;border-radius:50px;font-size:1.2rem;font-weight:bold;text-decoration:none;transition:background 0.2s ease-in-out,opacity 0.2s ease-in-out;box-shadow:0 5px 15px rgba(0,0,0,0.2);opacity:0;visibility:hidden}
+        .view-cart-btn.show{opacity:1;visibility:visible}
+        .view-cart-btn:hover{background:#333}
+        .back-arrow{position:absolute;top:20px;left:20px;background:rgba(0,0,0,0.647);color:white;padding:10px;border-radius:50%;transition:background 0.2s ease}
+        .back-arrow:hover{background:rgba(0,0,0,0.8)}
+        .menu-loading{font-size:1.5rem;font-weight:600;opacity:0.7;margin:0}
+        @media (max-width: 640px) {
+            .menu-section { padding: 30px 10px; }
+            .menu-item { padding: 10px; }
+            .options-panel { padding: 15px; }
+        }
+        input, textarea {
+            font-size: 16px;
+            outline: none;
+        }
+        *:focus {
+            zoom: 1 !important;
+        }
+        html, body {
+            -webkit-text-size-adjust: none;
+            touch-action: manipulation;
+        }
+    </style>
+    <script defer src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="restaurant-header">
+        <img id="restaurant-image" loading="lazy">
+        <button class="back-arrow" onclick="history.back()">
+            <svg width="25" height="30" viewBox="0 0 24 24" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+        <div class="restaurant-info">
+            <h1 id="restaurant-name"></h1>
+            <p id="restaurant-info"></p>
+        </div>
+    </div>
+    <div class="menu-section" id="menu-section">
+        <p class="menu-loading">Heating up the menu... 🍲</p>
+    </div>
+    <div id="options-panel" class="options-panel">
+        <h5 id="options-title"></h5>
+        <button class="close-btn" id="close-panel">×</button>
+        <div class="option-group" id="size-group">
+            <h6>Size</h6>
+            <div id="size-options"></div>
+        </div>
+        <div class="option-group" id="extra-group">
+            <h6>Extras</h6>
+            <div id="extra-options"></div>
+        </div>
+        <div class="quantity-controls">
+            <button class="quantity-btn" id="decrease-qty">-</button>
+            <span id="quantity">1</span>
+            <button class="quantity-btn" id="increase-qty">+</button>
+        </div>
+        <textarea id="vendor-note" class="note-input" placeholder="Add a note to the vendor..."></textarea>
+        <button id="confirm-add" class="confirm-btn">Add to Cart</button>
+    </div>
+    <div id="toast" class="toast-container">
+        <div class="toast-content">
+            <i data-feather="check-circle"></i>
+            <span id="toast-message"></span>
+        </div>
+    </div>
+    <a href="cart.html" class="view-cart-btn" id="view-cart-btn">View Cart</a>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, enableIndexedDbPersistence, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+            authDomain: "von600-7982d.firebaseapp.com",
+            projectId: "von600-7982d",
+            storageBucket: "von600-7982d.appspot.com",
+            messagingSenderId: "164591218045",
+            appId: "1:164591218045:web:afe17512e16573e7903014",
+            measurementId: "G-E69DMPLXBK"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        enableIndexedDbPersistence(db).catch(err => console.warn("Firestore persistence failed:", err));
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const restaurantId = urlParams.get("id");
+        let cartCount = 0, currentItem = null;
+        const elements = {
+            restaurantName: document.getElementById("restaurant-name"),
+            restaurantInfo: document.getElementById("restaurant-info"),
+            restaurantImage: document.getElementById("restaurant-image"),
+            menuSection: document.getElementById("menu-section"),
+            optionsPanel: document.getElementById("options-panel"),
+            optionsTitle: document.getElementById("options-title"),
+            sizeGroup: document.getElementById("size-group"),
+            extraGroup: document.getElementById("extra-group"),
+            sizeOptions: document.getElementById("size-options"),
+            extraOptions: document.getElementById("extra-options"),
+            quantity: document.getElementById("quantity"),
+            vendorNote: document.getElementById("vendor-note"),
+            toast: document.getElementById("toast"),
+            toastMessage: document.getElementById("toast-message"),
+            viewCartBtn: document.getElementById("view-cart-btn")
+        };
+
+        const loadRestaurant = async () => {
+            const docRef = doc(db, "restaurant", restaurantId);
+            const docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+                elements.restaurantName.textContent = "Restaurant Not Found";
+                elements.restaurantInfo.textContent = "";
+                return;
+            }
+            const data = docSnap.data();
+            requestAnimationFrame(() => {
+                elements.restaurantName.textContent = data.name;
+                elements.restaurantInfo.textContent = `⭐ ${data.rating} | ⏳ ${data.delivery_time} mins`;
+                elements.restaurantImage.src = data.image;
+            });
+        };
+
+        const loadMenu = async () => {
+            const menuRef = collection(db, "restaurant", restaurantId, "menu");
+            const querySnapshot = await getDocs(menuRef);
+            const menuItems = [];
+            querySnapshot.forEach(doc => menuItems.push({ id: doc.id, ...doc.data(), price: parseFloat(doc.data().price) || 0, sizes: doc.data().sizes || [], extras: doc.data().extras || [] }));
+            renderMenu(menuItems);
+        };
+
+        const renderMenu = items => {
+            const fragment = document.createDocumentFragment();
+            const menuList = document.createElement("div");
+            menuList.className = "menu-list";
+            items.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "menu-item";
+                div.dataset.item = JSON.stringify(item);
+                div.innerHTML = `<div><h4>${item.name}</h4><p>GH₵${item.price.toFixed(2)}</p></div><button class="add-to-cart">Add +</button>`;
+                menuList.appendChild(div);
+            });
+            const menuHeader = document.createElement("h2");
+            menuHeader.className = "fw-bold";
+            menuHeader.textContent = "Menu";
+            fragment.appendChild(menuHeader);
+            fragment.appendChild(menuList);
+            requestAnimationFrame(() => elements.menuSection.replaceChildren(fragment));
+        };
+
+        const showOptionsPanel = item => {
+            currentItem = item;
+            elements.optionsTitle.textContent = item.name;
+            elements.sizeGroup.style.display = item.sizes.length ? "block" : "none";
+            elements.extraGroup.style.display = item.extras.length ? "block" : "none";
+            elements.sizeOptions.innerHTML = item.sizes.length ? item.sizes.map((size, i) => `<label><input type="radio" name="size" value="${i}" ${i === 0 ? "checked" : ""}> ${size.name} (GH₵${size.price.toFixed(2)})</label>`).join("") : "";
+            elements.extraOptions.innerHTML = item.extras.length ? item.extras.map(extra => `<label><input type="checkbox" name="extra" value="${extra.name}" data-price="${extra.price}"> ${extra.name} (GH₵${extra.price.toFixed(2)})</label>`).join("") : "";
+            elements.quantity.textContent = "1";
+            elements.vendorNote.value = "";
+            elements.optionsPanel.classList.add("show");
+        };
+
+        const hideOptionsPanel = () => {
+            elements.optionsPanel.classList.remove("show");
+            currentItem = null;
+        };
+
+        const showToast = message => {
+            elements.toastMessage.textContent = message;
+            requestAnimationFrame(() => {
+                elements.toast.classList.add("show");
+                setTimeout(() => elements.toast.classList.remove("show"), 2000);
+            });
+        };
+
+        const updateCartButton = () => requestAnimationFrame(() => elements.viewCartBtn.classList.toggle("show", cartCount > 0));
+        const loadCartCount = () => {
+            cartCount = JSON.parse(localStorage.getItem("cart") || "[]").length;
+            updateCartButton();
+        };
+
+        const addToCart = async item => {
+            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            cart.push(item);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            cartCount++;
+            updateCartButton();
+            showToast(`${item.name} added to cart!`);
+            
+            // Save to Firestore orders collection with restaurantId
+            try {
+                await addDoc(collection(db, "orders"), {
+                    restaurantId: restaurantId,
+                    items: item.quantity > 1 ? Array(item.quantity).fill({ name: item.name, total: item.price }) : [{ name: item.name, total: item.price }],
+                    totalAmount: item.price * item.quantity,
+                    timestamp: new Date().toISOString(),
+                    note: item.note || ""
+                });
+                console.log("Order saved to Firestore");
+            } catch (error) {
+                console.error("Error saving order to Firestore:", error);
+            }
+        };
+
+        document.onclick = e => {
+            const menuItem = e.target.closest(".menu-item");
+            const addButton = e.target.closest(".add-to-cart");
+            if (addButton) {
+                const item = JSON.parse(menuItem.dataset.item);
+                if (!item.sizes.length && !item.extras.length) addToCart({ name: item.name, price: item.price, restaurantId, quantity: 1, id: Date.now(), extras: [], note: "" });
+                else showOptionsPanel(item);
+            } else if (menuItem && !elements.optionsPanel.contains(e.target)) {
+                const item = JSON.parse(menuItem.dataset.item);
+                if (item.sizes.length || item.extras.length) showOptionsPanel(item);
+            } else if (!elements.optionsPanel.contains(e.target) && elements.optionsPanel.classList.contains("show")) hideOptionsPanel();
+        };
+
+        document.getElementById("close-panel").onclick = hideOptionsPanel;
+        document.getElementById("increase-qty").onclick = () => elements.quantity.textContent = parseInt(elements.quantity.textContent) + 1;
+        document.getElementById("decrease-qty").onclick = () => elements.quantity.textContent = Math.max(1, parseInt(elements.quantity.textContent) - 1);
+        document.getElementById("confirm-add").onclick = () => {
+            if (!currentItem) return;
+            const sizeIndex = document.querySelector('input[name="size"]:checked')?.value;
+            const selectedSize = sizeIndex ? currentItem.sizes[sizeIndex] : null;
+            const extras = Array.from(document.querySelectorAll('input[name="extra"]:checked')).map(input => ({ name: input.value, price: parseFloat(input.dataset.price) }));
+            const item = {
+                name: selectedSize ? `${currentItem.name} (${selectedSize.name})` : currentItem.name,
+                price: selectedSize ? selectedSize.price : currentItem.price,
+                restaurantId,
+                quantity: parseInt(elements.quantity.textContent),
+                id: Date.now(),
+                extras,
+                note: elements.vendorNote.value
+            };
+            extras.forEach(extra => { item.name += ` + ${extra.name}`; item.price += extra.price; });
+            addToCart(item);
+            hideOptionsPanel();
+        };
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            await Promise.all([loadRestaurant(), loadMenu()]);
+            loadCartCount();
+            feather.replace();
+        });
+    </script>
+   <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'923f6a091cb54509',t:'MTc0MjU4MDcxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'928b5f22bce432f9',t:'MTc0MzM3NzE4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

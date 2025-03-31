@@ -1,0 +1,22 @@
+{
+  "name": "Chawp",
+  "short_name": "Chawp",
+  "description": "Sleek Food Delivery App",
+  "start_url": "https://ios.chawp.me/index.html",
+  "display": "standalone",
+  "background_color": "#565656",
+  "theme_color": "#565656",
+  "scope": "/",
+  "icons": [
+      {
+          "src": "img/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+      },
+      {
+          "src": "img/icon-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+      }
+  ]
+}

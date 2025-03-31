@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>King Gabby - Vendor Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            background: #1c1c1e;
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .btn {
+            background: #007aff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 500;
+            text-align: center;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .btn:hover {
+            background: #0062cc;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #ff3b30;
+            padding: 5px 15px;
+        }
+        .btn-secondary:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        .btn-edit {
+            background: #34c759;
+            padding: 5px 15px;
+        }
+        .btn-edit:hover {
+            background: #2ea44f;
+            transform: translateY(-2px);
+        }
+        .input {
+            background: #2c2c2e;
+            border: none;
+            color: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            width: 100%;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .notification {
+            background: #34c759;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .notification.error {
+            background: #ff3b30;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .menu-list .menu-item {
+            background: #2c2c2e;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .menu-list .menu-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .menu-item h4 {
+            margin: 0 0 10px;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .menu-item p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .menu-item .details { margin-top: 15px; }
+        .variation { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
+        .variation input { flex: 1; }
+        .variation .input-price { width: 90px; }
+        .menu-details { background: #252527; padding: 15px; border-radius: 10px; margin-top: 15px; }
+        .menu-details p { margin: 0; font-size: 0.95rem; opacity: 0.9; }
+        .menu-details h5 { font-size: 1.1rem; font-weight: 600; margin: 10px 0 5px; }
+        @media (max-width: 640px) {
+            .container { padding: 15px; }
+            .section { padding: 20px; }
+            .btn { padding: 8px 15px; font-size: 0.9rem; }
+            .input { font-size: 0.9rem; }
+        }
+        /* Prevent zoom on input focus */
+        input, textarea {
+            font-size: 16px; /* Ensures iOS doesn't zoom */
+            outline: none;
+        }
+        /* Disable layout shift or zoom */
+        *:focus {
+            zoom: 1 !important; /* Forces no zoom */
+        }
+        html, body {
+            -webkit-text-size-adjust: none; /* Prevents text size adjustment */
+            touch-action: manipulation; /* Disables double-tap zoom */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-4xl font-semibold text-center mb-4">🏪 <span id="restaurant-name">Vendor Portal</span></h1>
+        <p id="welcome-message" class="text-center text-gray-400 mb-8">Manage your culinary empire with elegance.</p>
+
+        <div id="notification" class="hidden notification"></div>
+
+        <div class="grid mb-8">
+            <button id="manage-store-btn" class="btn">Manage Store</button>
+            <button id="manage-menu-btn" class="btn">Manage Menu</button>
+            <button id="view-orders-btn" class="btn">View Orders</button>
+            <button id="delivery-btn" class="btn">Delivery</button>
+            <button id="settings-btn" class="btn">Settings</button>
+        </div>
+
+        <div id="manage-store" class="section hidden">
+            <h2 class="text-2xl font-semibold mb-4">Manage Store</h2>
+            <form id="store-form">
+                <input type="text" id="store-name" placeholder="Store Name" class="input">
+                <input type="text" id="store-image" placeholder="Image URL" class="input">
+                <button type="submit" class="btn w-full">Update Store</button>
+            </form>
+            <button id="delete-store" class="btn btn-secondary w-full mt-2">Delete Store</button>
+        </div>
+
+        <div id="manage-menu" class="section hidden">
+            <h2 class="text-2xl font-semibold mb-4">Manage Menu</h2>
+            <form id="menu-form" class="mb-6">
+                <label for="menu-name" class="block text-sm opacity-90 mb-1">Dish Name</label>
+                <input type="text" id="menu-name" placeholder="e.g., Chicken Burger" class="input">
+                <label for="menu-price" class="block text-sm opacity-90 mb-1">Price (GH₵)</label>
+                <input type="number" id="menu-price" placeholder="e.g., 15.00" step="0.01" class="input">
+                <button type="submit" class="btn w-full mt-2">Add New Dish</button>
+            </form>
+            <div id="menu-list" class="menu-list"></div>
+        </div>
+
+        <div id="view-orders" class="section hidden">
+            <h2 class="text-2xl font-semibold mb-4">View Orders</h2>
+            <div id="orders-list">Loading orders...</div>
+        </div>
+
+        <div id="delivery" class="section hidden">
+            <h2 class="text-2xl font-semibold mb-4">Delivery</h2>
+            <p class="text-gray-400">Delivery settings coming soon.</p>
+        </div>
+
+        <div id="settings" class="section hidden">
+            <h2 class="text-2xl font-semibold mb-4">Settings</h2>
+            <p class="text-gray-400">Store settings coming soon.</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { 
+            getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc, updateDoc
+        } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+            authDomain: "von600-7982d.firebaseapp.com",
+            projectId: "von600-7982d",
+            storageBucket: "von600-7982d.appspot.com",
+            messagingSenderId: "164591218045",
+            appId: "1:164591218045:web:afe17512e16573e7903014",
+            measurementId: "G-E69DMPLXBK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const restaurantId = "IHvLe6CCwUKl9FC2o3Dq";
+        let selectedMenuId = null;
+
+        function showNotification(message, type = "success") {
+            const notification = document.getElementById("notification");
+            notification.textContent = message;
+            notification.className = `notification ${type === "error" ? "error" : ""}`;
+            notification.classList.remove("hidden");
+            setTimeout(() => notification.classList.add("hidden"), 3000);
+        }
+
+        function toggleSection(sectionId) {
+            const sections = ["manage-store", "manage-menu", "view-orders", "delivery", "settings"];
+            sections.forEach(id => {
+                document.getElementById(id).classList.toggle("hidden", id !== sectionId);
+            });
+        }
+
+        async function loadRestaurantData() {
+            const docRef = doc(db, "restaurant", restaurantId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById("store-name").value = data.name;
+                document.getElementById("store-image").value = data.image;
+                document.getElementById("restaurant-name").textContent = `${data.name} Vendor Portal`;
+                document.getElementById("welcome-message").textContent = `Manage ${data.name} with elegance.`;
+            } else {
+                showNotification("Restaurant not found!", "error");
+            }
+        }
+
+        async function loadMenu() {
+            const menuList = document.getElementById("menu-list");
+            menuList.innerHTML = "<p class='text-gray-400'>Loading menu...</p>";
+            const menuRef = collection(db, "restaurant", restaurantId, "menu");
+            const querySnapshot = await getDocs(menuRef);
+            let output = "";
+            querySnapshot.forEach(docSnapshot => {
+                const data = docSnapshot.data();
+                output += `
+                    <div class="menu-item" data-id="${docSnapshot.id}">
+                        <h4>${data.name}</h4>
+                        <p>Price: GH₵${data.price.toFixed(2)}</p>
+                        <div id="details-${docSnapshot.id}" class="menu-details hidden"></div>
+                        <div id="edit-${docSnapshot.id}" class="details hidden"></div>
+                    </div>
+                `;
+            });
+            menuList.innerHTML = output || "<p class='text-gray-400'>No dishes added yet.</p>";
+
+            menuList.querySelectorAll(".menu-item").forEach(item => {
+                item.addEventListener("click", (e) => {
+                    if (!e.target.closest("button")) showMenuDetails(item.dataset.id);
+                });
+            });
+        }
+
+        async function showMenuDetails(menuId) {
+            if (selectedMenuId === menuId && document.getElementById(`details-${menuId}`).classList.contains("hidden")) {
+                document.getElementById(`details-${menuId}`).classList.remove("hidden");
+                return;
+            }
+            selectedMenuId = menuId;
+
+            const docRef = doc(db, "restaurant", restaurantId, "menu", menuId);
+            const docSnap = await getDoc(docRef);
+            const data = docSnap.data();
+            const sizes = data.sizes || [];
+            const extras = data.extras || [];
+
+            const detailsDiv = document.getElementById(`details-${menuId}`);
+            detailsDiv.innerHTML = `
+                <p>Sizes: ${sizes.length ? sizes.map(s => `${s.name} (GH₵${s.price.toFixed(2)})`).join(", ") : "None"}</p>
+                <p>Extras: ${extras.length ? extras.map(e => `${e.name} (GH₵${e.price.toFixed(2)})`).join(", ") : "None"}</p>
+                <div class="flex gap-4 mt-3">
+                    <button class="btn btn-edit" data-menu-id="${menuId}">Edit</button>
+                    <button onclick="deleteMenuItem('${menuId}')" class="btn btn-secondary">Delete</button>
+                </div>
+            `;
+            detailsDiv.classList.remove("hidden");
+
+            document.querySelectorAll(".menu-item").forEach(item => {
+                if (item.dataset.id !== menuId) {
+                    document.getElementById(`details-${item.dataset.id}`).classList.add("hidden");
+                    document.getElementById(`edit-${item.dataset.id}`).classList.add("hidden");
+                }
+            });
+
+            detailsDiv.querySelector(".btn-edit").addEventListener("click", () => showEditMenu(menuId));
+        }
+
+        async function showEditMenu(menuId) {
+            const docRef = doc(db, "restaurant", restaurantId, "menu", menuId);
+            const docSnap = await getDoc(docRef);
+            const data = docSnap.data();
+            const sizes = data.sizes || [];
+            const extras = data.extras || [];
+
+            const editDiv = document.getElementById(`edit-${menuId}`);
+            editDiv.innerHTML = `
+                <label class="block text-sm opacity-90 mb-1">Name</label>
+                <input type="text" id="name-${menuId}" value="${data.name}" class="input">
+                <label class="block text-sm opacity-90 mb-1">Price (GH₵)</label>
+                <input type="number" id="price-${menuId}" value="${data.price}" step="0.01" class="input">
+                <h5 class="text-sm font-semibold mt-3">Sizes</h5>
+                ${sizes.map((size, index) => `
+                    <div class="variation">
+                        <input type="text" value="${size.name}" id="size-name-${menuId}-${index}" class="input">
+                        <input type="number" value="${size.price}" step="0.01" id="size-price-${menuId}-${index}" class="input input-price">
+                        <button onclick="deleteSize('${menuId}', ${index})" class="btn btn-secondary">Delete</button>
+                    </div>
+                `).join("") || "<p class='text-gray-400'>No sizes added</p>"}
+                <div class="variation">
+                    <input type="text" placeholder="Add size" id="new-size-name-${menuId}" class="input">
+                    <input type="number" placeholder="Price" step="0.01" id="new-size-price-${menuId}" class="input input-price">
+                    <button onclick="addSize('${menuId}')" class="btn">Add</button>
+                </div>
+                <h5 class="text-sm font-semibold mt-3">Extras</h5>
+                ${extras.map((extra, index) => `
+                    <div class="variation">
+                        <input type="text" value="${extra.name}" id="extra-name-${menuId}-${index}" class="input">
+                        <input type="number" value="${extra.price}" step="0.01" id="extra-price-${menuId}-${index}" class="input input-price">
+                        <button onclick="deleteExtra('${menuId}', ${index})" class="btn btn-secondary">Delete</button>
+                    </div>
+                `).join("") || "<p class='text-gray-400'>No extras added</p>"}
+                <div class="variation">
+                    <input type="text" placeholder="Add extra" id="new-extra-name-${menuId}" class="input">
+                    <input type="number" placeholder="Price" step="0.01" id="new-extra-price-${menuId}" class="input input-price">
+                    <button onclick="addExtra('${menuId}')" class="btn">Add</button>
+                </div>
+                <button onclick="saveMenuItem('${menuId}')" class="btn w-full mt-3">Save Changes</button>
+            `;
+            editDiv.classList.remove("hidden");
+            document.getElementById(`details-${menuId}`).classList.add("hidden"); // Hide details when editing
+        }
+
+        async function loadOrders() {
+            const ordersList = document.getElementById("orders-list");
+            const localOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+            if (localOrders.length === 0) {
+                ordersList.innerHTML = "<p class='text-gray-400'>No orders found.</p>";
+                return;
+            }
+            let output = "";
+            localOrders.forEach(order => {
+                const items = order.items.map(item => `${item.quantity}x ${item.name}`).join(", ");
+                output += `
+                    <div class="bg-gray-800 p-4 rounded mb-4">
+                        <p><strong>Order ID:</strong> ${order.id}</p>
+                        <p><strong>Time:</strong> ${new Date(order.timestamp).toLocaleString()}</p>
+                        <p><strong>Items:</strong> ${items}</p>
+                        <p><strong>Total:</strong> GH₵${order.totalAmount.toFixed(2)}</p>
+                        <p><strong>Note:</strong> ${order.note || "None"}</p>
+                    </div>
+                `;
+            });
+            ordersList.innerHTML = output;
+        }
+
+        document.getElementById("store-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const name = document.getElementById("store-name").value;
+            const image = document.getElementById("store-image").value;
+            await setDoc(doc(db, "restaurant", restaurantId), { name, image }, { merge: true });
+            showNotification("Store updated successfully!");
+            loadRestaurantData(); // Refresh welcome message
+        });
+
+        document.getElementById("delete-store").addEventListener("click", async () => {
+            const menuRef = collection(db, "restaurant", restaurantId, "menu");
+            const menuSnapshot = await getDocs(menuRef);
+            menuSnapshot.forEach(async (menuDoc) => {
+                await deleteDoc(doc(db, "restaurant", restaurantId, "menu", menuDoc.id));
+            });
+            await deleteDoc(doc(db, "restaurant", restaurantId));
+            showNotification("Store deleted successfully!", "error");
+            document.getElementById("manage-store").innerHTML = "<p class='text-gray-400'>Store deleted.</p>";
+            loadRestaurantData(); // Reset welcome message
+        });
+
+        window.deleteMenuItem = async (menuId) => {
+            await deleteDoc(doc(db, "restaurant", restaurantId, "menu", menuId));
+            showNotification("Dish deleted!", "error");
+            loadMenu();
+        };
+
+        document.getElementById("menu-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const name = document.getElementById("menu-name").value;
+            const price = parseFloat(document.getElementById("menu-price").value);
+            if (!name || isNaN(price)) return showNotification("Please enter a name and price!", "error");
+            await addDoc(collection(db, "restaurant", restaurantId, "menu"), { name, price, sizes: [], extras: [] });
+            showNotification("Dish added!");
+            document.getElementById("menu-name").value = "";
+            document.getElementById("menu-price").value = "";
+            loadMenu();
+        });
+
+        window.addSize = async (menuId) => {
+            const name = document.getElementById(`new-size-name-${menuId}`).value;
+            const price = parseFloat(document.getElementById(`new-size-price-${menuId}`).value);
+            if (!name || isNaN(price)) return showNotification("Enter size name and price!", "error");
+            const docRef = doc(db, "restaurant", restaurantId, "menu", menuId);
+            const docSnap = await getDoc(docRef);
+            const sizes = docSnap.data().sizes || [];
+            sizes.push({ name, price });
+            await updateDoc(docRef, { sizes });
+            showNotification("Size added!");
+            showEditMenu(menuId);
+        };
+
+        window.addExtra = async (menuId) => {
+            const name = document.getElementById(`new-extra-name-${menuId}`).value;
+            const price = parseFloat(document.getElementById(`new-extra-price-${menuId}`).value);
+            if (!name || isNaN(price)) return showNotification("Enter extra name and price!", "error");
+            const docRef = doc(db, "restaurant", restaurantId, "menu", menuId);
+            const docSnap = await getDoc(docRef);
+            const extras = docSnap.data().extras || [];
+            extras.push({ name, price });
+            await updateDoc(docRef, { extras });
+            showNotification("Extra added!");
+            showEditMenu(menuId);
+        };
+
+        window.deleteSize = async (menuId, index) => {
+            const docRef = doc(db, "restaurant", restaurantId, "menu", menuId);
+            const docSnap = await getDoc(docRef);
+            const sizes = docSnap.data().sizes || [];
+            sizes.splice(index, 1);
+            await updateDoc(docRef, { sizes });
+            showNotification("Size deleted!", "error");
+            showEditMenu(menuId);
+        };
+
+        window.deleteExtra = async (menuId, index) => {
+            const docRef = doc(db, "restaurant", restaurantId, "menu", menuId);
+            const docSnap = await getDoc(docRef);
+            const extras = docSnap.data().extras || [];
+            extras.splice(index, 1);
+            await updateDoc(docRef, { extras });
+            showNotification("Extra deleted!", "error");
+            showEditMenu(menuId);
+        };
+
+        window.saveMenuItem = async (menuId) => {
+            const docRef = doc(db, "restaurant", restaurantId, "menu", menuId);
+            const docSnap = await getDoc(docRef);
+            const data = docSnap.data();
+            const name = document.getElementById(`name-${menuId}`).value;
+            const price = parseFloat(document.getElementById(`price-${menuId}`).value);
+            const sizes = data.sizes || [];
+            const extras = data.extras || [];
+
+            const updatedSizes = sizes.map((_, index) => ({
+                name: document.getElementById(`size-name-${menuId}-${index}`).value,
+                price: parseFloat(document.getElementById(`size-price-${menuId}-${index}`).value)
+            }));
+            const updatedExtras = extras.map((_, index) => ({
+                name: document.getElementById(`extra-name-${menuId}-${index}`).value,
+                price: parseFloat(document.getElementById(`extra-price-${menuId}-${index}`).value)
+            }));
+
+            if (!name || isNaN(price)) return showNotification("Please enter a name and price!", "error");
+            await updateDoc(docRef, { name, price, sizes: updatedSizes, extras: updatedExtras });
+            showNotification("Changes saved!");
+            loadMenu();
+        };
+
+        document.getElementById("manage-store-btn").addEventListener("click", () => toggleSection("manage-store"));
+        document.getElementById("manage-menu-btn").addEventListener("click", () => { toggleSection("manage-menu"); loadMenu(); });
+        document.getElementById("view-orders-btn").addEventListener("click", () => { toggleSection("view-orders"); loadOrders(); });
+        document.getElementById("delivery-btn").addEventListener("click", () => toggleSection("delivery"));
+        document.getElementById("settings-btn").addEventListener("click", () => toggleSection("settings"));
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            await loadRestaurantData();
+            loadMenu();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'923ee5b33cbc1355',t:'MTc0MjU3NTI5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>EduNest CMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+    <div class="max-w-4xl mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">🍏 EduNest CMS</h1>
+        
+        <!-- Restaurant Management -->
+        <div class="bg-white p-6 shadow-md rounded-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Manage Restaurants</h2>
+            <form id="restaurant-form" class="mb-4">
+                <input type="text" id="restaurant-name" placeholder="Restaurant Name" class="border p-2 rounded w-full mb-2">
+                <input type="text" id="restaurant-image" placeholder="Image URL" class="border p-2 rounded w-full mb-2">
+                <input type="number" id="restaurant-rating" placeholder="Rating (1-5)" class="border p-2 rounded w-full mb-2">
+                <input type="number" id="restaurant-time" placeholder="Delivery Time (mins)" class="border p-2 rounded w-full mb-2">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add Restaurant</button>
+            </form>
+
+            <!-- Restaurant List -->
+            <ul id="restaurant-list" class="space-y-4"></ul>
+        </div>
+
+        <!-- Menu Management -->
+        <div class="bg-white p-6 shadow-md rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Manage Menus</h2>
+            <select id="restaurant-select" class="border p-2 rounded w-full mb-2">
+                <option value="">Select a Restaurant</option>
+            </select>
+            <form id="menu-form" class="mb-4">
+                <input type="text" id="menu-name" placeholder="Dish Name" class="border p-2 rounded w-full mb-2">
+                <input type="text" id="menu-image" placeholder="Image URL" class="border p-2 rounded w-full mb-2">
+                <input type="number" id="menu-price" placeholder="Price ($)" class="border p-2 rounded w-full mb-2">
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Add Menu Item</button>
+            </form>
+
+            <!-- Menu List -->
+            <ul id="menu-list" class="space-y-4"></ul>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+            authDomain: "von600-7982d.firebaseapp.com",
+            projectId: "von600-7982d",
+            storageBucket: "von600-7982d.appspot.com",
+            messagingSenderId: "164591218045",
+            appId: "1:164591218045:web:afe17512e16573e7903014",
+            measurementId: "G-E69DMPLXBK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadRestaurants() {
+            const querySnapshot = await getDocs(collection(db, "restaurant"));
+            const list = document.getElementById("restaurant-list");
+            const select = document.getElementById("restaurant-select");
+            list.innerHTML = "";
+            select.innerHTML = '<option value="">Select a Restaurant</option>';
+
+            querySnapshot.forEach(doc => {
+                const data = doc.data();
+                const li = document.createElement("li");
+                li.className = "bg-gray-200 p-4 rounded flex justify-between items-center";
+                li.innerHTML = `
+                    <div>
+                        <h3 class="text-lg font-semibold">${data.name}</h3>
+                        <p class="text-sm text-gray-600">⭐ ${data.rating} | ⏳ ${data.delivery_time} mins</p>
+                    </div>
+                    <button class="bg-red-500 text-white px-3 py-1 rounded" data-id="${doc.id}">Delete</button>
+                `;
+
+                li.querySelector("button").addEventListener("click", async () => {
+                    await deleteDoc(doc(db, "restaurant", doc.id));
+                    loadRestaurants();
+                });
+
+                list.appendChild(li);
+                select.innerHTML += `<option value="${doc.id}">${data.name}</option>`;
+            });
+        }
+
+        document.getElementById("restaurant-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const name = document.getElementById("restaurant-name").value.trim();
+            const image = document.getElementById("restaurant-image").value.trim();
+            const rating = parseFloat(document.getElementById("restaurant-rating").value.trim());
+            const time = parseInt(document.getElementById("restaurant-time").value.trim(), 10);
+
+            if (!name || !image || isNaN(rating) || isNaN(time)) {
+                alert("Fill all fields correctly!");
+                return;
+            }
+
+            await addDoc(collection(db, "restaurant"), { name, image, rating, delivery_time: time });
+            e.target.reset();
+            loadRestaurants();
+        });
+
+        async function loadMenu() {
+            const restaurantId = document.getElementById("restaurant-select").value;
+            if (!restaurantId) return;
+
+            const menuList = document.getElementById("menu-list");
+            menuList.innerHTML = "<p>Loading menu...</p>";
+
+            const menuRef = collection(db, "restaurant", restaurantId, "menu");
+            const querySnapshot = await getDocs(menuRef);
+
+            let output = "";
+            querySnapshot.forEach(docSnapshot => {
+                const data = docSnapshot.data();
+                output += `
+                    <li class="bg-gray-200 p-4 rounded flex justify-between items-center">
+                        <div>
+                            <h4 class="text-lg font-semibold">${data.name}</h4>
+                            <p class="text-sm text-gray-600">$${data.price}</p>
+                        </div>
+                        <button class="bg-red-500 text-white px-3 py-1 rounded" data-id="${docSnapshot.id}">Delete</button>
+                    </li>
+                `;
+            });
+
+            menuList.innerHTML = output || "<p>No menu items found.</p>";
+        }
+
+        document.getElementById("menu-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const restaurantId = document.getElementById("restaurant-select").value;
+            if (!restaurantId) {
+                alert("Select a restaurant first!");
+                return;
+            }
+
+            const name = document.getElementById("menu-name").value.trim();
+            const image = document.getElementById("menu-image").value.trim();
+            const price = parseFloat(document.getElementById("menu-price").value.trim());
+
+            if (!name || !image || isNaN(price)) {
+                alert("Fill all fields correctly!");
+                return;
+            }
+
+            await addDoc(collection(db, "restaurant", restaurantId, "menu"), { name, image, price });
+            e.target.reset();
+            loadMenu();
+        });
+
+        document.getElementById("restaurant-select").addEventListener("change", loadMenu);
+        document.addEventListener("DOMContentLoaded", loadRestaurants);
+    </script>
+
+</body>
+</html>

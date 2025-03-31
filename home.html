@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Askbootstrap">
+    <meta name="author" content="Askbootstrap">
+    <link rel="icon" type="image/png" href="img/fav.png">
+    <title>Chawp</title>
+    <link href="vendor/slick/slick/slick.css" rel="stylesheet" type="text/css">
+    <link href="vendor/slick/slick/slick-theme.css" rel="stylesheet" type="text/css">
+    <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="vendor/sidebar/demo.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+    <style>
+        body {background:#2c2c2c; font-family: 'Poppins', sans-serif; color: #fff;}
+        .text-danger {color: #00c8ff !important; transition: color 0.3s ease, transform 0.3s ease;}
+        .text-danger:hover {color: #00c8ff !important; transform: scale(1.05);}
+        input, textarea {font-size: 16px; outline: none; -webkit-appearance: none;}
+        *:focus {zoom: 1 !important;}
+        html, body {-webkit-text-size-adjust: none; touch-action: manipulation;}
+        
+        /* Restaurant Card Styles */
+        .most_popular .list-card {
+            background: #565656; border-radius: 12px; overflow: hidden; position: relative;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; animation: fadeIn 0.5s ease forwards;
+        }
+        .most_popular .list-card:hover {
+            transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0, 200, 255, 0.2);
+        }
+        .most_popular .list-card-image {
+            position: relative; height: 160px; overflow: hidden;
+        }
+        .most_popular .list-card-image img {
+            height: 100%; width: 100%; object-fit: cover; transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0.9;
+        }
+        .most_popular .list-card-image img.loaded {opacity: 1;}
+        .most_popular .list-card:hover .list-card-image img {transform: scale(1.08);}
+        .most_popular .list-card-image::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+        }
+        .most_popular .list-card-body {
+            padding: 12px; height: 80px; position: relative; /* Increased height slightly */
+        }
+        .most_popular .list-card-body h6 {
+            font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 6px;
+            overflow-wrap: break-word; white-space: normal; max-height: 36px; line-height: 1.2;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        .most_popular .list-card-body p {
+            font-size: 0.8rem; color: #d0d0d0; margin-bottom: 0; margin-top: 4px; display: flex; flex-wrap: wrap;
+        }
+        .most_popular .list-card-badge {
+            position: absolute; top: 10px; right: 10px;
+        }
+        .most_popular .list-card-badge span {
+            background: #00c8ff; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem;
+            color: #fff; font-weight: 600;
+        }
+
+        /* General Styles */
+        .all {padding-bottom: 100px;}
+        .search-dropdown {
+            position: absolute; top: 100%; left: 0; width: 100%; background: #161616;
+            border: 1px solid #ddd; border-radius: 0 0 5px 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-height: 200px; overflow-y: auto; display: none; z-index: 1000;
+        }
+        .search-dropdown div {padding: 10px; cursor: pointer; transition: background 0.2s ease;}
+        .search-dropdown div:hover {background: #000000;}
+        .offline-notice {
+            display: none; text-align: center; padding: 20px; color: #fff;
+            background: #ff3b30; border-radius: 10px; margin: 20px;
+        }
+        body.offline .offline-notice {display: block;}
+        .time span, .fee span {
+            background: #4a4a4a; color: #fff; padding: 4px 10px; border-radius: 10px;
+            font-size: 0.75rem; font-weight: 500; margin-right: 8px;
+        }
+        .list-card {
+            background: #565656; border-radius: 12px; overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; animation: fadeIn 0.5s ease forwards;
+        }
+        .list-card:hover {
+            transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0, 200, 255, 0.2);
+        }
+        .list-card-image {height: 140px; position: relative;}
+        .list-card-image img {height: 100%; width: 100%; object-fit: cover;}
+        .list-card-body {height: 80px; padding: 12px; text-align: left; /* Increased height slightly */}
+        .list-card-body h6 {font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; max-height: 36px;}
+        .bg-darker {background: #565656 !important;}
+        .bg-darks {background: #1a1a1a !important;}
+        /* Animation */
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(10px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .list-card a, .list-card h6 {
+            color: inherit;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 15px;
+            text-overflow: ellipsis;
+        }
+
+        /* Promotional Messages */
+.promo-messages {
+    position: relative;
+    width: 95%; /* Reduce width to add space on sides */
+    max-width: 800px; /* Optional: Limit max width */
+    height: 100px; /* Compact welcome message height */
+    overflow: hidden;
+    margin: 0 auto 10px; /* Center horizontally and add bottom margin */
+    user-select: none; /* Prevent text selection during swipe */
+    border-radius: 40px; /* Rounded corners */
+    
+    /* Centering */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+
+.promo-messages.hidden {
+    display: none; /* Hide when searching */
+}
+
+.promo-messages .message {
+    position: absolute;
+    top: 0;
+    left: 100%; /* Start off-screen right */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1); /* Subtle backdrop */
+    border-radius: 40px;
+    transition: left 0.8s ease-in-out;
+}
+
+.promo-messages .message.active {
+    left: 0; /* Move to center */
+}
+
+.promo-messages .message.exit {
+    left: -100%; /* Move out to the left */
+}
+
+.promo-messages .message h4 {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 0 20px;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+    </style>
+</head>
+<body class="fixed-bottom-bar">
+    <div class="osahan-home-page">
+        <div class="bg-transparent p-3">
+            <div class="text-white title d-flex align-items-center">
+                <a href="home.html" class="text-white small fw-bold text-decoration-none"><p class="h4"><i class="feather-map-pin"></i></p></a>  
+                <h4 class="fw-bold">UPSA</h4>
+            </div>
+            <div class="input-group bg-white rounded shadow-sm mt-3 position-relative">
+                <span class="input-group-text bg-transparent border-0 rounded-0"><i class="feather-search"></i></span>
+                <input type="text" id="search-input" class="form-control bg-transparent border-0 rounded-0 px-0 shadow-none" placeholder="Food, restaurants, stores..." aria-label="Enter Your Location">
+                <div id="search-dropdown" class="search-dropdown"></div>
+            </div>
+        </div>
+        <div class="promo-messages">
+            <div class="message active"><h4>Order and relax, we go deliver am to your door soft!</h4></div>
+            <div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div>
+            <div class="message"><h4>Eat, Get Energy and Study.</h4></div>
+            <div class="message"><h4>Don't overstress yourself though...</h4></div>
+            <!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
+    </div><!--Duplicate for seamless cycle-->
+        </div><br>
+        <div class="offline-notice">You’re offline. Check your internet connection.</div>
+        <div class="container">
+            <div class="all">
+                <div class="body-color title d-flex align-items-center" style="padding-top: 0; padding-bottom: 15px;">
+                    <h5 class="m-0">All Restaurants</h5>
+                </div>
+                <div class="most_popular">
+                    <div class="row" id="all-restaurants"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="osahan-menu-fotter fixed-bottom bg-darks px-3 py-2 text-center">
+        <div class="row">
+            <div class="col"><a href="index.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-map-pin"></i></p>Trending</a></div>
+            <div class="col selected"><a href="home.html" class="text-danger small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-home text-danger"></i></p>Home</a></div>
+            <div class="col"><a href="cart.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart</a></div>
+            <div class="col"><a href="orders.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders</a></div>
+            <div class="col"><a href="profile.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-user"></i></p>Profile</a></div>
+        </div>
+    </div>
+
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+    <script src="vendor/slick/slick/slick.min.js" defer></script>
+    <script src="vendor/sidebar/hc-offcanvas-nav.js" defer></script>
+    <script src="js/osahan.js" defer></script>
+    <script src="cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="111d9aae73bae4dc8762fda2-|49" defer></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+            authDomain: "von600-7982d.firebaseapp.com",
+            projectId: "von600-7982d",
+            storageBucket: "von600-7982d.appspot.com",
+            messagingSenderId: "164591218045",
+            appId: "1:164591218045:web:afe17512e16573e7903014",
+            measurementId: "G-E69DMPLXBK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let allRestaurants = [];
+        const restaurantList = document.getElementById("all-restaurants");
+
+        const loadAllRestaurants = async () => {
+            const cachedData = localStorage.getItem("allRestaurantsIndex");
+            if (cachedData) {
+                requestAnimationFrame(() => {
+                    restaurantList.innerHTML = cachedData;
+                    allRestaurants = JSON.parse(localStorage.getItem("allRestaurantsData") || "[]");
+                    document.querySelectorAll(".list-card-image img").forEach(img => img.classList.add("loaded"));
+                });
+            } else {
+                restaurantList.innerHTML = "<div class='col-12 text-center'><p>Loading...</p></div>";
+            }
+
+            try {
+                const q = query(collection(db, "restaurant"), orderBy("delivery_time", "asc"));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    restaurantList.innerHTML = "<div class='col-12 text-center'><p>No restaurants found.</p></div>";
+                    return;
+                }
+
+                allRestaurants = [];
+                let output = "";
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const restaurantId = doc.id;
+                    const deliveryTime = data.delivery_time || "N/A";
+                    const deliveryFee = data.delivery_fee || "25.00"; // Default to ₵25.00 if not in Firestore
+                    allRestaurants.push({ id: restaurantId, ...data });
+                    output += `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
+    <a href="restaurant.html?id=${restaurantId}" class="d-block text-decoration-none">
+        <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
+            <div class="list-card-image">
+                <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
+            </div>
+            <div class="list-card-body">
+                <h6 class="mb-1 text-white">${data.name}</h6>
+                <p class="mb-0">
+                    <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
+                </p>
+            </div>
+            <div class="list-card-badge"><span>Open</span></div>
+        </div>
+    </a>
+</div>`;
+                });
+
+                requestAnimationFrame(() => {
+                    restaurantList.innerHTML = output;
+                    document.querySelectorAll(".list-card-image img").forEach(img => {
+                        if (img.complete) img.classList.add("loaded");
+                        else img.onload = () => img.classList.add("loaded");
+                    });
+                });
+                localStorage.setItem("allRestaurantsIndex", output);
+                localStorage.setItem("allRestaurantsData", JSON.stringify(allRestaurants));
+                document.body.classList.remove("offline");
+            } catch (error) {
+                console.error("Error:", error);
+                if (!cachedData) restaurantList.innerHTML = "<div class='col-12 text-center'><p>Failed to load. Check connection.</p></div>";
+                document.body.classList.add("offline");
+            }
+        };
+
+                const filterRestaurants = searchTerm => {
+            const filtered = allRestaurants.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            let output = filtered.length ? filtered.map(data => {
+                const deliveryTime = data.delivery_time || "N/A";
+                const deliveryFee = data.delivery_fee || "3.00"; // Default to ₵3.00 if not in Firestore
+                return `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
+    <a href="restaurant.html?id=${data.id}" class="d-block text-decoration-none">
+        <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
+            <div class="list-card-image">
+                <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
+            </div>
+            <div class="list-card-body">
+                <h6 class="mb-1 text-white">${data.name}</h6>
+                <p class="mb-0">
+                    <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
+                </p>
+            </div>
+            <div class="list-card-badge"><span>Open</span></div>
+        </div>
+    </a>
+</div>`;
+            }).join("") : "<div class='col-12 text-center'><p>No matching restaurants found.</p></div>";
+            requestAnimationFrame(() => {
+                restaurantList.innerHTML = output;
+                document.querySelectorAll(".list-card-image img").forEach(img => {
+                    if (img.complete) img.classList.add("loaded");
+                    else img.onload = () => img.classList.add("loaded");
+                });
+            });
+        };
+
+        const updateDropdown = searchTerm => {
+            const dropdown = document.getElementById("search-dropdown");
+            dropdown.innerHTML = "";
+            if (!searchTerm) return dropdown.style.display = "none";
+
+            const suggestions = allRestaurants.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, 5);
+            if (suggestions.length) {
+                suggestions.forEach(r => {
+                    const div = document.createElement("div");
+                    div.textContent = r.name;
+                    div.onclick = () => {
+                        document.getElementById("search-input").value = r.name;
+                        filterRestaurants(r.name);
+                        dropdown.style.display = "none";
+                    };
+                    dropdown.appendChild(div);
+                });
+                dropdown.style.display = "block";
+            } else {
+                dropdown.style.display = "none";
+            }
+        };
+
+        // Debounce function
+        const debounce = (func, wait) => {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(...args), wait);
+            };
+        };
+
+        $(document).ready(() => {
+            // Removed Slick initialization since it's no longer needed
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadAllRestaurants();
+            const searchInput = document.getElementById("search-input");
+            const promoMessages = document.querySelector('.promo-messages');
+            const messages = document.querySelectorAll('.promo-messages .message');
+            let currentMessage = 0;
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            const debouncedFilter = debounce(term => {
+                updateDropdown(term);
+                term ? filterRestaurants(term) : loadAllRestaurants();
+                // Hide promo messages when searching
+                promoMessages.classList.toggle('hidden', !!term);
+            }, 300);
+
+            searchInput.oninput = e => debouncedFilter(e.target.value.trim());
+
+            document.onclick = e => {
+                const dropdown = document.getElementById("search-dropdown");
+                if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = "none";
+                }
+            };
+
+            // Auto-swipe Logic
+            function showNextMessage() {
+                messages[currentMessage].classList.remove('active');
+                messages[currentMessage].style.left = '-100%';
+                currentMessage = (currentMessage + 1) % messages.length;
+                messages[currentMessage].classList.add('active');
+                messages[currentMessage].style.left = '100%';
+                setTimeout(() => {
+                    messages[currentMessage].style.left = '0';
+                }, 50);
+            }
+
+            // Manual Swipe Logic (Isolated to promo-messages)
+            promoMessages.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+                e.stopPropagation(); // Prevent bubbling to document
+            });
+
+            promoMessages.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+                e.stopPropagation(); // Prevent bubbling to document
+            });
+
+            promoMessages.addEventListener('mousedown', e => {
+                touchStartX = e.screenX;
+                promoMessages.addEventListener('mousemove', onMouseMove);
+                e.stopPropagation(); // Prevent bubbling to document
+            });
+
+            document.addEventListener('mouseup', e => {
+                if (promoMessages.contains(e.target)) { // Only handle if within promo-messages
+                    touchEndX = e.screenX;
+                    promoMessages.removeEventListener('mousemove', onMouseMove);
+                    handleSwipe();
+                }
+            });
+
+            function onMouseMove(e) {
+                touchEndX = e.screenX;
+                e.stopPropagation(); // Prevent bubbling to document
+            }
+
+            function handleSwipe() {
+                const swipeDistance = touchStartX - touchEndX;
+                if (swipeDistance > 50) { // Swipe left
+                    showNextMessage();
+                } else if (swipeDistance < -50) { // Swipe right
+                    messages[currentMessage].classList.remove('active');
+                    messages[currentMessage].style.left = '100%';
+                    currentMessage = (currentMessage - 1 + messages.length) % messages.length;
+                    messages[currentMessage].classList.add('active');
+                    messages[currentMessage].style.left = '-100%';
+                    setTimeout(() => {
+                        messages[currentMessage].style.left = '0';
+                    }, 50);
+                }
+            }
+
+            // Start with the first message
+            messages[currentMessage].classList.add('active');
+            messages[currentMessage].style.left = '0';
+
+            // Auto-swipe every 3.8 seconds
+            setInterval(showNextMessage, 3800);
+        });
+
+        window.ononline = () => {
+            document.body.classList.remove("offline");
+            loadAllRestaurants();
+        };
+        window.onoffline = () => {
+            const cachedData = localStorage.getItem("allRestaurantsIndex");
+            if (cachedData) {
+                restaurantList.innerHTML = cachedData;
+                allRestaurants = JSON.parse(localStorage.getItem("allRestaurantsData") || "[]");
+            }
+            document.body.classList.add("offline");
+        };
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9277cf1a288c7221',t:'MTc0MzE3MjA1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92785e7add8532fe',t:'MTc0MzE3NzkyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9278d6b33beb44d8',t:'MTc0MzE4Mjg1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
