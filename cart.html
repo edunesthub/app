@@ -144,7 +144,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-
+    
         const firebaseConfig = {
             apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
             authDomain: "von600-7982d.firebaseapp.com",
@@ -154,23 +154,23 @@
             appId: "1:164591218045:web:afe17512e16573e7903014",
             measurementId: "G-E69DMPLXBK"
         };
-
+    
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
+    
         const elements = {
             cartContainer: document.getElementById("cart-container"),
             notification: document.getElementById("notification"),
             notificationMessage: document.getElementById("notification-message")
         };
-
+    
         const showNotification = (message, type = "success") => {
             elements.notificationMessage.textContent = message;
             elements.notification.className = `notification ${type === "error" ? "error" : ""}`;
             elements.notification.classList.add("show");
             setTimeout(() => elements.notification.classList.remove("show"), 2000);
         };
-
+    
         const getCart = () => JSON.parse(localStorage.getItem("cart") || "[]");
         const saveCart = cart => localStorage.setItem("cart", JSON.stringify(cart));
         const getPersistentDeliveryDetails = () => {
@@ -180,16 +180,24 @@
         const savePersistentDeliveryDetails = (location, contactNumber) => {
             localStorage.setItem("deliveryDetails", JSON.stringify({ location, contactNumber }));
         };
-
+        const getDeviceId = () => {
+            let deviceId = localStorage.getItem("deviceId");
+            if (!deviceId) {
+                deviceId = "device_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
+                localStorage.setItem("deviceId", deviceId);
+            }
+            return deviceId;
+        };
+    
         const renderCart = () => {
             const cart = getCart();
             const persistentDetails = getPersistentDeliveryDetails();
-
+    
             if (!cart.length) {
                 elements.cartContainer.innerHTML = `<div class="empty-cart"><h2>Your Cart is Empty</h2><p>Looks like you haven't added anything yet.<br>Explore the shops and treat yourself🍔</p><a href="index.html" class="btn btn-primary">Start Shopping</a></div>`;
                 return;
             }
-
+    
             let subtotal = 0;
             const groupedCart = new Map();
             cart.forEach(item => {
@@ -202,7 +210,7 @@
                     groupedCart.set(key, { ...item, ids: [item.id] });
                 }
             });
-
+    
             const itemsHTML = Array.from(groupedCart.values()).map(item => {
                 const itemTotal = item.price * item.quantity;
                 subtotal += itemTotal;
@@ -217,7 +225,7 @@
                     </div>
                 </div>`;
             }).join("");
-
+    
             elements.cartContainer.innerHTML = `
                 <div class="cart-items">${itemsHTML}</div>
                 <div class="delivery-details">
@@ -238,7 +246,7 @@
                     <button id="remove-all-btn" class="btn btn-danger w-100">Remove All <i class="feather-trash-2"></i></button>
                 </div>
             `;
-
+    
             elements.cartContainer.querySelectorAll(".increase").forEach(btn => btn.onclick = () => updateItemQuantity(btn.closest(".cart-item").dataset.key, 1));
             elements.cartContainer.querySelectorAll(".decrease").forEach(btn => btn.onclick = () => updateItemQuantity(btn.closest(".cart-item").dataset.key, -1));
             elements.cartContainer.querySelectorAll(".remove").forEach(btn => btn.onclick = () => removeItem(btn.closest(".cart-item").dataset.key));
@@ -247,14 +255,14 @@
             document.getElementById("checkout-btn").onclick = proceedToCheckout;
             document.getElementById("remove-all-btn").onclick = removeAllItems;
         };
-
+    
         const updateItemQuantity = (key, delta) => {
             const cart = getCart();
             cart.filter(item => `${item.name}-${item.price}` === key).forEach(item => item.quantity = Math.max(1, item.quantity + delta));
             saveCart(cart.filter(item => item.quantity > 0));
             renderCart();
         };
-
+    
         const removeItem = key => {
             const cart = getCart();
             const firstItem = cart.find(item => `${item.name}-${item.price}` === key);
@@ -262,37 +270,34 @@
             renderCart();
             showNotification(`${firstItem.name} removed from cart`);
         };
-
+    
         const removeAllItems = () => {
             saveCart([]);
             renderCart();
             showNotification("All items removed from cart");
         };
-
+    
         const saveDeliveryInputs = () => {
             const location = document.getElementById("delivery-location").value;
             const contactNumber = document.getElementById("delivery-contact").value;
             savePersistentDeliveryDetails(location, contactNumber);
             renderCart();
         };
-
+    
         let isProcessing = false;
-
+    
         const proceedToCheckout = async () => {
-            // Prevent multiple submissions
             if (isProcessing) return;
             isProcessing = true;
-
-            // Immediately update the button state for feedback
+    
             const checkoutBtn = document.getElementById("checkout-btn");
             checkoutBtn.disabled = true;
             checkoutBtn.textContent = "Processing...";
-
+    
             const cart = getCart();
             const persistentDetails = getPersistentDeliveryDetails();
             const deliveryNotes = document.getElementById("delivery-notes").value;
-
-            // Validate cart and delivery details
+    
             if (!cart.length) {
                 showNotification("Your cart is empty!", "error");
                 resetCheckoutButton();
@@ -303,21 +308,19 @@
                 resetCheckoutButton();
                 return;
             }
-
-            // Sanitize cart data
+    
             const sanitizedCart = cart.filter(item => {
                 const isValid = item.name && typeof item.price === "number" && !isNaN(item.price) && typeof item.quantity === "number" && !isNaN(item.quantity);
                 if (!isValid) console.warn("Invalid cart item:", item);
                 return isValid;
             });
-
+    
             if (!sanitizedCart.length) {
                 showNotification("Invalid items in cart!", "error");
                 resetCheckoutButton();
                 return;
             }
-
-            // Validate restaurantId consistency
+    
             const restaurantIds = [...new Set(sanitizedCart.map(item => item.restaurantId))];
             if (restaurantIds.length > 1) {
                 showNotification("Error: Cart contains items from multiple restaurants!", "error");
@@ -329,7 +332,7 @@
                 resetCheckoutButton();
                 return;
             }
-
+    
             const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 5;
             const orderData = {
                 restaurantId: sanitizedCart[0].restaurantId,
@@ -347,22 +350,23 @@
                     contactNumber: persistentDetails.contactNumber
                 },
                 timestamp: new Date().toISOString(),
-                status: "pending"
+                status: "pending",
+                deviceId: getDeviceId() // Add deviceId to the order
             };
-
+    
             console.log("Submitting order:", orderData);
-
+    
             try {
                 const docRef = await addDoc(collection(db, "orders"), orderData);
                 console.log("Order saved to Firestore with ID:", docRef.id);
-
+    
                 const paymentSuccess = Math.random() > 0.2;
                 if (paymentSuccess) {
                     saveCart([]);
                     showNotification("Order placed successfully!");
                     setTimeout(() => {
                         window.location.href = "successful.html";
-                    }, 1000); // Delay redirect to show notification
+                    }, 1000);
                 } else {
                     showNotification("Payment failed.", "error");
                     setTimeout(() => {
@@ -375,14 +379,14 @@
                 resetCheckoutButton();
             }
         };
-
+    
         function resetCheckoutButton() {
             const checkoutBtn = document.getElementById("checkout-btn");
             checkoutBtn.disabled = false;
             checkoutBtn.textContent = "Proceed to Checkout";
             isProcessing = false;
         }
-
+    
         document.addEventListener("DOMContentLoaded", () => {
             renderCart();
             feather.replace();
