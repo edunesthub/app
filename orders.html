@@ -59,8 +59,8 @@
         </div>
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-            import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-        
+            import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    
             const firebaseConfig = {
                 apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
                 authDomain: "von600-7982d.firebaseapp.com",
@@ -70,20 +70,12 @@
                 appId: "1:164591218045:web:afe17512e16573e7903014",
                 measurementId: "G-E69DMPLXBK"
             };
-        
+    
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
             const ordersList = document.getElementById("orders-list");
-        
-            const getDeviceId = () => {
-                let deviceId = localStorage.getItem("deviceId");
-                if (!deviceId) {
-                    deviceId = "device_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
-                    localStorage.setItem("deviceId", deviceId);
-                }
-                return deviceId;
-            };
-        
+    
+            // Function to validate orders and filter out those with "undefined" values
             const isValidOrder = (order) => {
                 if (!order.items || !Array.isArray(order.items)) return false;
                 return order.items.every(item => 
@@ -92,19 +84,16 @@
                     typeof item.total === "number" && !isNaN(item.total)
                 );
             };
-        
+    
             const loadOrders = async () => {
                 try {
-                    const deviceId = getDeviceId();
                     const ordersRef = collection(db, "orders");
-                    const q = query(ordersRef, where("deviceId", "==", deviceId)); // Filter by deviceId
-                    const querySnapshot = await getDocs(q);
-        
+                    const querySnapshot = await getDocs(ordersRef);
                     if (querySnapshot.empty) {
-                        ordersList.innerHTML = "<p class='text-center text-white'>No orders found for this device yet.</p>";
+                        ordersList.innerHTML = "<p class='text-center text-white'>No orders found yet.</p>";
                         return;
                     }
-        
+    
                     const validOrders = querySnapshot.docs
                         .map(doc => ({ id: doc.id, ...doc.data() }))
                         .filter(order => {
@@ -114,12 +103,12 @@
                             }
                             return isValid;
                         });
-        
+    
                     if (!validOrders.length) {
-                        ordersList.innerHTML = "<p class='text-center text-white'>No valid orders found for this device yet.</p>";
+                        ordersList.innerHTML = "<p class='text-center text-white'>No valid orders found yet.</p>";
                         return;
                     }
-        
+    
                     ordersList.innerHTML = validOrders
                         .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
                         .map(order => {
@@ -151,11 +140,10 @@
                     ordersList.innerHTML = "<p class='text-center text-white'>No orders collection found yet. Place an order to start tracking!</p>";
                 }
             };
-        
+    
             document.addEventListener("DOMContentLoaded", () => {
                 loadOrders();
                 feather.replace();
             });
-        </script>
-        <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'928b5f22abb5adf4',t:'MTc0MzM3NzE4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+        </script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'928b5f22abb5adf4',t:'MTc0MzM3NzE4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
