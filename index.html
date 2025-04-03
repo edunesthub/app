@@ -38,8 +38,8 @@
         .list-card:hover {transform:translateY(-8px);box-shadow:0 12px 24px rgba(0,0,0,0.3);}
         .list-card-image img {height:110px;object-fit:cover;width:100%;border-radius:10px 10px 0 0;filter:brightness(0.9);transition:filter 0.3s ease;}
         .list-card:hover .list-card-image img {filter:brightness(1);}
-        .list-card-body {padding:8px;text-align:left;height:60px;} /* Shortened height */
-        .list-card-body h6 {font-size:1rem;font-weight:600;color:#fff;margin-bottom:4px;overflow-wrap:break-word;white-space:normal;max-height:32px;line-height:1.1;} /* Smaller, full names */
+        .list-card-body {padding:8px;text-align:left;height:60px;}
+        .list-card-body h6 {font-size:1rem;font-weight:600;color:#fff;margin-bottom:4px;overflow-wrap:break-word;white-space:normal;max-height:32px;line-height:1.1;}
         .time {font-size:0.75rem;color:#b0b0b0;margin-top:2px;}
         .time span {background:#4a4a4a;color:#fff;padding:3px 8px;border-radius:12px;}
         .trending-text {color:#fff;font-weight:600;}
@@ -80,12 +80,12 @@
 </head>
 <body class="fixed-bottom-bar">
     <!-- Loading screen with "Chawp" centered -->
-    <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c2c2c; display: flex; align-items: center; justify-content: center; z-index: 3000;">
+    <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c2c2c; display: none; align-items: center; justify-content: center; z-index: 3000;">
         <h1 style="font-size: 3rem; font-weight: 600; letter-spacing: -2px; background: linear-gradient(45deg, #007aff, #34c759, #007aff); -webkit-background-clip: text; background-clip: text; color: transparent;">Chawp</h1>
     </div>
 
-    <!-- Main content (hidden until loaded) -->
-    <div id="main-content" class="osahan-home-page" style="display: none;">
+    <!-- Main content -->
+    <div id="main-content" class="osahan-home-page">
         <div class="welcome-header">
             <div class="title d-flex align-items-center justify-content-center">
                 <h1 id="welcome-message">Hi!</h1>
@@ -98,7 +98,7 @@
         </div>
     </div>
 
-    <div id="trending-section" class="trending-section" style="display: none;">
+    <div id="trending-section" class="trending-section">
         <div class="container">
             <div class="d-flex align-items-center">
                 <h5 class="trending-text">Trending Now 🔥</h5>
@@ -109,7 +109,7 @@
         </div>
     </div>
 
-    <div id="footer-nav" class="osahan-menu-fotter fixed-bottom bg-darks px-3 py-2 text-center" style="display: none;">
+    <div id="footer-nav" class="osahan-menu-fotter fixed-bottom bg-darks px-3 py-2 text-center">
         <div class="row">
             <div class="col selected">
                 <a href="index.html" class="text-danger small fw-bold text-decoration-none">
@@ -169,13 +169,16 @@
         const trendingList = document.getElementById("trending-list");
         const welcomeMessage = document.getElementById("welcome-message");
 
+        // Check if running in standalone mode (PWA installed)
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
         // Load trending restaurants
         async function loadTrendingRestaurants() {
             const cachedData = localStorage.getItem("trendingRestaurants");
             if (cachedData && !navigator.onLine) {
                 trendingList.innerHTML = cachedData;
                 document.body.classList.add("offline");
-                showContent();
+                showContent(false);
                 return;
             }
 
@@ -187,7 +190,7 @@
 
                 if (querySnapshot.empty) {
                     trendingList.innerHTML = "<p style='color:#b0b0b0;'>No trending restaurants found.</p>";
-                    showContent();
+                    showContent(true);
                     return;
                 }
 
@@ -214,7 +217,7 @@
                 trendingList.appendChild(fragment);
                 localStorage.setItem("trendingRestaurants", trendingList.innerHTML);
                 document.body.classList.remove("offline");
-                showContent();
+                showContent(true);
 
             } catch (error) {
                 console.error("❌ ERROR fetching trending restaurants:", error);
@@ -224,7 +227,7 @@
                 } else {
                     trendingList.innerHTML = "<p style='color:#b0b0b0;'>Failed to load restaurants.</p>";
                 }
-                showContent();
+                showContent(true);
             }
         }
 
@@ -249,12 +252,29 @@
             }
         }
 
-        // Show content after loading
-        function showContent() {
-            loadingScreen.style.display = "none";
-            mainContent.style.display = "block";
-            trendingSection.style.display = "block";
-            footerNav.style.display = "block";
+        // Show content with optional loading screen
+        function showContent(useLoadingScreen) {
+            if (useLoadingScreen && !localStorage.getItem("hasLoadedOnce")) {
+                loadingScreen.style.display = "flex";
+                setTimeout(() => {
+                    loadingScreen.style.display = "none";
+                    mainContent.style.display = "block";
+                    trendingSection.style.display = "block";
+                    footerNav.style.display = "block";
+                    applyFadeIns();
+                    localStorage.setItem("hasLoadedOnce", "true");
+                }, 1000); // Show loading screen for 1s on first load
+            } else {
+                loadingScreen.style.display = "none";
+                mainContent.style.display = "block";
+                trendingSection.style.display = "block";
+                footerNav.style.display = "block";
+                applyFadeIns();
+            }
+        }
+
+        // Apply fade-in animations
+        function applyFadeIns() {
             setTimeout(() => {
                 document.querySelector(".welcome-header").classList.add("loaded");
                 document.querySelector(".promo-banner").classList.add("loaded");
@@ -266,6 +286,12 @@
 
         // Initialize on DOM load
         document.addEventListener("DOMContentLoaded", () => {
+            // Reset flag if in standalone mode and app is freshly opened
+            if (isStandalone && !sessionStorage.getItem("appSessionActive")) {
+                localStorage.removeItem("hasLoadedOnce");
+                sessionStorage.setItem("appSessionActive", "true");
+            }
+
             loadTrendingRestaurants();
             updateWelcomeMessage();
 
@@ -283,11 +309,11 @@
             if (cachedData) {
                 trendingList.innerHTML = cachedData;
                 document.body.classList.add("offline");
-                showContent();
+                showContent(false);
             }
         });
 
-        // Push notification setup (unchanged but optimized)
+        // Push notification setup
         if ("serviceWorker" in navigator && "PushManager" in window) {
             navigator.serviceWorker.register("/service-worker.js")
                 .then(registration => {
@@ -313,8 +339,15 @@
                 })
                 .catch(error => console.error("Service Worker reg failed:", error));
         }
+
+        // Reset session flag when app is closed in standalone mode
+        window.addEventListener("beforeunload", () => {
+            if (isStandalone) {
+                sessionStorage.removeItem("appSessionActive");
+            }
+        });
     </script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'927746ef38e553de',t:'MTc0MzE2NjQ3Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92a99f60e9af497c',t:'MTc0MzY5NDM4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92a9c8b1491144ef',t:'MTc0MzY5NjA3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
-</html>
+</html>     
