@@ -40,7 +40,47 @@
         .options-section { margin-top: 40px; }
         .options-section h5 { color: #fff; font-weight: 600; margin-bottom: 15px; }
         html, body { -webkit-text-size-adjust: none; touch-action: manipulation; }
-    </style>
+        .footer-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    border-radius: 10px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.footer-item.selected {
+    background: rgba(0, 200, 255, 0.2); /* Matches your #00c8ff theme color */
+    transform: scale(1.05);
+}
+.footer-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.footer-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+.footer-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    border-radius: 10px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.footer-item.selected {
+    background: #00566d; /* Matches your #00c8ff theme color */
+    transform: scale(1.05);
+}
+.footer-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.footer-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+</style>
 </head>
 <body class="fixed-bottom-bar">
     <div class="account-container">
@@ -73,13 +113,43 @@
     </div>
 
     <!-- Footer -->
-    <div class="osahan-menu-fotter fixed-bottom bg-darker px-3 py-2 text-center">
+    <div class="osahan-menu-fotter fixed-bottom bg-darks px-3 py-2 text-center">
         <div class="row">
-            <div class="col"><a href="index.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-map-pin"></i></p>Trending</a></div>
-            <div class="col"><a href="home.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-home text-white"></i></p>Home</a></div>
-            <div class="col"><a href="cart.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart</a></div>
-            <div class="col"><a href="orders.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders</a></div>
-            <div class="col selected"><a href="profile.html" class="text-danger small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-user"></i></p>Profile</a></div>
+            <div class="col">
+                <div class="footer-item">
+                    <a href="index.html" class="text-white small fw-bold text-decoration-none">
+                        <p class="h4 m-0"><i class="feather-map-pin text-white"></i></p>Trending
+                    </a>
+                </div>
+            </div>
+            <div class="col">
+                <div class="footer-item">
+                    <a href="home.html" class="text-white small fw-bold text-decoration-none">
+                        <p class="h4 m-0"><i class="feather-home text-white"></i></p>Home
+                    </a>
+                </div>
+            </div>
+            <div class="col">
+                <div class="footer-item ">
+                    <a href="cart.html" class="text-white small fw-bold text-decoration-none">
+                        <p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart
+                    </a>
+                </div>
+            </div>
+            <div class="col">
+                <div class="footer-item">
+                    <a href="orders.html" class="text-white small fw-bold text-decoration-none">
+                        <p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders
+                    </a>
+                </div>
+            </div>
+            <div class="col">
+                <div class="footer-item selected">
+                    <a href="profile.html" class="text-white small fw-bold text-decoration-none">
+                        <p class="h4 m-0"><i class="feather-user"></i></p>Profile
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -37,7 +37,82 @@
             *:focus {
                 zoom: 1 !important;
             }
-        </style>
+            /* Status styles */
+            .status-badge {
+                padding: 2px 8px;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 600;
+                display: inline-block;
+                margin-top: 5px;  
+            }
+            .status-pending {
+                background: #ffc107; /* Yellow */
+                color: #212529;
+            }
+            .status-being_delivered {
+                background: #007bff; /* Blue */
+                color: #fff;
+            }
+            .status-delivered {
+                background: #28a745; /* Green */
+                color: #fff;
+            }
+            .status-not_delivered {
+                background: #dc3545; /* Red */
+                color: #fff;
+            }
+            /* Adjust summary layout */
+            .order-summary-left {
+                flex: 1;
+            }
+            .order-summary-right {
+                text-align: right;
+            }
+            .osahan-checkout {
+    padding-bottom: 80px; /* Adds space to clear the fixed footer */
+}
+            .footer-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    border-radius: 10px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.footer-item.selected {
+    background: rgba(0, 200, 255, 0.2); /* Matches your #00c8ff theme color */
+    transform: scale(1.05);
+}
+.footer-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.footer-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+.footer-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    border-radius: 10px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.footer-item.selected {
+    background: #00566d; /* Matches your #00c8ff theme color */
+    transform: scale(1.05);
+}
+.footer-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.footer-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+</style>
     </head>
     <body class="fixed-bottom-bar">
         <div class="osahan-checkout">
@@ -48,18 +123,48 @@
                 <div id="orders-list"></div>
             </div>
         </div>
-        <div class="osahan-menu-fotter fixed-bottom bg-darker px-3 py-2 text-center">
+        <div class="osahan-menu-fotter fixed-bottom bg-darks px-3 py-2 text-center">
             <div class="row">
-                <div class="col"><a href="index.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-map-pin"></i></p>Trending</a></div>
-                <div class="col"><a href="home.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-home text-white"></i></p>Home</a></div>
-                <div class="col"><a href="cart.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart</a></div>
-                <div class="col selected"><a href="orders.html" class="text-danger small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders</a></div>
-                <div class="col"><a href="profile.html" class="text-white small fw-bold text-decoration-none"><p class="h4 m-0"><i class="feather-user"></i></p>Profile</a></div>
+                <div class="col">
+                    <div class="footer-item">
+                        <a href="index.html" class="text-white small fw-bold text-decoration-none">
+                            <p class="h4 m-0"><i class="feather-map-pin text-white"></i></p>Trending
+                        </a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="footer-item ">
+                        <a href="home.html" class="text-white small fw-bold text-decoration-none">
+                            <p class="h4 m-0"><i class="feather-home text-white"></i></p>Home
+                        </a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="footer-item ">
+                        <a href="cart.html" class="text-white small fw-bold text-decoration-none">
+                            <p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart
+                        </a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="footer-item selected">
+                        <a href="orders.html" class="text-white small fw-bold text-decoration-none">
+                            <p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders
+                        </a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="footer-item ">
+                        <a href="profile.html" class="text-white small fw-bold text-decoration-none">
+                            <p class="h4 m-0"><i class="feather-user"></i></p>Profile
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-            import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+            import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
         
             const firebaseConfig = {
                 apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
@@ -92,62 +197,81 @@
                     typeof item.total === "number" && !isNaN(item.total)
                 );
             };
+
+            // Map status values to appealing phrases
+            const getStatusText = (status) => {
+                switch (status) {
+                    case "pending": return "Order Confirmed";
+                    case "being_delivered": return "In Transit";
+                    case "delivered": return "Delivered!";
+                    case "not_delivered": return "Delivery Failed";
+                    default: return "Unknown";
+                }
+            };
         
-            const loadOrders = async () => {
+            const loadOrders = () => {
                 try {
                     const deviceId = getDeviceId();
                     const ordersRef = collection(db, "orders");
-                    const q = query(ordersRef, where("deviceId", "==", deviceId)); // Filter by deviceId
-                    const querySnapshot = await getDocs(q);
+                    const q = query(ordersRef, where("deviceId", "==", deviceId));
+                    
+                    onSnapshot(q, (querySnapshot) => {
+                        if (querySnapshot.empty) {
+                            ordersList.innerHTML = "<p class='text-center text-white'>No orders found for this device yet.</p>";
+                            return;
+                        }
         
-                    if (querySnapshot.empty) {
-                        ordersList.innerHTML = "<p class='text-center text-white'>No orders found for this device yet.</p>";
-                        return;
-                    }
+                        const validOrders = querySnapshot.docs
+                            .map(doc => ({ id: doc.id, ...doc.data() }))
+                            .filter(order => {
+                                const isValid = isValidOrder(order);
+                                if (!isValid) {
+                                    console.log("Filtered out invalid order in orders.html:", order);
+                                }
+                                return isValid;
+                            });
         
-                    const validOrders = querySnapshot.docs
-                        .map(doc => ({ id: doc.id, ...doc.data() }))
-                        .filter(order => {
-                            const isValid = isValidOrder(order);
-                            if (!isValid) {
-                                console.log("Filtered out invalid order in orders.html:", order);
-                            }
-                            return isValid;
-                        });
+                        if (!validOrders.length) {
+                            ordersList.innerHTML = "<p class='text-center text-white'>No valid orders found for this device yet.</p>";
+                            return;
+                        }
         
-                    if (!validOrders.length) {
-                        ordersList.innerHTML = "<p class='text-center text-white'>No valid orders found for this device yet.</p>";
-                        return;
-                    }
-        
-                    ordersList.innerHTML = validOrders
-                        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                        .map(order => {
-                            const orderTime = new Date(order.timestamp).toLocaleString();
-                            const itemsListSummary = order.items.map(item => `${item.quantity}x ${item.name}`).join(", ");
-                            const itemsListFull = order.items.map(item => `<li class="text-white small">${item.quantity}x ${item.name} - GH₵${item.total.toFixed(2)}</li>`).join("");
-                            const subtotal = order.items.reduce((sum, item) => sum + item.total, 0);
-                            const total = subtotal + 5; // Assuming fixed fees
-                            return `<div class="order-box bg-darkish p-3 mb-3 rounded" onclick="this.classList.toggle('expanded')">
-                                <div class="order-summary">
-                                    <div>
-                                        <h5 class="fw-bold text-white">Order on ${orderTime}</h5>
-                                        <p class="order-id text-white-50 small">Order ID: <span>${order.id}</span></p>
-                                        <p class="text-white small">${itemsListSummary}</p>
+                        ordersList.innerHTML = validOrders
+                            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                            .map(order => {
+                                const orderTime = new Date(order.timestamp).toLocaleString();
+                                const itemsListSummary = order.items.map(item => `${item.quantity}x ${item.name}`).join(", ");
+                                const itemsListFull = order.items.map(item => `<li class="text-white small">${item.quantity}x ${item.name} - GH₵${item.total.toFixed(2)}</li>`).join("");
+                                const subtotal = order.items.reduce((sum, item) => sum + item.total, 0);
+                                const total = subtotal + 5; // Assuming fixed fees
+                                const statusText = getStatusText(order.status || "pending");
+                                const statusClass = `status-badge status-${order.status || "pending"}`;
+                                return `<div class="order-box bg-darkish p-3 mb-3 rounded" onclick="this.classList.toggle('expanded')">
+                                    <div class="order-summary">
+                                        <div class="order-summary-left">
+                                            <h5 class="fw-bold text-white">Order on ${orderTime}</h5>
+                                            <p class="order-id text-white-50 small">Order ID: <span>${order.id}</span></p>
+                                            <p class="text-white small">${itemsListSummary}<br> <span class="${statusClass}">${statusText}</span></p>
+                                        </div>
+                                        <div class="order-summary-right">
+                                            <p class="order-total text-white fw-bold">GH₵${total.toFixed(2)}</p>
+                                        </div>
                                     </div>
-                                    <p class="order-total text-white fw-bold">GH₵${total.toFixed(2)}</p>
-                                </div>
-                                <div class="order-details">
-                                    <hr class="bg-light"><ul class="list-unstyled">${itemsListFull}</ul><hr class="bg-light">
-                                    <p class="text-white small">Subtotal: GH₵${subtotal.toFixed(2)}</p>
-                                    <p class="text-white small">Processing Fee: GH₵2.00</p>
-                                    <p class="text-white small">Delivery Fee: GH₵3.00</p>
-                                    <hr class="bg-light"><p class="order-total text-white fw-bold">Total: GH₵${total.toFixed(2)}</p>
-                                </div>
-                            </div>`;
-                        }).join("");
+                                    <div class="order-details">
+                                        <hr class="bg-light"><ul class="list-unstyled">${itemsListFull}</ul><hr class="bg-light">
+                                        <p class="text-white small">Subtotal: GH₵${subtotal.toFixed(2)}</p>
+                                        <p class="text-white small">Processing Fee: GH₵2.00</p>
+                                        <p class="text-white small">Delivery Fee: GH₵3.00</p>
+                                        <hr class="bg-light"><p class="order-total text-white fw-bold">Total: GH₵${total.toFixed(2)}</p>
+                                    </div>
+                                </div>`;
+                            }).join("");
+                    }, (error) => {
+                        console.error("Error loading orders:", error);
+                        ordersList.innerHTML = "<p class='text-center text-white'>Error loading orders.</p>";
+                    });
                 } catch (error) {
-                    console.error("Error loading orders:", error);
+                    console.error("Error setting up orders listener:", error);
                     ordersList.innerHTML = "<p class='text-center text-white'>No orders collection found yet. Place an order to start tracking!</p>";
                 }
             };
@@ -157,5 +281,5 @@
                 feather.replace();
             });
         </script>
-        <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'928b5f22abb5adf4',t:'MTc0MzM3NzE4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+        <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'928b5f22abb5adf4',t:'MTc0MzM3NzE4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92b4300338799934',t:'MTc0MzgwNTE2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

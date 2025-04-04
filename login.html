@@ -31,7 +31,47 @@
         .notification {position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:#ffffff;padding:10px 20px;border-radius:10px;font-size:0.9rem;font-weight:500;display:none;align-items:center;gap:8px;z-index:1000;}
         .notification.show {display:flex;}
         html, body {-webkit-text-size-adjust:none;touch-action:auto;}
-    </style>
+        .footer-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    border-radius: 10px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.footer-item.selected {
+    background: rgba(0, 200, 255, 0.2); /* Matches your #00c8ff theme color */
+    transform: scale(1.05);
+}
+.footer-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.footer-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+.footer-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    border-radius: 10px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.footer-item.selected {
+    background: #00566d; /* Matches your #00c8ff theme color */
+    transform: scale(1.05);
+}
+.footer-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.footer-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+</style>
 </head>
 <body class="fixed-bottom-bar">
     <div class="login-container">

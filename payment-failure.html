@@ -14,7 +14,47 @@
         p {font-size:1.1rem;opacity:0.9;margin-bottom:30px;}
         .btn {background:#007bff;padding:12px 30px;border-radius:50px;font-size:1rem;font-weight:600;color:#fff;border:none;transition:background 0.3s ease,transform 0.2s ease;}
         .btn:hover {background:#0056b3;transform:translateY(-2px);}
-    </style>
+        .footer-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    border-radius: 10px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.footer-item.selected {
+    background: rgba(0, 200, 255, 0.2); /* Matches your #00c8ff theme color */
+    transform: scale(1.05);
+}
+.footer-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.footer-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+.footer-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    border-radius: 10px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.footer-item.selected {
+    background: #00566d; /* Matches your #00c8ff theme color */
+    transform: scale(1.05);
+}
+.footer-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.footer-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+</style>
     <script defer src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>

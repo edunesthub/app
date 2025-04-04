@@ -56,7 +56,47 @@
         *:focus {zoom:1 !important;}
         html, body {-webkit-text-size-adjust:none;touch-action:manipulation;}
         @keyframes fadeIn {from {opacity:0;transform:translateY(10px);} to {opacity:1;transform:translateY(0);}}
-    </style>
+        .footer-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    border-radius: 10px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.footer-item.selected {
+    background: rgba(0, 200, 255, 0.2); /* Matches your #00c8ff theme color */
+    transform: scale(1.05);
+}
+.footer-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.footer-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+.footer-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    border-radius: 10px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.footer-item.selected {
+    background: #00566d; /* Matches your #00c8ff theme color */
+    transform: scale(1.05);
+}
+.footer-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.footer-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+</style>
     <script defer src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
