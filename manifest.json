@@ -2,7 +2,7 @@
   "name": "Chawp",
   "short_name": "Chawp",
   "description": "Sleek Food Delivery App",
-  "start_url": "https://app.chawp.me/index.html",
+  "start_url": "/https://app.chawp.me/index.html",
   "display": "standalone",
   "background_color": "#565656",
   "theme_color": "#565656",
