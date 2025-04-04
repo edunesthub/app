@@ -15,154 +15,48 @@
     <link href="vendor/sidebar/demo.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
     <style>
-        body {background:#2c2c2c; font-family: 'Poppins', sans-serif; color: #fff;}
+        body {background:#2c2c2c; font-family: 'Poppins', sans-serif; color: #fff; transition:background 0.3s ease;}
         .text-danger {color: #00c8ff !important; transition: color 0.3s ease, transform 0.3s ease;}
         .text-danger:hover {color: #00c8ff !important; transform: scale(1.05);}
-        input, textarea {font-size: 16px; outline: none; -webkit-appearance: none;}
+        input, textarea {font-size: 16px; outline: none; -webkit-appearance: none; transition:border 0.3s ease;}
+        input:focus, textarea:focus {border:1px solid #00c8ff;}
         *:focus {zoom: 1 !important;}
         html, body {-webkit-text-size-adjust: none; touch-action: manipulation;}
-        
-        /* Restaurant Card Styles */
-        .most_popular .list-card {
-            background: #565656; border-radius: 12px; overflow: hidden; position: relative;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); transition: transform 0.3s ease, box-shadow 0.3s ease;
-            opacity: 0; animation: fadeIn 0.5s ease forwards;
-        }
-        .most_popular .list-card:hover {
-            transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0, 200, 255, 0.2);
-        }
-        .most_popular .list-card-image {
-            position: relative; height: 160px; overflow: hidden;
-        }
-        .most_popular .list-card-image img {
-            height: 100%; width: 100%; object-fit: cover; transition: transform 0.3s ease, opacity 0.3s ease;
-            opacity: 0.9;
-        }
+        .most_popular .list-card {background: #565656; border-radius: 12px; overflow: hidden; position: relative; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); transition: transform 0.3s ease, box-shadow 0.3s ease; opacity: 0; animation: fadeIn 0.5s ease forwards;}
+        .most_popular .list-card:hover {transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0, 200, 255, 0.2);}
+        .most_popular .list-card-image {position: relative; height: 160px; overflow: hidden;}
+        .most_popular .list-card-image img {height: 100%; width: 100%; object-fit: cover; transition: transform 0.3s ease, opacity 0.3s ease; opacity: 0.9;}
         .most_popular .list-card-image img.loaded {opacity: 1;}
         .most_popular .list-card:hover .list-card-image img {transform: scale(1.08);}
-        .most_popular .list-card-image::after {
-            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 50%;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-        }
-        .most_popular .list-card-body {
-            padding: 12px; height: 80px; position: relative; /* Increased height slightly */
-        }
-        .most_popular .list-card-body h6 {
-            font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 6px;
-            overflow-wrap: break-word; white-space: normal; max-height: 36px; line-height: 1.2;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-        }
-        .most_popular .list-card-body p {
-            font-size: 0.8rem; color: #d0d0d0; margin-bottom: 0; margin-top: 4px; display: flex; flex-wrap: wrap;
-        }
-        .most_popular .list-card-badge {
-            position: absolute; top: 10px; right: 10px;
-        }
-        .most_popular .list-card-badge span {
-            background: #00c8ff; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem;
-            color: #fff; font-weight: 600;
-        }
-
-        /* General Styles */
+        .most_popular .list-card-image::after {content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);}
+        .most_popular .list-card-body {padding: 12px; height: 80px; position: relative;}
+        .most_popular .list-card-body h6 {font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 6px; overflow-wrap: break-word; white-space: normal; max-height: 36px; line-height: 1.2; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);}
+        .most_popular .list-card-body p {font-size: 0.8rem; color: #d0d0d0; margin-bottom: 0; margin-top: 4px; display: flex; flex-wrap: wrap;}
+        .most_popular .list-card-badge {position: absolute; top: 10px; right: 10px;}
+        .most_popular .list-card-badge span {background: #00c8ff; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; color: #fff; font-weight: 600;}
         .all {padding-bottom: 100px;}
-        .search-dropdown {
-            position: absolute; top: 100%; left: 0; width: 100%; background: #161616;
-            border: 1px solid #ddd; border-radius: 0 0 5px 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-height: 200px; overflow-y: auto; display: none; z-index: 1000;
-        }
+        .search-dropdown {position: absolute; top: 100%; left: 0; width: 100%; background: #161616; border: 1px solid #ddd; border-radius: 0 0 5px 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); max-height: 200px; overflow-y: auto; display: none; z-index: 1000;}
         .search-dropdown div {padding: 10px; cursor: pointer; transition: background 0.2s ease;}
         .search-dropdown div:hover {background: #000000;}
-        .offline-notice {
-            display: none; text-align: center; padding: 20px; color: #fff;
-            background: #ff3b30; border-radius: 10px; margin: 20px;
-        }
-        body.offline .offline-notice {display: block;}
-        .time span, .fee span {
-            background: #4a4a4a; color: #fff; padding: 4px 10px; border-radius: 10px;
-            font-size: 0.75rem; font-weight: 500; margin-right: 8px;
-        }
-        .list-card {
-            background: #565656; border-radius: 12px; overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            opacity: 0; animation: fadeIn 0.5s ease forwards;
-        }
-        .list-card:hover {
-            transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0, 200, 255, 0.2);
-        }
+        .offline-notice {display: none; text-align: center; padding: 20px; color: #fff; background: #ff3b30; border-radius: 10px; margin: 20px; opacity: 0; transition: opacity 0.5s ease;}
+        body.offline .offline-notice {display: block; opacity: 1;}
+        .time span, .fee span {background: #4a4a4a; color: #fff; padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 500; margin-right: 8px;}
+        .list-card {background: #565656; border-radius: 12px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; opacity: 0; animation: fadeIn 0.5s ease forwards;}
+        .list-card:hover {transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0, 200, 255, 0.2);}
         .list-card-image {height: 140px; position: relative;}
         .list-card-image img {height: 100%; width: 100%; object-fit: cover;}
-        .list-card-body {height: 80px; padding: 12px; text-align: left; /* Increased height slightly */}
+        .list-card-body {height: 80px; padding: 12px; text-align: left;}
         .list-card-body h6 {font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; max-height: 36px;}
         .bg-darker {background: #565656 !important;}
         .bg-darks {background: #1a1a1a !important;}
-        /* Animation */
-        @keyframes fadeIn {
-            from {opacity: 0; transform: translateY(10px);}
-            to {opacity: 1; transform: translateY(0);}
-        }
-
-        .list-card a, .list-card h6 {
-            color: inherit;
-            overflow: hidden;
-            white-space: nowrap;
-            font-size: 15px;
-            text-overflow: ellipsis;
-        }
-
-        /* Promotional Messages */
-.promo-messages {
-    position: relative;
-    width: 95%; /* Reduce width to add space on sides */
-    max-width: 800px; /* Optional: Limit max width */
-    height: 100px; /* Compact welcome message height */
-    overflow: hidden;
-    margin: 0 auto 10px; /* Center horizontally and add bottom margin */
-    user-select: none; /* Prevent text selection during swipe */
-    border-radius: 40px; /* Rounded corners */
-    
-    /* Centering */
-    display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-}
-
-
-.promo-messages.hidden {
-    display: none; /* Hide when searching */
-}
-
-.promo-messages .message {
-    position: absolute;
-    top: 0;
-    left: 100%; /* Start off-screen right */
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.1); /* Subtle backdrop */
-    border-radius: 40px;
-    transition: left 0.8s ease-in-out;
-}
-
-.promo-messages .message.active {
-    left: 0; /* Move to center */
-}
-
-.promo-messages .message.exit {
-    left: -100%; /* Move out to the left */
-}
-
-.promo-messages .message h4 {
-    color: #fff;
-    font-weight: 700;
-    font-size: 1.5rem;
-    text-align: center;
-    padding: 0 20px;
-    margin: 0;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
+        @keyframes fadeIn {from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);}}
+        .list-card a, .list-card h6 {color: inherit; overflow: hidden; white-space: nowrap; font-size: 15px; text-overflow: ellipsis;}
+        .promo-messages {position: relative; width: 95%; max-width: 800px; height: 100px; overflow: hidden; margin: 0 auto 10px; user-select: none; border-radius: 40px; display: flex; justify-content: center; align-items: center; opacity: 0; animation: fadeIn 0.5s ease forwards;}
+        .promo-messages.hidden {display: none;}
+        .promo-messages .message {position: absolute; top: 0; left: 100%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.1); border-radius: 40px; transition: left 0.8s ease-in-out;}
+        .promo-messages .message.active {left: 0;}
+        .promo-messages .message.exit {left: -100%;}
+        .promo-messages .message h4 {color: #fff; font-weight: 700; font-size: 1.5rem; text-align: center; padding: 0 20px; margin: 0; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);}
     </style>
 </head>
 <body class="fixed-bottom-bar">
@@ -244,7 +138,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-
+    
         const firebaseConfig = {
             apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
             authDomain: "von600-7982d.firebaseapp.com",
@@ -254,12 +148,12 @@
             appId: "1:164591218045:web:afe17512e16573e7903014",
             measurementId: "G-E69DMPLXBK"
         };
-
+    
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         let allRestaurants = [];
         const restaurantList = document.getElementById("all-restaurants");
-
+    
         const loadAllRestaurants = async () => {
             const cachedData = localStorage.getItem("allRestaurantsIndex");
             if (cachedData) {
@@ -271,42 +165,42 @@
             } else {
                 restaurantList.innerHTML = "<div class='col-12 text-center'><p>Loading...</p></div>";
             }
-
+    
             try {
                 const q = query(collection(db, "restaurant"), orderBy("delivery_time", "asc"));
                 const querySnapshot = await getDocs(q);
-
+    
                 if (querySnapshot.empty) {
                     restaurantList.innerHTML = "<div class='col-12 text-center'><p>No restaurants found.</p></div>";
                     return;
                 }
-
+    
                 allRestaurants = [];
                 let output = "";
                 querySnapshot.forEach(doc => {
                     const data = doc.data();
                     const restaurantId = doc.id;
                     const deliveryTime = data.delivery_time || "N/A";
-                    const deliveryFee = data.delivery_fee || "25.00"; // Default to ₵25.00 if not in Firestore
+                    const deliveryFee = data.delivery_fee || "25.00";
                     allRestaurants.push({ id: restaurantId, ...data });
                     output += `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
-    <a href="restaurant.html?id=${restaurantId}" class="d-block text-decoration-none">
-        <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
-            <div class="list-card-image">
-                <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
+        <a href="restaurant.html?id=${restaurantId}" class="d-block text-decoration-none">
+            <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
+                <div class="list-card-image">
+                    <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
+                </div>
+                <div class="list-card-body">
+                    <h6 class="mb-1 text-white">${data.name}</h6>
+                    <p class="mb-0">
+                        <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
+                    </p>
+                </div>
+                <div class="list-card-badge"><span>Open</span></div>
             </div>
-            <div class="list-card-body">
-                <h6 class="mb-1 text-white">${data.name}</h6>
-                <p class="mb-0">
-                    <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
-                </p>
-            </div>
-            <div class="list-card-badge"><span>Open</span></div>
-        </div>
-    </a>
-</div>`;
+        </a>
+    </div>`;
                 });
-
+    
                 requestAnimationFrame(() => {
                     restaurantList.innerHTML = output;
                     document.querySelectorAll(".list-card-image img").forEach(img => {
@@ -323,28 +217,28 @@
                 document.body.classList.add("offline");
             }
         };
-
-                const filterRestaurants = searchTerm => {
+    
+        const filterRestaurants = searchTerm => {
             const filtered = allRestaurants.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()));
             let output = filtered.length ? filtered.map(data => {
                 const deliveryTime = data.delivery_time || "N/A";
-                const deliveryFee = data.delivery_fee || "3.00"; // Default to ₵3.00 if not in Firestore
+                const deliveryFee = data.delivery_fee || "3.00";
                 return `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
-    <a href="restaurant.html?id=${data.id}" class="d-block text-decoration-none">
-        <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
-            <div class="list-card-image">
-                <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
+        <a href="restaurant.html?id=${data.id}" class="d-block text-decoration-none">
+            <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
+                <div class="list-card-image">
+                    <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
+                </div>
+                <div class="list-card-body">
+                    <h6 class="mb-1 text-white">${data.name}</h6>
+                    <p class="mb-0">
+                        <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
+                    </p>
+                </div>
+                <div class="list-card-badge"><span>Open</span></div>
             </div>
-            <div class="list-card-body">
-                <h6 class="mb-1 text-white">${data.name}</h6>
-                <p class="mb-0">
-                    <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
-                </p>
-            </div>
-            <div class="list-card-badge"><span>Open</span></div>
-        </div>
-    </a>
-</div>`;
+        </a>
+    </div>`;
             }).join("") : "<div class='col-12 text-center'><p>No matching restaurants found.</p></div>";
             requestAnimationFrame(() => {
                 restaurantList.innerHTML = output;
@@ -354,12 +248,12 @@
                 });
             });
         };
-
+    
         const updateDropdown = searchTerm => {
             const dropdown = document.getElementById("search-dropdown");
             dropdown.innerHTML = "";
             if (!searchTerm) return dropdown.style.display = "none";
-
+    
             const suggestions = allRestaurants.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, 5);
             if (suggestions.length) {
                 suggestions.forEach(r => {
@@ -377,8 +271,7 @@
                 dropdown.style.display = "none";
             }
         };
-
-        // Debounce function
+    
         const debounce = (func, wait) => {
             let timeout;
             return (...args) => {
@@ -386,11 +279,7 @@
                 timeout = setTimeout(() => func(...args), wait);
             };
         };
-
-        $(document).ready(() => {
-            // Removed Slick initialization since it's no longer needed
-        });
-
+    
         document.addEventListener("DOMContentLoaded", () => {
             loadAllRestaurants();
             const searchInput = document.getElementById("search-input");
@@ -399,24 +288,22 @@
             let currentMessage = 0;
             let touchStartX = 0;
             let touchEndX = 0;
-
+    
             const debouncedFilter = debounce(term => {
                 updateDropdown(term);
                 term ? filterRestaurants(term) : loadAllRestaurants();
-                // Hide promo messages when searching
                 promoMessages.classList.toggle('hidden', !!term);
             }, 300);
-
+    
             searchInput.oninput = e => debouncedFilter(e.target.value.trim());
-
+    
             document.onclick = e => {
                 const dropdown = document.getElementById("search-dropdown");
                 if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
                     dropdown.style.display = "none";
                 }
             };
-
-            // Auto-swipe Logic
+    
             function showNextMessage() {
                 messages[currentMessage].classList.remove('active');
                 messages[currentMessage].style.left = '-100%';
@@ -427,43 +314,42 @@
                     messages[currentMessage].style.left = '0';
                 }, 50);
             }
-
-            // Manual Swipe Logic (Isolated to promo-messages)
+    
             promoMessages.addEventListener('touchstart', e => {
                 touchStartX = e.changedTouches[0].screenX;
-                e.stopPropagation(); // Prevent bubbling to document
+                e.stopPropagation();
             });
-
+    
             promoMessages.addEventListener('touchend', e => {
                 touchEndX = e.changedTouches[0].screenX;
                 handleSwipe();
-                e.stopPropagation(); // Prevent bubbling to document
+                e.stopPropagation();
             });
-
+    
             promoMessages.addEventListener('mousedown', e => {
                 touchStartX = e.screenX;
                 promoMessages.addEventListener('mousemove', onMouseMove);
-                e.stopPropagation(); // Prevent bubbling to document
+                e.stopPropagation();
             });
-
+    
             document.addEventListener('mouseup', e => {
-                if (promoMessages.contains(e.target)) { // Only handle if within promo-messages
+                if (promoMessages.contains(e.target)) {
                     touchEndX = e.screenX;
                     promoMessages.removeEventListener('mousemove', onMouseMove);
                     handleSwipe();
                 }
             });
-
+    
             function onMouseMove(e) {
                 touchEndX = e.screenX;
-                e.stopPropagation(); // Prevent bubbling to document
+                e.stopPropagation();
             }
-
+    
             function handleSwipe() {
                 const swipeDistance = touchStartX - touchEndX;
-                if (swipeDistance > 50) { // Swipe left
+                if (swipeDistance > 50) {
                     showNextMessage();
-                } else if (swipeDistance < -50) { // Swipe right
+                } else if (swipeDistance < -50) {
                     messages[currentMessage].classList.remove('active');
                     messages[currentMessage].style.left = '100%';
                     currentMessage = (currentMessage - 1 + messages.length) % messages.length;
@@ -474,15 +360,12 @@
                     }, 50);
                 }
             }
-
-            // Start with the first message
+    
             messages[currentMessage].classList.add('active');
             messages[currentMessage].style.left = '0';
-
-            // Auto-swipe every 3.8 seconds
             setInterval(showNextMessage, 3800);
         });
-
+    
         window.ononline = () => {
             document.body.classList.remove("offline");
             loadAllRestaurants();

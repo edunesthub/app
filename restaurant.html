@@ -8,55 +8,54 @@
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style" onload="this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"></noscript>
     <style>
-        body{font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,sans-serif;background:#2c2c2c;color:white;margin:0;padding:0;min-height:100vh;overflow-x:hidden}
-        .restaurant-header{position:relative;height:300px;display:flex;align-items:center;justify-content:center;color:white;text-align:center;overflow:hidden}
-        .restaurant-header img{width:100%;height:100%;object-fit:cover;filter:brightness(0.5)}
-        .restaurant-info{position:absolute;text-align:center}
-        .restaurant-info h1{font-size:2.5rem;font-weight:bold;margin-bottom:10px}
-        .restaurant-info p{font-size:1.2rem;opacity:0.8}
-        .menu-section{padding:50px 20px;max-width:600px;margin:auto;text-align:center}
-        .menu-list{background:#4a4a4a;padding:20px;border-radius:12px;box-shadow:0 10px 20px rgba(0,0,0,0.1)}
-        .menu-item{background:#3f3f3f;padding:15px;border-radius:12px;box-shadow:0 10px 20px rgba(0,0,0,0.05);margin-bottom:15px;display:flex;align-items:center;justify-content:space-between;transition:transform 0.2s ease-in-out;cursor:pointer}
-        .menu-item:hover{transform:scale(1.02)}
-        .menu-item h4{margin:0;font-size:1.2rem;font-weight:600;color:white}
-        .menu-item p{margin:0;font-size:1rem;opacity:0.7;color:#fff}
-        .add-to-cart{border:none;background:white;color:black;padding:8px 15px;border-radius:8px;font-size:1rem;transition:background 0.2s}
-        .add-to-cart:hover{background:#ddd}
-        .options-panel{position:fixed;bottom:-100%;left:0;width:100%;background:#3f3f3f;padding:20px;border-radius:20px 20px 0 0;box-shadow:0 -5px 15px rgba(0,0,0,0.3);transition:bottom 0.3s ease;z-index:10}
-        .options-panel.show{bottom:0}
-        .options-panel h5{font-size:1.2rem;font-weight:600;margin-bottom:15px}
-        .close-btn{position:absolute;top:10px;right:10px;background:#2c2c2e;padding:5px 10px;border-radius:50%;cursor:pointer}
-        .option-group{margin-bottom:15px}
-        .option-group label{display:block;margin:5px 0;font-size:0.9rem}
-        .quantity-controls{display:flex;align-items:center;gap:10px;margin:15px 0}
-        .quantity-btn{background:#2c2c2e;padding:5px 10px;border-radius:5px;cursor:pointer}
-        .note-input{width:100%;background:#2c2c2e;border:none;color:#fff;padding:10px;border-radius:8px;margin-bottom:15px}
-        .confirm-btn{background:#007aff;color:white;padding:10px;border-radius:12px;width:100%;border:none}
-        .confirm-btn:hover{background:#0062cc}
-        .toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:white;padding:12px 20px;border-radius:12px;font-size:1rem;font-weight:500;display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transition:opacity 0.4s ease,transform 0.4s ease}
-        .toast-container.show{opacity:1;transform:translateX(-50%) translateY(10px);pointer-events:auto}
-        .view-cart-btn{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:black;color:white;padding:16px 50px;border-radius:50px;font-size:1.2rem;font-weight:bold;text-decoration:none;transition:background 0.2s ease-in-out,opacity 0.2s ease-in-out;box-shadow:0 5px 15px rgba(0,0,0,0.2);opacity:0;visibility:hidden}
-        .view-cart-btn.show{opacity:1;visibility:visible}
-        .view-cart-btn:hover{background:#333}
-        .back-arrow{position:absolute;top:20px;left:20px;background:rgba(0,0,0,0.647);color:white;padding:10px;border-radius:50%;transition:background 0.2s ease}
-        .back-arrow:hover{background:rgba(0,0,0,0.8)}
-        .menu-loading{font-size:1.5rem;font-weight:600;opacity:0.7;margin:0}
+        body{font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,sans-serif;background:#2c2c2c;color:white;margin:0;padding:0;min-height:100vh;overflow-x:hidden;transition:background 0.3s ease;}
+        .restaurant-header{position:relative;height:300px;display:flex;align-items:center;justify-content:center;color:white;text-align:center;overflow:hidden;opacity:0;animation:fadeIn 0.5s ease forwards;}
+        .restaurant-header img{width:100%;height:100%;object-fit:cover;filter:brightness(0.5);transition:filter 0.3s ease;}
+        .restaurant-header:hover img{filter:brightness(0.6);}
+        .restaurant-info{position:absolute;text-align:center;}
+        .restaurant-info h1{font-size:2.5rem;font-weight:bold;margin-bottom:10px;}
+        .restaurant-info p{font-size:1.2rem;opacity:0.8;}
+        .menu-section{padding:50px 20px;max-width:600px;margin:auto;text-align:center;opacity:0;animation:fadeIn 0.5s ease 0.2s forwards;}
+        .menu-list{background:#4a4a4a;padding:20px;border-radius:12px;box-shadow:0 10px 20px rgba(0,0,0,0.1);transition:transform 0.3s ease;}
+        .menu-item{background:#3f3f3f;padding:15px;border-radius:12px;box-shadow:0 10px 20px rgba(0,0,0,0.05);margin-bottom:15px;display:flex;align-items:center;justify-content:space-between;transition:transform 0.2s ease-in-out;cursor:pointer;}
+        .menu-item:hover{transform:scale(1.02);}
+        .menu-item h4{margin:0;font-size:1.2rem;font-weight:600;color:white;}
+        .menu-item p{margin:0;font-size:1rem;opacity:0.7;color:#fff;}
+        .add-to-cart{border:none;background:white;color:black;padding:8px 15px;border-radius:8px;font-size:1rem;transition:background 0.2s ease,opacity 0.3s ease;}
+        .add-to-cart:hover{background:#ddd;}
+        .add-to-cart:disabled{opacity:0.6;cursor:not-allowed;}
+        .options-panel{position:fixed;bottom:-100%;left:0;width:100%;background:#3f3f3f;padding:20px;border-radius:20px 20px 0 0;box-shadow:0 -5px 15px rgba(0,0,0,0.3);transition:bottom 0.3s ease;z-index:10;}
+        .options-panel.show{bottom:0;}
+        .options-panel h5{font-size:1.2rem;font-weight:600;margin-bottom:15px;}
+        .close-btn{position:absolute;top:10px;right:10px;background:#2c2c2e;padding:5px 10px;border-radius:50%;cursor:pointer;transition:background 0.2s ease;}
+        .close-btn:hover{background:#4a4a4a;}
+        .option-group{margin-bottom:15px;}
+        .option-group label{display:block;margin:5px 0;font-size:0.9rem;}
+        .quantity-controls{display:flex;align-items:center;gap:10px;margin:15px 0;}
+        .quantity-btn{background:#2c2c2e;padding:5px 10px;border-radius:5px;cursor:pointer;transition:background 0.2s ease;}
+        .quantity-btn:hover{background:#4a4a4a;}
+        .note-input{width:100%;background:#2c2c2e;border:none;color:#fff;padding:10px;border-radius:8px;margin-bottom:15px;transition:border 0.3s ease;}
+        .note-input:focus{border:1px solid #00c8ff;}
+        .confirm-btn{background:#007aff;color:white;padding:10px;border-radius:12px;width:100%;border:none;transition:background 0.3s ease,opacity 0.3s ease;}
+        .confirm-btn:hover{background:#0062cc;}
+        .confirm-btn:disabled{background:#4a4a4a;opacity:0.6;cursor:not-allowed;}
+        .toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:white;padding:12px 20px;border-radius:12px;font-size:1rem;font-weight:500;display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transition:opacity 0.4s ease,transform 0.4s ease;}
+        .toast-container.show{opacity:1;transform:translateX(-50%) translateY(10px);pointer-events:auto;}
+        .view-cart-btn{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:black;color:white;padding:16px 50px;border-radius:50px;font-size:1.2rem;font-weight:bold;text-decoration:none;transition:background 0.2s ease-in-out,opacity 0.2s ease-in-out,transform 0.3s ease;box-shadow:0 5px 15px rgba(0,0,0,0.2);opacity:0;visibility:hidden;}
+        .view-cart-btn.show{opacity:1;visibility:visible;}
+        .view-cart-btn:hover{background:#333;transform:translateX(-50%) scale(1.05);}
+        .back-arrow{position:absolute;top:20px;left:20px;background:rgba(0,0,0,0.647);color:white;padding:10px;border-radius:50%;transition:background 0.2s ease,transform 0.2s ease;}
+        .back-arrow:hover{background:rgba(0,0,0,0.8);transform:scale(1.1);}
+        .menu-loading{font-size:1.5rem;font-weight:600;opacity:0.7;margin:0;}
         @media (max-width: 640px) {
             .menu-section { padding: 30px 10px; }
             .menu-item { padding: 10px; }
             .options-panel { padding: 15px; }
         }
-        input, textarea {
-            font-size: 16px;
-            outline: none;
-        }
-        *:focus {
-            zoom: 1 !important;
-        }
-        html, body {
-            -webkit-text-size-adjust: none;
-            touch-action: manipulation;
-        }
+        input, textarea {font-size:16px;outline:none;}
+        *:focus {zoom:1 !important;}
+        html, body {-webkit-text-size-adjust:none;touch-action:manipulation;}
+        @keyframes fadeIn {from {opacity:0;transform:translateY(10px);} to {opacity:1;transform:translateY(0);}}
     </style>
     <script defer src="https://unpkg.com/feather-icons"></script>
 </head>
@@ -102,10 +101,12 @@
         </div>
     </div>
     <a href="cart.html" class="view-cart-btn" id="view-cart-btn">View Cart</a>
+    
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, enableIndexedDbPersistence, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-
+        import { getFirestore, collection, getDocs, doc, getDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    
         const firebaseConfig = {
             apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
             authDomain: "von600-7982d.firebaseapp.com",
@@ -118,7 +119,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         enableIndexedDbPersistence(db).catch(err => console.warn("Firestore persistence failed:", err));
-
+    
         const urlParams = new URLSearchParams(window.location.search);
         const restaurantId = urlParams.get("id");
         let cartCount = 0, currentItem = null;
@@ -139,31 +140,56 @@
             toastMessage: document.getElementById("toast-message"),
             viewCartBtn: document.getElementById("view-cart-btn")
         };
-
+    
         const loadRestaurant = async () => {
-            const docRef = doc(db, "restaurant", restaurantId);
-            const docSnap = await getDoc(docRef);
-            if (!docSnap.exists()) {
-                elements.restaurantName.textContent = "Restaurant Not Found";
-                elements.restaurantInfo.textContent = "";
-                return;
+            const cachedData = localStorage.getItem(`restaurant-${restaurantId}`);
+            if (cachedData) {
+                const data = JSON.parse(cachedData);
+                renderRestaurant(data);
             }
-            const data = docSnap.data();
+            try {
+                const docRef = doc(db, "restaurant", restaurantId);
+                const docSnap = await getDoc(docRef);
+                if (!docSnap.exists()) {
+                    elements.restaurantName.textContent = "Restaurant Not Found";
+                    elements.restaurantInfo.textContent = "";
+                    return;
+                }
+                const data = docSnap.data();
+                localStorage.setItem(`restaurant-${restaurantId}`, JSON.stringify(data));
+                renderRestaurant(data);
+            } catch (error) {
+                console.error("Error loading restaurant:", error);
+                if (!cachedData) elements.restaurantName.textContent = "Failed to load";
+            }
+        };
+    
+        const renderRestaurant = data => {
             requestAnimationFrame(() => {
                 elements.restaurantName.textContent = data.name;
                 elements.restaurantInfo.textContent = `⭐ ${data.rating} | ⏳ ${data.delivery_time} mins`;
-                elements.restaurantImage.src = data.image;
+                elements.restaurantImage.src = data.image || "img/placeholder.png";
             });
         };
-
+    
         const loadMenu = async () => {
-            const menuRef = collection(db, "restaurant", restaurantId, "menu");
-            const querySnapshot = await getDocs(menuRef);
-            const menuItems = [];
-            querySnapshot.forEach(doc => menuItems.push({ id: doc.id, ...doc.data(), price: parseFloat(doc.data().price) || 0, sizes: doc.data().sizes || [], extras: doc.data().extras || [] }));
-            renderMenu(menuItems);
+            const cachedMenu = localStorage.getItem(`menu-${restaurantId}`);
+            if (cachedMenu) {
+                renderMenu(JSON.parse(cachedMenu));
+            }
+            try {
+                const menuRef = collection(db, "restaurant", restaurantId, "menu");
+                const querySnapshot = await getDocs(menuRef);
+                const menuItems = [];
+                querySnapshot.forEach(doc => menuItems.push({ id: doc.id, ...doc.data(), price: parseFloat(doc.data().price) || 0, sizes: doc.data().sizes || [], extras: doc.data().extras || [] }));
+                localStorage.setItem(`menu-${restaurantId}`, JSON.stringify(menuItems));
+                renderMenu(menuItems);
+            } catch (error) {
+                console.error("Error loading menu:", error);
+                if (!cachedMenu) elements.menuSection.innerHTML = "<p>Failed to load menu</p>";
+            }
         };
-
+    
         const renderMenu = items => {
             const fragment = document.createDocumentFragment();
             const menuList = document.createElement("div");
@@ -182,7 +208,7 @@
             fragment.appendChild(menuList);
             requestAnimationFrame(() => elements.menuSection.replaceChildren(fragment));
         };
-
+    
         const showOptionsPanel = item => {
             currentItem = item;
             elements.optionsTitle.textContent = item.name;
@@ -194,12 +220,12 @@
             elements.vendorNote.value = "";
             elements.optionsPanel.classList.add("show");
         };
-
+    
         const hideOptionsPanel = () => {
             elements.optionsPanel.classList.remove("show");
             currentItem = null;
         };
-
+    
         const showToast = message => {
             elements.toastMessage.textContent = message;
             requestAnimationFrame(() => {
@@ -207,54 +233,48 @@
                 setTimeout(() => elements.toast.classList.remove("show"), 2000);
             });
         };
-
+    
         const updateCartButton = () => requestAnimationFrame(() => elements.viewCartBtn.classList.toggle("show", cartCount > 0));
         const loadCartCount = () => {
             cartCount = JSON.parse(localStorage.getItem("cart") || "[]").length;
             updateCartButton();
         };
-
-        const addToCart = async item => {
+    
+        const addToCart = item => {
             const cart = JSON.parse(localStorage.getItem("cart") || "[]");
             cart.push(item);
             localStorage.setItem("cart", JSON.stringify(cart));
             cartCount++;
             updateCartButton();
             showToast(`${item.name} added to cart!`);
-            
-            // Save to Firestore orders collection with restaurantId
-            try {
-                await addDoc(collection(db, "orders"), {
-                    restaurantId: restaurantId,
-                    items: item.quantity > 1 ? Array(item.quantity).fill({ name: item.name, total: item.price }) : [{ name: item.name, total: item.price }],
-                    totalAmount: item.price * item.quantity,
-                    timestamp: new Date().toISOString(),
-                    note: item.note || ""
-                });
-                console.log("Order saved to Firestore");
-            } catch (error) {
-                console.error("Error saving order to Firestore:", error);
-            }
         };
-
+    
         document.onclick = e => {
             const menuItem = e.target.closest(".menu-item");
             const addButton = e.target.closest(".add-to-cart");
             if (addButton) {
+                addButton.disabled = true;
                 const item = JSON.parse(menuItem.dataset.item);
-                if (!item.sizes.length && !item.extras.length) addToCart({ name: item.name, price: item.price, restaurantId, quantity: 1, id: Date.now(), extras: [], note: "" });
-                else showOptionsPanel(item);
+                if (!item.sizes.length && !item.extras.length) {
+                    addToCart({ name: item.name, price: item.price, restaurantId, quantity: 1, id: Date.now(), extras: [], note: "" });
+                    setTimeout(() => addButton.disabled = false, 500);
+                } else {
+                    showOptionsPanel(item);
+                    setTimeout(() => addButton.disabled = false, 500);
+                }
             } else if (menuItem && !elements.optionsPanel.contains(e.target)) {
                 const item = JSON.parse(menuItem.dataset.item);
                 if (item.sizes.length || item.extras.length) showOptionsPanel(item);
             } else if (!elements.optionsPanel.contains(e.target) && elements.optionsPanel.classList.contains("show")) hideOptionsPanel();
         };
-
+    
         document.getElementById("close-panel").onclick = hideOptionsPanel;
         document.getElementById("increase-qty").onclick = () => elements.quantity.textContent = parseInt(elements.quantity.textContent) + 1;
         document.getElementById("decrease-qty").onclick = () => elements.quantity.textContent = Math.max(1, parseInt(elements.quantity.textContent) - 1);
         document.getElementById("confirm-add").onclick = () => {
             if (!currentItem) return;
+            const confirmBtn = document.getElementById("confirm-add");
+            confirmBtn.disabled = true;
             const sizeIndex = document.querySelector('input[name="size"]:checked')?.value;
             const selectedSize = sizeIndex ? currentItem.sizes[sizeIndex] : null;
             const extras = Array.from(document.querySelectorAll('input[name="extra"]:checked')).map(input => ({ name: input.value, price: parseFloat(input.dataset.price) }));
@@ -265,18 +285,22 @@
                 quantity: parseInt(elements.quantity.textContent),
                 id: Date.now(),
                 extras,
-                note: elements.vendorNote.value
+                note: elements.vendorNote.value.trim()
             };
             extras.forEach(extra => { item.name += ` + ${extra.name}`; item.price += extra.price; });
             addToCart(item);
             hideOptionsPanel();
+            setTimeout(() => confirmBtn.disabled = false, 500);
         };
-
+    
         document.addEventListener("DOMContentLoaded", async () => {
             await Promise.all([loadRestaurant(), loadMenu()]);
             loadCartCount();
             feather.replace();
         });
+    
+        window.addEventListener("online", () => loadMenu());
+        window.addEventListener("offline", () => showToast("You're offline! Using cached data."));
     </script>
    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'923f6a091cb54509',t:'MTc0MjU4MDcxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'928b5f22bce432f9',t:'MTc0MzM3NzE4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
