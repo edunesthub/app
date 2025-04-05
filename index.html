@@ -325,5 +325,15 @@
             }
         });
     </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(regs => {
+            for (let reg of regs) {
+              reg.update(); // force refresh
+            }
+          });
+        }
+      </script>
+      
 </body>
 </html>
