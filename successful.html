@@ -54,6 +54,15 @@
 .footer-item:hover {
     background: rgba(255, 255, 255, 0.1);
 }
+/* Hide Scrollbar for PWA */
+html, body {
+    overflow-y: scroll; /* Ensures scrolling is still possible */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
 </style>
     <script defer src="https://unpkg.com/feather-icons"></script>
 </head>

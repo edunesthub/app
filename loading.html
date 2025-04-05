@@ -98,7 +98,36 @@
             transform: scale(1.05);
         }
 
-        /* Skeleton Loading Styles */
+        /* Smooth Loading Styles */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #2c2c2c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+        #loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
         .skeleton-card {
             background: #565656;
             border-radius: 10px;
@@ -123,9 +152,23 @@
         body::-webkit-scrollbar {
             display: none; /* Chrome, Safari, and Opera */
         }
-    </style>
+    /* Hide Scrollbar for PWA */
+html, body {
+    overflow-y: scroll; /* Ensures scrolling is still possible */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
+</style>
 </head>
 <body class="fixed-bottom-bar">
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="loading-text">Chawp</div>
+    </div>
+
     <div class="osahan-home-page">
         <div class="welcome-header">
             <div class="title d-flex align-items-center justify-content-center">
@@ -220,6 +263,21 @@
         async function loadTrendingRestaurants() {
             const trendingList = document.getElementById("trending-list");
             const trendingSection = document.querySelector(".trending-section");
+            const loadingOverlay = document.getElementById("loading-overlay");
+    
+            // Check if the loading screen has already been shown in this session
+            const hasSeenLoading = sessionStorage.getItem("hasSeenLoading");
+    
+            // Hide the loading screen immediately if already seen, otherwise after a delay
+            if (hasSeenLoading) {
+                loadingOverlay.classList.add("hidden");
+            } else {
+                // Force hide after 2 seconds max, even if data loading fails
+                setTimeout(() => {
+                    loadingOverlay.classList.add("hidden");
+                    sessionStorage.setItem("hasSeenLoading", "true");
+                }, 1000); // 2 seconds max delay
+            }
     
             // Show cached data immediately if available
             const cachedData = localStorage.getItem("trendingRestaurants");
@@ -299,12 +357,10 @@
         }
     
         document.addEventListener("DOMContentLoaded", () => {
-            // Add loaded classes for animations immediately
             document.querySelector(".welcome-header").classList.add("loaded");
             document.querySelector(".promo-banner").classList.add("loaded");
             document.querySelector(".osahan-menu-fotter").classList.add("loaded");
     
-            // Load content
             loadTrendingRestaurants();
             updateWelcomeMessage();
     
@@ -325,5 +381,7 @@
             }
         });
     </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'927746ef38e553de',t:'MTc0MzE2NjQ3Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92b49ad389a0add1',t:'MTc0MzgwOTU0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
