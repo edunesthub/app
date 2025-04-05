@@ -221,12 +221,11 @@ body::-webkit-scrollbar {
             const details = JSON.parse(localStorage.getItem("deliveryDetails") || "{}");
             return { 
                 location: details.location || "", 
-                contactNumber: details.contactNumber || "",
-                email: details.email || "" 
+                contactNumber: details.contactNumber || ""
             };
         };
-        const savePersistentDeliveryDetails = (location, contactNumber, email) => {
-            localStorage.setItem("deliveryDetails", JSON.stringify({ location, contactNumber, email }));
+        const savePersistentDeliveryDetails = (location, contactNumber) => {
+            localStorage.setItem("deliveryDetails", JSON.stringify({ location, contactNumber }));
         };
         const getDeviceId = () => {
             let deviceId = localStorage.getItem("deviceId");
@@ -281,7 +280,6 @@ body::-webkit-scrollbar {
                     <label for="delivery-location">Location</label><input type="text" id="delivery-location" value="${persistentDetails.location}" placeholder="Enter your address">
                     <label for="delivery-notes">Delivery Notes</label><textarea id="delivery-notes" placeholder="e.g., Leave at door"></textarea>
                     <label for="delivery-contact">Contact Number</label><input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number">
-                    <label for="delivery-email">Email</label><input type="email" id="delivery-email" value="${persistentDetails.email}" placeholder="Enter your email">
                 </div>
                 <div class="order-summary">
                     <p>Subtotal <span class="float-end">GH₵${subtotal.toFixed(2)}</span></p>
@@ -301,7 +299,6 @@ body::-webkit-scrollbar {
             elements.cartContainer.querySelectorAll(".remove").forEach(btn => btn.onclick = () => removeItem(btn.closest(".cart-item").dataset.key));
             document.getElementById("delivery-location").onchange = saveDeliveryInputs;
             document.getElementById("delivery-contact").onchange = saveDeliveryInputs;
-            document.getElementById("delivery-email").onchange = saveDeliveryInputs;
             document.getElementById("checkout-btn").onclick = proceedToCheckout;
             document.getElementById("remove-all-btn").onclick = removeAllItems;
         };
@@ -330,8 +327,7 @@ body::-webkit-scrollbar {
         const saveDeliveryInputs = () => {
             const location = document.getElementById("delivery-location").value.trim();
             const contactNumber = document.getElementById("delivery-contact").value.trim();
-            const email = document.getElementById("delivery-email").value.trim();
-            savePersistentDeliveryDetails(location, contactNumber, email);
+            savePersistentDeliveryDetails(location, contactNumber);
         };
     
         let isProcessing = false;
@@ -353,8 +349,8 @@ body::-webkit-scrollbar {
                 resetCheckoutButton();
                 return;
             }
-            if (!persistentDetails.location || !persistentDetails.contactNumber || !persistentDetails.email) {
-                showNotification("Please enter your location, contact number, and email!", "error");
+            if (!persistentDetails.location || !persistentDetails.contactNumber) {
+                showNotification("Please enter your location and contact number!", "error");
                 resetCheckoutButton();
                 return;
             }
@@ -397,8 +393,7 @@ body::-webkit-scrollbar {
                 deliveryDetails: {
                     location: persistentDetails.location,
                     deliveryNotes: deliveryNotes,
-                    contactNumber: persistentDetails.contactNumber,
-                    email: persistentDetails.email
+                    contactNumber: persistentDetails.contactNumber
                 },
                 timestamp: new Date().toISOString(),
                 status: "pending",
@@ -416,9 +411,6 @@ body::-webkit-scrollbar {
             // Paystack Payment Integration
             try {
                 // Validate payment details before proceeding
-                if (!persistentDetails.email) {
-                    throw new Error("Email is required for payment");
-                }
                 if (totalAmount <= 0) {
                     throw new Error("Invalid payment amount");
                 }
@@ -471,7 +463,7 @@ body::-webkit-scrollbar {
 
                 const handler = PaystackPop.setup({
                     key: "pk_live_014478be275a6453efab7529d14bd938c8b9b964",
-                    email: persistentDetails.email,
+                    email: "customer@chawp.com",
                     amount: Math.round(totalAmount * 100),
                     currency: "GHS",
                     ref: "ORDER_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9),

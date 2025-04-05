@@ -250,20 +250,20 @@ body::-webkit-scrollbar {
             });
         };
     
-        // Immediate auth check
-        const user = auth.currentUser; // Try current user first
-        if (user) {
-            loadUserProfileFast(user);
-        } else {
-            // Fallback to auth state listener if no user is immediately available
+        // Wait for DOM to be ready before checking auth state
+        document.addEventListener("DOMContentLoaded", () => {
+            // Use onAuthStateChanged to properly handle auth state changes
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     loadUserProfileFast(user);
                 } else {
-                    window.location.href = "login.html";
+                    // Only redirect if we're not already on the login page
+                    if (!window.location.pathname.includes("login.html")) {
+                        window.location.href = "login.html";
+                    }
                 }
             });
-        }
+        });
     </script>
     <script defer src="vendor/jquery/jquery.min.js"></script>
     <script defer src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

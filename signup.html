@@ -118,19 +118,72 @@
             top: 1.5rem;
             left: 50%;
             transform: translateX(-50%);
-            background: #34c759;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
             padding: 0.75rem 2rem;
             border-radius: 0.875rem;
             text-align: center;
             box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.4);
             z-index: 1000;
             opacity: 0;
-            transition: opacity 0.2s ease-out;
+            transition: all 0.3s ease-out;
             max-width: 90%;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         .notification.show {
             opacity: 1;
-            display: flex;
+            transform: translateX(-50%) translateY(10px);
+        }
+        .notification.error {
+            background: rgba(220, 53, 69, 0.9);
+        }
+        .notification.success {
+            background: rgba(52, 199, 89, 0.9);
+        }
+        .notification.warning {
+            background: rgba(255, 193, 7, 0.9);
+        }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
+        }
+        .btn-primary.loading {
+            opacity: 0.8;
+            pointer-events: none;
+        }
+        .btn-primary.loading .spinner {
+            display: block;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .form-group input:invalid {
+            border: 1px solid rgba(220, 53, 69, 0.5);
+        }
+        .form-group input:valid {
+            border: 1px solid rgba(52, 199, 89, 0.5);
+        }
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #fff;
+            opacity: 0.7;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        .form-group {
+            position: relative;
         }
         html, body {
             -webkit-text-size-adjust: none;
@@ -155,25 +208,35 @@ body::-webkit-scrollbar {
         <form id="signup-form">
             <div class="form-group">
                 <label for="name">Full Name</label>
-                <input type="text" id="name" placeholder="Full Name" required>
+                <input type="text" id="name" placeholder="Enter your full name" required autocomplete="name">
             </div>
             <div class="form-group">
                 <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" placeholder="Phone Number" required>
+                <input type="tel" id="phone" placeholder="Enter your phone number" required autocomplete="tel">
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" placeholder="Email" required>
+                <input type="email" id="email" placeholder="Enter your email" required autocomplete="email">
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Password" required>
+                <input type="password" id="password" placeholder="Enter your password" required autocomplete="new-password">
+                <button type="button" class="password-toggle" id="toggle-password">
+                    <i class="feather-eye"></i>
+                </button>
             </div>
             <div class="form-group">
                 <label for="confirm-password">Confirm Password</label>
-                <input type="password" id="confirm-password" placeholder="Confirm Password" required>
+                <input type="password" id="confirm-password" placeholder="Confirm your password" required autocomplete="new-password">
+                <button type="button" class="password-toggle" id="toggle-confirm-password">
+                    <i class="feather-eye"></i>
+                </button>
             </div>
-            <button type="submit" class="btn-primary">Sign Up <i class="feather-user-plus"></i></button>
+            <button type="submit" class="btn-primary">
+                <span class="button-text">Sign Up</span>
+                <span class="spinner"></span>
+                <i class="feather-user-plus"></i>
+            </button>
             <p class="text-center">Already have an account? <a href="login.html">Login</a></p>
         </form>
     </div>
@@ -205,43 +268,130 @@ body::-webkit-scrollbar {
         const signupForm = document.getElementById("signup-form");
         const notification = document.getElementById("notification");
         const notificationMessage = document.getElementById("notification-message");
+        const submitButton = signupForm.querySelector("button[type='submit']");
+        const buttonText = submitButton.querySelector(".button-text");
+        const togglePassword = document.getElementById("toggle-password");
+        const toggleConfirmPassword = document.getElementById("toggle-confirm-password");
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("confirm-password");
 
-        function showNotification(message) {
+        // Password visibility toggles
+        togglePassword.addEventListener("click", () => {
+            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+            passwordInput.setAttribute("type", type);
+            togglePassword.innerHTML = type === "password" ? '<i class="feather-eye"></i>' : '<i class="feather-eye-off"></i>';
+        });
+
+        toggleConfirmPassword.addEventListener("click", () => {
+            const type = confirmPasswordInput.getAttribute("type") === "password" ? "text" : "password";
+            confirmPasswordInput.setAttribute("type", type);
+            toggleConfirmPassword.innerHTML = type === "password" ? '<i class="feather-eye"></i>' : '<i class="feather-eye-off"></i>';
+        });
+
+        function showNotification(message, type = "success") {
             notificationMessage.textContent = message;
+            notification.className = `notification ${type}`;
             notification.classList.add("show");
             setTimeout(() => notification.classList.remove("show"), 3000);
         }
 
-        signupForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const name = document.getElementById("name").value;
-            const phone = document.getElementById("phone").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirm-password").value;
+        function setLoading(isLoading) {
+            submitButton.classList.toggle("loading", isLoading);
+            buttonText.textContent = isLoading ? "Creating account..." : "Sign Up";
+        }
 
-            if (password !== confirmPassword) {
-                showNotification("Passwords do not match!");
+        // Validate email format
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Validate phone number format
+        function isValidPhone(phone) {
+            return /^[0-9]{10,15}$/.test(phone.replace(/\D/g, ''));
+        }
+
+        signupForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById("name").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const confirmPassword = document.getElementById("confirm-password").value.trim();
+
+            // Validate inputs
+            if (!name || !phone || !email || !password || !confirmPassword) {
+                showNotification("Please fill in all fields", "error");
                 return;
             }
 
-            createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    return setDoc(doc(db, "users", user.uid), {
-                        name: name,
-                        phone: phone,
-                        email: email
-                    });
-                })
-                .then(() => {
-                    showNotification("Sign up successful! Redirecting...");
-                    setTimeout(() => window.location.href = "index.html", 1000);
-                })
-                .catch((error) => {
-                    showNotification(`Error: ${error.message}`);
+            if (!isValidEmail(email)) {
+                showNotification("Please enter a valid email address", "error");
+                return;
+            }
+
+            if (!isValidPhone(phone)) {
+                showNotification("Please enter a valid phone number", "error");
+                return;
+            }
+
+            if (password.length < 6) {
+                showNotification("Password must be at least 6 characters", "error");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showNotification("Passwords do not match", "error");
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                await setDoc(doc(db, "users", user.uid), {
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    createdAt: new Date().toISOString()
                 });
+
+                showNotification("Account created successfully! Redirecting...", "success");
+                
+                // Store signup state
+                localStorage.setItem("isLoggedIn", "true");
+                localStorage.setItem("userEmail", email);
+                
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1000);
+            } catch (error) {
+                setLoading(false);
+                let errorMessage = "An error occurred during signup";
+                
+                switch (error.code) {
+                    case "auth/email-already-in-use":
+                        errorMessage = "This email is already registered";
+                        break;
+                    case "auth/invalid-email":
+                        errorMessage = "Invalid email address";
+                        break;
+                    case "auth/weak-password":
+                        errorMessage = "Password is too weak";
+                        break;
+                    case "auth/network-request-failed":
+                        errorMessage = "Network error. Please check your connection";
+                        break;
+                }
+                
+                showNotification(errorMessage, "error");
+            }
         });
+
+        // Auto-focus name input on page load
+        document.getElementById("name").focus();
     </script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92b4927e59f8b0b2',t:'MTc0MzgwOTIwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
