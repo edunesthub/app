@@ -38,8 +38,50 @@
         .confirm-btn{background:#007aff;color:white;padding:10px;border-radius:12px;width:100%;border:none;}
         .confirm-btn:hover{background:#0062cc;}
         .confirm-btn:disabled{background:#4a4a4a;opacity:0.6;cursor:not-allowed;}
-        .toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:white;padding:12px 20px;border-radius:12px;font-size:1rem;font-weight:500;display:flex;align-items:center;gap:10px;display:none;}
-        .toast-container.show{display:flex;}
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            display: none;
+            z-index: 1000;
+            max-width: 90%;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+        
+        .toast-container.show {
+            display: flex;
+            animation: slideDown 0.3s ease-out;
+            opacity: 1;
+        }
+        
+        .toast-container.hide {
+            opacity: 0;
+        }
+        
+        .toast-container.error {
+            background: rgba(220, 53, 69, 0.9);
+        }
+        
+        .toast-container.success {
+            background: rgba(40, 167, 69, 0.9);
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
         .view-cart-btn{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:black;color:white;padding:16px 50px;border-radius:50px;font-size:1.2rem;font-weight:bold;text-decoration:none;box-shadow:0 5px 15px rgba(0,0,0,0.2);display:none;}
         .view-cart-btn.show{display:block;}
         .view-cart-btn:hover{background:#333;transform:translateX(-50%) scale(1.05);}
@@ -196,10 +238,21 @@
             currentItem = null;
         };
 
-        const showToast = message => {
+        const showToast = (message, type = "success") => {
             elements.toastMessage.textContent = message;
+            elements.toast.className = `toast-container ${type}`;
             elements.toast.classList.add("show");
-            setTimeout(() => elements.toast.classList.remove("show"), 1000);
+            
+            // Remove show class after animation
+            setTimeout(() => {
+                elements.toast.classList.remove("show");
+                elements.toast.classList.add("hide");
+            }, 5000);
+            
+            // Remove hide class after fade out
+            setTimeout(() => {
+                elements.toast.classList.remove("hide");
+            }, 5300);
         };
 
         const updateCartButton = () => elements.viewCartBtn.classList.toggle("show", cartCount > 0);
@@ -210,6 +263,13 @@
 
         const addToCart = item => {
             const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            
+            // Check if cart has items from a different restaurant
+            if (cart.length > 0 && cart[0].restaurantId !== restaurantId) {
+                showToast("Please clear your cart or complete your current order before ordering from a different restaurant", "error");
+                return;
+            }
+            
             cart.push(item);
             localStorage.setItem("cart", JSON.stringify(cart));
             cartCount++;

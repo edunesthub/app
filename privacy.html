@@ -20,60 +20,143 @@
     <!-- Sidebar CSS -->
     <link href="vendor/sidebar/demo.css" rel="stylesheet">
     <style>
-        .back-btn{background:none;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;position:absolute;left:10px;top:15px;transition:transform 0.2s ease,opacity 0.2s ease}
-        .back-btn i{width:40px;height:40px;stroke-width:3;color:white;transition:transform 0.2s ease}
-        .back-btn:hover{opacity:0.8;transform:scale(1.1)}
-       
+        body {
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .osahan-privacy {
+            background: #2a2a2a;
+            border-radius: 16px;
+            padding: 4rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .legal-section {
+            margin-bottom: 4rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .legal-section h3 {
+            color: #00c8ff;
+            font-size: 2rem;
+            margin-bottom: 2.5rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .legal-section p {
+            color: #e0e0e0;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .legal-list {
+            list-style-type: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .legal-list li {
+            margin-bottom: 1.8rem;
+            color: #e0e0e0;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .legal-list li::before {
+            content: '•';
+            color: #00c8ff;
+            position: absolute;
+            left: 0;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        
+        .legal-list li strong {
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .legal-note {
+            background: #333;
+            padding: 2.5rem;
+            border-radius: 12px;
+            margin: 4rem auto;
+            max-width: 600px;
+            border-left: 4px solid #00c8ff;
+        }
+        
+        .legal-note p {
+            margin: 0;
+            color: #e0e0e0;
+            font-style: italic;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .osahan-privacy {
+                padding: 2.5rem;
+            }
+            
+            .legal-section h3 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        /* Keep existing footer styles */
         .footer-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1px;
-    border-radius: 10px;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-.footer-item.selected {
-    background: rgba(0, 200, 255, 0.2); /* Matches your #00c8ff theme color */
-    transform: scale(1.05);
-}
-.footer-item a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.footer-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-.footer-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1px;
-    border-radius: 10px;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-.footer-item.selected {
-    background: #00566d; /* Matches your #00c8ff theme color */
-    transform: scale(1.05);
-}
-.footer-item a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.footer-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-/* Hide Scrollbar for PWA */
-html, body {
-    overflow-y: scroll; /* Ensures scrolling is still possible */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-}
-body::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-}
-</style>
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1px;
+            border-radius: 10px;
+        }
+        
+        .footer-item.selected {
+            background: #00566d;
+        }
+        
+        .footer-item a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .footer-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Hide Scrollbar for PWA */
+        html, body {
+            overflow-y: scroll;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        body::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
 </head>
 
 <body class="fixed-bottom-bar">
@@ -95,66 +178,96 @@ body::-webkit-scrollbar {
                             <div id="intro" class="mb-4">
                                 <div class="mb-3">
                                     <h2 class="h5 text-primary">Privacy Policy – Chawp</h2>
-                                    <h7>Effective Date: April 2025</h7>
+                                    <h7>Effective Date: April 2025 | Version 2.1.3</h7>
                                 </div>
-                                <p class="body-color">At Chawp, your privacy is a priority. We only collect what we need to deliver your food safely and efficiently—and nothing more.</p>
+                                <p class="body-color">Welcome to Chawp's comprehensive Privacy Policy. This document outlines our commitment to protecting your personal information and explains how we collect, use, and safeguard your data.</p>
                             </div>
+
                             <div id="collection" class="mb-4">
                                 <div class="mb-3">
-                                    <h3 class="h5 text-primary">What We Collect</h3>
+                                    <h3 class="h5 text-primary">1. Information Collection</h3>
                                 </div>
-                                <ul class="text-secondary">
-                                    <li class="pb-2 body-color">Name, email, phone number, delivery address</li>
-                                    <li class="pb-2 body-color">Order history and payment info (securely processed)</li>
-                                    <li class="pb-2 body-color">Device and browser data (to improve performance)</li>
+                                <p class="body-color">We collect various types of information to provide and improve our services:</p>
+                                <ul class="legal-list">
+                                    <li>Personal Information: Full legal name, email address, phone number, delivery address</li>
+                                    <li>Order Data: Complete order history, preferences, dietary restrictions</li>
+                                    <li>Device Information: IP address, device type, operating system version</li>
+                                    <li>Location Data: Precise GPS coordinates for delivery</li>
+                                    <li>Usage Data: Session duration, feature interaction patterns</li>
+                                    <li>Communication Data: Support ticket history, chat transcripts</li>
+                                    <li>Behavioral Data: Purchase patterns, browsing history</li>
+                                    <li>Technical Data: System logs, error reports, performance metrics</li>
                                 </ul>
                             </div>
+
                             <div id="usage" class="mb-4">
                                 <div class="mb-3">
-                                    <h3 class="h5 text-primary">How We Use It</h3>
+                                    <h3 class="h5 text-primary">2. Data Usage</h3>
                                 </div>
-                                <ul class="text-secondary">
-                                    <li class="pb-2 body-color">To deliver your food and send order updates</li>
-                                    <li class="pb-2 body-color">To improve your app experience</li>
-                                    <li class="pb-2 body-color">To troubleshoot issues and support your requests</li>
+                                <p class="body-color">We use your information for the following purposes:</p>
+                                <ul class="legal-list">
+                                    <li>Processing and delivering your orders efficiently</li>
+                                    <li>Providing customer support and resolving issues</li>
+                                    <li>Improving our services through analytics</li>
+                                    <li>Preventing fraud and maintaining security</li>
+                                    <li>Communicating updates and offers</li>
+                                    <li>Optimizing delivery routes</li>
+                                    <li>Complying with legal obligations</li>
                                 </ul>
                             </div>
-                            <div id="restrictions" class="mb-4">
+
+                            <div id="protection" class="mb-4">
                                 <div class="mb-3">
-                                    <h3 class="h5 text-primary">What We Don’t Do</h3>
+                                    <h3 class="h5 text-primary">3. Data Protection</h3>
                                 </div>
-                                <ul class="text-secondary">
-                                    <li class="pb-2 body-color">Sell your data to anyone—ever</li>
-                                    <li class="pb-2 body-color">Use your personal info for ads</li>
-                                    <li class="pb-2 body-color">Store sensitive payment info (we use secure third-party processors)</li>
+                                <p class="body-color">We implement robust security measures to protect your information:</p>
+                                <ul class="legal-list">
+                                    <li>End-to-end encryption for all data</li>
+                                    <li>Regular security audits</li>
+                                    <li>Secure payment processing</li>
+                                    <li>Multi-factor authentication</li>
+                                    <li>Regular backups and monitoring</li>
                                 </ul>
                             </div>
+
+                            <div id="sharing" class="mb-4">
+                                <div class="mb-3">
+                                    <h3 class="h5 text-primary">4. Third-Party Sharing</h3>
+                                </div>
+                                <p class="body-color">We may share your information with:</p>
+                                <ul class="legal-list">
+                                    <li>Restaurants and delivery partners</li>
+                                    <li>Payment processors</li>
+                                    <li>Analytics providers</li>
+                                    <li>Legal authorities when required</li>
+                                </ul>
+                            </div>
+
                             <div id="rights" class="mb-4">
                                 <div class="mb-3">
-                                    <h3 class="h5 text-primary">Your Rights</h3>
+                                    <h3 class="h5 text-primary">5. Your Rights</h3>
                                 </div>
-                                <ul class="text-secondary">
-                                    <li class="pb-2 body-color">You can request to see, update, or delete your data anytime</li>
-                                    <li class="pb-2 body-color">You can opt out of certain communications (except critical updates)</li>
+                                <p class="body-color">You have the following rights regarding your data:</p>
+                                <ul class="legal-list">
+                                    <li>Access your personal information</li>
+                                    <li>Request data deletion</li>
+                                    <li>Opt-out of marketing</li>
+                                    <li>Export your data</li>
                                 </ul>
                             </div>
-                            <div id="security" class="mb-4">
+
+                            <div id="updates" class="mb-4">
                                 <div class="mb-3">
-                                    <h3 class="h5 text-primary">Security</h3>
+                                    <h3 class="h5 text-primary">6. Policy Updates</h3>
                                 </div>
-                                <p class="body-color">We use strong encryption and best practices to protect your data. No shady stuff.</p>
-                            </div>
-                            <div id="contact" class="mb-4">
-                                <div class="mb-3">
-                                    <h3 class="h5 text-primary">Questions?</h3>
-                                </div>
-                                <p class="body-color">Email us at <a href="mailto:support@chawp.app">support@chawp.app</a> and we’ll get back to you fast.</p>
+                                <p class="body-color">We may update this policy periodically. We'll notify you of significant changes via email or app notifications.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     <!-- footer -->
    
     <div class="osahan-menu-fotter fixed-bottom bg-darks px-3 py-2 text-center">

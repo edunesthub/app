@@ -27,8 +27,39 @@
         .osahan-profile { padding-bottom: 100px; }
         html, body { -webkit-text-size-adjust: none; touch-action: manipulation; }
         .bg-dark {background:#2c2c2c !important;} /* Swapped to #565656 */
-        .profile-details .user-info h5 {font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 5px; overflow-wrap: break-word; white-space: normal; max-height: 48px; line-height: 1.2;} /* Full names, adjusted */
-        .profile-details .user-info p {font-size: 0.9rem; color: #b0b0b0; margin-bottom: 0;} /* Adjusted email */
+        .profile-details .user-info h5 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+            overflow-wrap: break-word;
+            white-space: normal;
+            max-height: 48px;
+            line-height: 1.2;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .profile-details .user-info h5.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .profile-details .user-info p {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            margin-bottom: 0;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transition-delay: 0.1s;
+        }
+        
+        .profile-details .user-info p.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
         .footer-item {
     display: flex;
     justify-content: center;
@@ -185,24 +216,33 @@ body::-webkit-scrollbar {
         };
     
         const CACHE_KEY = "user-profile-cache";
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
     
         // Load profile data quickly, prioritizing cache but checking for updates
         const loadUserProfileFast = (user) => {
             const cachedData = localStorage.getItem(`${CACHE_KEY}-${user.uid}`);
-            if (cachedData) {
+            const cacheTimestamp = localStorage.getItem(`${CACHE_KEY}-${user.uid}-timestamp`);
+            const isCacheValid = cacheTimestamp && (Date.now() - parseInt(cacheTimestamp)) < CACHE_DURATION;
+            
+            if (cachedData && isCacheValid) {
                 const { name, email } = JSON.parse(cachedData);
-                // Render cached data immediately
+                // Render cached data immediately with animation
                 requestAnimationFrame(() => {
                     elements.userName.textContent = name;
                     elements.userEmail.textContent = email;
+                    elements.userName.classList.add("loaded");
+                    elements.userEmail.classList.add("loaded");
                 });
             } else {
                 // Fallback to basic user data while fetching
                 requestAnimationFrame(() => {
-                    elements.userName.textContent = user.email.split("@")[0]; // Quick placeholder
+                    elements.userName.textContent = user.email.split("@")[0];
                     elements.userEmail.textContent = user.email;
+                    elements.userName.classList.add("loaded");
+                    elements.userEmail.classList.add("loaded");
                 });
             }
+            
             // Always check Firestore for updates
             updateProfileFromFirestore(user);
         };
@@ -215,28 +255,28 @@ body::-webkit-scrollbar {
                 const userData = userDoc.exists() ? userDoc.data() : { name: user.email.split("@")[0] };
                 const profileData = { name: userData.name, email: user.email };
                 
-                // Smoothly update UI if name has changed
-                if (elements.userName.textContent !== profileData.name) {
-                    elements.userName.style.transition = "opacity 0.3s ease";
-                    elements.userName.style.opacity = "0";
-                    setTimeout(() => {
+                // Only update if the data has changed
+                if (elements.userName.textContent !== profileData.name || 
+                    elements.userEmail.textContent !== profileData.email) {
+                    
+                    // Remove loaded class for animation
+                    elements.userName.classList.remove("loaded");
+                    elements.userEmail.classList.remove("loaded");
+                    
+                    // Wait for next frame to ensure animation starts
+                    requestAnimationFrame(() => {
                         elements.userName.textContent = profileData.name;
-                        elements.userName.style.opacity = "1";
-                    }, 300); // Match transition duration
-                }
-                // Update email (no transition needed)
-                if (elements.userEmail.textContent !== profileData.email) {
-                    elements.userEmail.textContent = profileData.email;
+                        elements.userEmail.textContent = profileData.email;
+                        elements.userName.classList.add("loaded");
+                        elements.userEmail.classList.add("loaded");
+                    });
                 }
                 
-                // Cache the result
+                // Cache the result with timestamp
                 localStorage.setItem(`${CACHE_KEY}-${user.uid}`, JSON.stringify(profileData));
+                localStorage.setItem(`${CACHE_KEY}-${user.uid}-timestamp`, Date.now().toString());
             } catch (e) {
                 console.error("Failed to fetch profile:", e);
-                requestAnimationFrame(() => {
-                    elements.userName.textContent = "Error";
-                    elements.userEmail.textContent = "Could not load";
-                });
             }
         };
     
