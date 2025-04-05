@@ -91,21 +91,21 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-#intro, #eligibility, #ordering, #account, #conduct, #liability, #changes {
+.legal-section {
     margin-bottom: 4rem;
     text-align: center;
     position: relative;
 }
 
-.h5.text-primary {
-    color: #00c8ff !important;
+.legal-section h3 {
+    color: #00c8ff;
     font-size: 2rem;
     margin-bottom: 2.5rem;
     font-weight: 600;
     letter-spacing: -0.5px;
 }
 
-.body-color {
+.legal-section p {
     color: #e0e0e0;
     line-height: 1.8;
     margin-bottom: 2rem;
@@ -140,6 +140,28 @@ body {
     line-height: 1;
 }
 
+.legal-list li strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+.legal-note {
+    background: #333;
+    padding: 2.5rem;
+    border-radius: 12px;
+    margin: 4rem auto;
+    max-width: 600px;
+    border-left: 4px solid #00c8ff;
+}
+
+.legal-note p {
+    margin: 0;
+    color: #e0e0e0;
+    font-style: italic;
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
 @media (max-width: 768px) {
     body {
         padding: 1rem;
@@ -149,7 +171,7 @@ body {
         padding: 2.5rem;
     }
     
-    .h5.text-primary {
+    .legal-section h3 {
         font-size: 1.8rem;
     }
 }
@@ -167,101 +189,71 @@ body {
                 <h4 class="fw-bold m-0 text-white">Terms & Conditions</h4>
             </div>
         </div>
-        <div class="container position-relative body-color">
+        <div class="container position-relative">
             <div class="py-5 osahan-profile row">
                 <div class="col-md-8 mb-3">
                     <div class="rounded shadow-sm">
                         <div class="osahan-privacy bg-transparent rounded shadow-sm p-4">
-                            <div id="intro" class="mb-4">
-                                <div class="mb-3">
-                                    <h2 class="h5 text-primary">Terms & Conditions – Chawp</h2>
-                                    <h7>Effective Date: April 2025</h7>
+                            <div class="legal-section">
+                                <h3>Terms & Conditions</h3>
+                                <p>Effective Date: April 2025</p>
+                                <div class="legal-note">
+                                    <p>These terms outline your rights and responsibilities when using our services. Please read carefully before proceeding.</p>
                                 </div>
-                                <p class="body-color">Welcome to Chawp! By using our app or website, you agree to the following terms.</p>
                             </div>
-                            <div id="eligibility" class="mb-4">
-                                <div class="mb-3">
-                                    <h3 class="h5 text-primary">1. Who Can Use Chawp</h3>
-                                </div>
-                                <p class="body-color">By accessing or using the Chawp platform, you represent and warrant that:</p>
+                            
+                            <div class="legal-section">
+                                <h3>Who Can Use Chawp</h3>
+                                <p>To use our services, you must meet these requirements:</p>
                                 <ul class="legal-list">
-                                    <li>You are at least 18 years of age or have obtained explicit parental/guardian consent</li>
-                                    <li>You possess the legal capacity to enter into binding contracts</li>
-                                    <li>You are not prohibited from receiving services under applicable laws</li>
-                                    <li>You will comply with all applicable local, state, national, and international laws and regulations</li>
-                                    <li>You will not use the service for any illegal or unauthorized purpose</li>
-                                    <li>You will maintain the security of your account credentials</li>
-                                    <li>You will provide accurate and complete information when required</li>
-                                    <li>You will not impersonate any person or entity or misrepresent your affiliation</li>
+                                    <li><strong>Age Requirement:</strong> Be at least 18 years old</li>
+                                    <li><strong>Legal Capacity:</strong> Have the ability to form binding contracts</li>
+                                    <li><strong>Location:</strong> Be in our service area</li>
+                                    <li><strong>Account:</strong> Maintain accurate account information</li>
                                 </ul>
                             </div>
-                            <div id="ordering" class="mb-4">
-                                <div class="mb-3">
-                                    <h3 class="h5 text-primary">2. Ordering & Delivery</h3>
-                                </div>
-                                <p class="body-color">Our ordering and delivery system operates under the following terms:</p>
+                            
+                            <div class="legal-section">
+                                <h3>Ordering & Delivery</h3>
+                                <p>Our delivery service operates under these terms:</p>
                                 <ul class="legal-list">
-                                    <li>Orders are processed immediately upon confirmation and cannot be cancelled once accepted by the restaurant</li>
-                                    <li>Delivery times are estimates and not guaranteed due to various factors including traffic, weather, and restaurant preparation times</li>
-                                    <li>We reserve the right to modify or cancel orders in cases of pricing errors, product unavailability, or suspected fraud</li>
-                                    <li>Restaurants maintain full control over menu items, pricing, and preparation methods</li>
-                                    <li>We are not responsible for food quality, temperature, or preparation methods</li>
-                                    <li>Delivery fees may vary based on distance, time of day, and demand</li>
-                                    <li>We may implement surge pricing during peak hours or special events</li>
-                                    <li>Orders may be subject to minimum purchase requirements</li>
-                                    <li>We reserve the right to refuse service to any user at our discretion</li>
+                                    <li><strong>Order Processing:</strong> Orders cannot be cancelled once accepted</li>
+                                    <li><strong>Delivery Time:</strong> Estimates are not guaranteed</li>
+                                    <li><strong>Food Quality:</strong> Restaurants are responsible for food quality</li>
+                                    <li><strong>Pricing:</strong> May vary based on demand and time</li>
+                                </ul>
+                                <div class="legal-note">
+                                    <p>We reserve the right to refuse service or cancel orders in cases of suspected fraud or system errors.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="legal-section">
+                                <h3>Account Rules</h3>
+                                <p>Your account responsibilities include:</p>
+                                <ul class="legal-list">
+                                    <li><strong>Security:</strong> Protect your login credentials</li>
+                                    <li><strong>Usage:</strong> One account per person</li>
+                                    <li><strong>Activity:</strong> Responsible for all account actions</li>
+                                    <li><strong>Information:</strong> Keep details up to date</li>
                                 </ul>
                             </div>
-                            <div id="account" class="mb-4">
-                                <div class="mb-3">
-                                    <h3 class="h5 text-primary">3. Your Account</h3>
-                                </div>
-                                <p class="body-color">Account usage is governed by the following terms:</p>
+                            
+                            <div class="legal-section">
+                                <h3>Prohibited Actions</h3>
+                                <p>The following are not allowed:</p>
                                 <ul class="legal-list">
-                                    <li>You are solely responsible for maintaining the confidentiality of your account credentials</li>
-                                    <li>You must immediately notify us of any unauthorized access or security breach</li>
-                                    <li>We reserve the right to suspend or terminate accounts for violations of these terms</li>
-                                    <li>Account sharing or transfer is strictly prohibited</li>
-                                    <li>We may require identity verification for certain transactions</li>
-                                    <li>You are responsible for all activities conducted under your account</li>
-                                    <li>We may implement account restrictions based on usage patterns or security concerns</li>
-                                    <li>Inactive accounts may be subject to deletion after a specified period</li>
+                                    <li><strong>Fraud:</strong> Any form of deceptive behavior</li>
+                                    <li><strong>Abuse:</strong> Harassment of staff or partners</li>
+                                    <li><strong>Systems:</strong> Attempting to breach security</li>
+                                    <li><strong>Sharing:</strong> Unauthorized account access</li>
                                 </ul>
-                            </div>
-                            <div id="conduct" class="mb-4">
-                                <div class="mb-3">
-                                    <h3 class="h5 text-primary">4. No Funny Business</h3>
-                                </div>
-                                <p class="body-color">Prohibited activities include but are not limited to:</p>
-                                <ul class="legal-list">
-                                    <li>Creating multiple accounts to circumvent restrictions or obtain multiple promotions</li>
-                                    <li>Using automated systems or bots to place orders or manipulate the platform</li>
-                                    <li>Attempting to reverse engineer or decompile any portion of the service</li>
-                                    <li>Engaging in fraudulent activities or misrepresenting information</li>
-                                    <li>Interfering with the proper functioning of the platform</li>
-                                    <li>Harassing or threatening other users or service providers</li>
-                                    <li>Violating intellectual property rights or proprietary information</li>
-                                    <li>Using the service for any illegal or unauthorized purpose</li>
-                                    <li>Circumventing security measures or access controls</li>
-                                </ul>
-                            </div>
-                            <div id="liability" class="mb-4">
-                                <div class="mb-3">
-                                    <h3 class="h5 text-primary">5. Liability</h3>
-                                </div>
-                                <p class="body-color">We'll always try to fix things if something goes wrong, but Chawp isn't liable for damages, losses, or inconveniences outside of our control.</p>
-                            </div>
-                            <div id="changes" class="mb-4">
-                                <div class="mb-3">
-                                    <h3 class="h5 text-primary">6. Changes to Terms</h3>
-                                </div>
-                                <p class="body-color">We may update these terms when necessary. We'll let you know if anything major changes.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     <!-- footer -->
     <div class="osahan-menu-fotter fixed-bottom bg-darks px-3 py-2 text-center">
         <div class="row">
