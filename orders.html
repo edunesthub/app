@@ -10,6 +10,9 @@
         <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
         <link href="css/style.css" rel="stylesheet">
+        <!-- Preconnect to Firebase to reduce DNS lookup time -->
+        <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+        <link rel="preconnect" href="https://firebase.googleapis.com" crossorigin>
         <style>
             .order-box {
                 cursor: pointer;
@@ -172,9 +175,10 @@ body::-webkit-scrollbar {
             </div>
         </div>
         <script type="module">
+            // Import Firebase scripts with async loading
             import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
             import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-        
+
             const firebaseConfig = {
                 apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
                 authDomain: "von600-7982d.firebaseapp.com",
@@ -184,20 +188,22 @@ body::-webkit-scrollbar {
                 appId: "1:164591218045:web:afe17512e16573e7903014",
                 measurementId: "G-E69DMPLXBK"
             };
-        
+
+            // Initialize Firebase as soon as possible
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
             const ordersList = document.getElementById("orders-list");
-        
-            const getDeviceId = () => {
+
+            // Memoize deviceId to avoid repeated localStorage calls
+            const getDeviceId = (() => {
                 let deviceId = localStorage.getItem("deviceId");
                 if (!deviceId) {
                     deviceId = "device_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
                     localStorage.setItem("deviceId", deviceId);
                 }
-                return deviceId;
-            };
-        
+                return () => deviceId;
+            })();
+
             const isValidOrder = (order) => {
                 if (!order.items || !Array.isArray(order.items)) return false;
                 return order.items.every(item => 
@@ -207,7 +213,6 @@ body::-webkit-scrollbar {
                 );
             };
 
-            // Map status values to appealing phrases
             const getStatusText = (status) => {
                 switch (status) {
                     case "pending": return "Order Confirmed";
@@ -217,78 +222,82 @@ body::-webkit-scrollbar {
                     default: return "Unknown";
                 }
             };
-        
+
             const loadOrders = () => {
-                try {
-                    const deviceId = getDeviceId();
-                    const ordersRef = collection(db, "orders");
-                    const q = query(ordersRef, where("deviceId", "==", deviceId));
-                    
-                    onSnapshot(q, (querySnapshot) => {
-                        if (querySnapshot.empty) {
-                            ordersList.innerHTML = "<p class='text-center text-white'>No orders found for this device yet.</p>";
-                            return;
-                        }
-        
-                        const validOrders = querySnapshot.docs
-                            .map(doc => ({ id: doc.id, ...doc.data() }))
-                            .filter(order => {
-                                const isValid = isValidOrder(order);
-                                if (!isValid) {
-                                    console.log("Filtered out invalid order in orders.html:", order);
-                                }
-                                return isValid;
-                            });
-        
-                        if (!validOrders.length) {
-                            ordersList.innerHTML = "<p class='text-center text-white'>No valid orders found for this device yet.</p>";
-                            return;
-                        }
-        
-                        ordersList.innerHTML = validOrders
-                            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                            .map(order => {
-                                const orderTime = new Date(order.timestamp).toLocaleString();
-                                const itemsListSummary = order.items.map(item => `${item.quantity}x ${item.name}`).join(", ");
-                                const itemsListFull = order.items.map(item => `<li class="text-white small">${item.quantity}x ${item.name} - GH₵${item.total.toFixed(2)}</li>`).join("");
-                                const subtotal = order.items.reduce((sum, item) => sum + item.total, 0);
-                                const total = subtotal + 5; // Assuming fixed fees
-                                const statusText = getStatusText(order.status || "pending");
-                                const statusClass = `status-badge status-${order.status || "pending"}`;
-                                return `<div class="order-box bg-darkish p-3 mb-3 rounded" onclick="this.classList.toggle('expanded')">
-                                    <div class="order-summary">
-                                        <div class="order-summary-left">
-                                            <h5 class="fw-bold text-white">Order on ${orderTime}</h5>
-                                            <p class="order-id text-white-50 small">Order ID: <span>${order.id}</span></p>
-                                            <p class="text-white small">${itemsListSummary}<br> <span class="${statusClass}">${statusText}</span></p>
-                                        </div>
-                                        <div class="order-summary-right">
-                                            <p class="order-total text-white fw-bold">GH₵${total.toFixed(2)}</p>
-                                        </div>
+                const deviceId = getDeviceId();
+                const ordersRef = collection(db, "orders");
+                const q = query(ordersRef, where("deviceId", "==", deviceId));
+
+                // Initial loading indicator
+                ordersList.innerHTML = "<p class='text-center text-white'>Loading orders...</p>";
+
+                onSnapshot(q, (querySnapshot) => {
+                    if (querySnapshot.empty) {
+                        ordersList.innerHTML = "<p class='text-center text-white'>No orders found for this device yet.</p>";
+                        return;
+                    }
+
+                    const validOrders = querySnapshot.docs
+                        .map(doc => ({ id: doc.id, ...doc.data() }))
+                        .filter(order => isValidOrder(order));
+
+                    if (!validOrders.length) {
+                        ordersList.innerHTML = "<p class='text-center text-white'>No valid orders found for this device yet.</p>";
+                        return;
+                    }
+
+                    // Batch DOM updates for performance
+                    const fragment = document.createDocumentFragment();
+                    validOrders
+                        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                        .forEach(order => {
+                            const orderTime = new Date(order.timestamp).toLocaleString();
+                            const itemsListSummary = order.items.map(item => `${item.quantity}x ${item.name}`).join(", ");
+                            const itemsListFull = order.items.map(item => `<li class="text-white small">${item.quantity}x ${item.name} - GH₵${item.total.toFixed(2)}</li>`).join("");
+                            const subtotal = order.items.reduce((sum, item) => sum + item.total, 0);
+                            const total = subtotal + 5;
+                            const statusText = getStatusText(order.status || "pending");
+                            const statusClass = `status-badge status-${order.status || "pending"}`;
+
+                            const orderDiv = document.createElement("div");
+                            orderDiv.className = "order-box bg-darkish p-3 mb-3 rounded";
+                            orderDiv.innerHTML = `
+                                <div class="order-summary">
+                                    <div class="order-summary-left">
+                                        <h5 class="fw-bold text-white">Order on ${orderTime}</h5>
+                                        <p class="order-id text-white-50 small">Order ID: <span>${order.id}</span></p>
+                                        <p class="text-white small">${itemsListSummary}<br> <span class="${statusClass}">${statusText}</span></p>
                                     </div>
-                                    <div class="order-details">
-                                        <hr class="bg-light"><ul class="list-unstyled">${itemsListFull}</ul><hr class="bg-light">
-                                        <p class="text-white small">Subtotal: GH₵${subtotal.toFixed(2)}</p>
-                                        <p class="text-white small">Processing Fee: GH₵2.00</p>
-                                        <p class="text-white small">Delivery Fee: GH₵3.00</p>
-                                        <hr class="bg-light"><p class="order-total text-white fw-bold">Total: GH₵${total.toFixed(2)}</p>
+                                    <div class="order-summary-right">
+                                        <p class="order-total text-white fw-bold">GH₵${total.toFixed(2)}</p>
                                     </div>
+                                </div>
+                                <div class="order-details">
+                                    <hr class="bg-light"><ul class="list-unstyled">${itemsListFull}</ul><hr class="bg-light">
+                                    <p class="text-white small">Subtotal: GH₵${subtotal.toFixed(2)}</p>
+                                    <p class="text-white small">Processing Fee: GH₵2.00</p>
+                                    <p class="text-white small">Delivery Fee: GH₵3.00</p>
+                                    <hr class="bg-light"><p class="order-total text-white fw-bold">Total: GH₵${total.toFixed(2)}</p>
                                 </div>`;
-                            }).join("");
-                    }, (error) => {
-                        console.error("Error loading orders:", error);
-                        ordersList.innerHTML = "<p class='text-center text-white'>Error loading orders.</p>";
-                    });
-                } catch (error) {
-                    console.error("Error setting up orders listener:", error);
-                    ordersList.innerHTML = "<p class='text-center text-white'>No orders collection found yet. Place an order to start tracking!</p>";
-                }
+                            orderDiv.onclick = () => orderDiv.classList.toggle("expanded");
+                            fragment.appendChild(orderDiv);
+                        });
+
+                    ordersList.innerHTML = "";
+                    ordersList.appendChild(fragment);
+                }, (error) => {
+                    console.error("Error loading orders:", error);
+                    ordersList.innerHTML = "<p class='text-center text-white'>Error loading orders.</p>";
+                });
             };
-        
-            document.addEventListener("DOMContentLoaded", () => {
-                loadOrders();
-                feather.replace();
-            });
+
+            // Load orders immediately and replace feather icons after DOM is ready
+            loadOrders();
+            document.addEventListener("DOMContentLoaded", () => feather.replace());
         </script>
-        <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'928b5f22abb5adf4',t:'MTc0MzM3NzE4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92b4300338799934',t:'MTc0MzgwNTE2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+        <!-- Defer Cloudflare challenge scripts to avoid blocking -->
+        <script defer>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'928b5f22abb5adf4',t:'MTc0MzM3NzE4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+        <script defer>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92b4300338799934',t:'MTc0MzgwNTE2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+        <script defer>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92b55aa77a97adb2',t:'MTc0MzgxNzQwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    </body>
 </html>

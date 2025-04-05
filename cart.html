@@ -9,6 +9,8 @@
     <title>Chawp - Your Cart</title>
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
+    <!-- Paystack Inline Script -->
+    <script src="https://js.paystack.co/v1/inline.js" defer></script>
     <style>
         body{font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,sans-serif;background:#2c2c2c;color:#ffffff;margin:0;padding:0;min-height:100vh;overflow-x:hidden;padding-bottom:calc(70px + env(safe-area-inset-bottom));transition:background 0.3s ease;}
         .cart-header{background:#2c2c2c;padding:15px 25px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,0.3);position:sticky;top:0;z-index:10;}
@@ -217,10 +219,14 @@ body::-webkit-scrollbar {
         const saveCart = cart => localStorage.setItem("cart", JSON.stringify(cart));
         const getPersistentDeliveryDetails = () => {
             const details = JSON.parse(localStorage.getItem("deliveryDetails") || "{}");
-            return { location: details.location || "", contactNumber: details.contactNumber || "" };
+            return { 
+                location: details.location || "", 
+                contactNumber: details.contactNumber || "",
+                email: details.email || "" 
+            };
         };
-        const savePersistentDeliveryDetails = (location, contactNumber) => {
-            localStorage.setItem("deliveryDetails", JSON.stringify({ location, contactNumber }));
+        const savePersistentDeliveryDetails = (location, contactNumber, email) => {
+            localStorage.setItem("deliveryDetails", JSON.stringify({ location, contactNumber, email }));
         };
         const getDeviceId = () => {
             let deviceId = localStorage.getItem("deviceId");
@@ -275,6 +281,7 @@ body::-webkit-scrollbar {
                     <label for="delivery-location">Location</label><input type="text" id="delivery-location" value="${persistentDetails.location}" placeholder="Enter your address">
                     <label for="delivery-notes">Delivery Notes</label><textarea id="delivery-notes" placeholder="e.g., Leave at door"></textarea>
                     <label for="delivery-contact">Contact Number</label><input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number">
+                    <label for="delivery-email">Email</label><input type="email" id="delivery-email" value="${persistentDetails.email}" placeholder="Enter your email">
                 </div>
                 <div class="order-summary">
                     <p>Subtotal <span class="float-end">GH₵${subtotal.toFixed(2)}</span></p>
@@ -294,6 +301,7 @@ body::-webkit-scrollbar {
             elements.cartContainer.querySelectorAll(".remove").forEach(btn => btn.onclick = () => removeItem(btn.closest(".cart-item").dataset.key));
             document.getElementById("delivery-location").onchange = saveDeliveryInputs;
             document.getElementById("delivery-contact").onchange = saveDeliveryInputs;
+            document.getElementById("delivery-email").onchange = saveDeliveryInputs;
             document.getElementById("checkout-btn").onclick = proceedToCheckout;
             document.getElementById("remove-all-btn").onclick = removeAllItems;
         };
@@ -322,7 +330,8 @@ body::-webkit-scrollbar {
         const saveDeliveryInputs = () => {
             const location = document.getElementById("delivery-location").value.trim();
             const contactNumber = document.getElementById("delivery-contact").value.trim();
-            savePersistentDeliveryDetails(location, contactNumber);
+            const email = document.getElementById("delivery-email").value.trim();
+            savePersistentDeliveryDetails(location, contactNumber, email);
         };
     
         let isProcessing = false;
@@ -344,8 +353,8 @@ body::-webkit-scrollbar {
                 resetCheckoutButton();
                 return;
             }
-            if (!persistentDetails.location || !persistentDetails.contactNumber) {
-                showNotification("Please enter your location and contact number!", "error");
+            if (!persistentDetails.location || !persistentDetails.contactNumber || !persistentDetails.email) {
+                showNotification("Please enter your location, contact number, and email!", "error");
                 resetCheckoutButton();
                 return;
             }
@@ -388,33 +397,107 @@ body::-webkit-scrollbar {
                 deliveryDetails: {
                     location: persistentDetails.location,
                     deliveryNotes: deliveryNotes,
-                    contactNumber: persistentDetails.contactNumber
+                    contactNumber: persistentDetails.contactNumber,
+                    email: persistentDetails.email
                 },
                 timestamp: new Date().toISOString(),
                 status: "pending",
                 deviceId: getDeviceId()
             };
     
-            try {
-                const docRef = await addDoc(collection(db, "orders"), orderData);
-                console.log("Order saved to Firestore with ID:", docRef.id);
+            // Ensure Paystack is loaded
+            if (typeof PaystackPop === "undefined") {
+                showNotification("Payment system not loaded. Please try again.", "error");
+                console.error("PaystackPop is not defined. Script may not have loaded.");
+                resetCheckoutButton();
+                return;
+            }
     
-                const paymentSuccess = Math.random() > 0.2; // Simulated payment
-                if (paymentSuccess) {
-                    saveCart([]);
-                    showNotification("Order placed successfully!");
-                    setTimeout(() => {
-                        window.location.href = "successful.html";
-                    }, 1000);
-                } else {
-                    showNotification("Payment failed.", "error");
-                    setTimeout(() => {
-                        window.location.href = "payment-failure.html";
-                    }, 1000);
+            // Paystack Payment Integration
+            try {
+                // Validate payment details before proceeding
+                if (!persistentDetails.email) {
+                    throw new Error("Email is required for payment");
                 }
+                if (totalAmount <= 0) {
+                    throw new Error("Invalid payment amount");
+                }
+
+                // Define the callback function separately
+                const paymentCallback = function(response) {
+                    console.log("Paystack callback response:", response);
+                    if (response.status === "success") {
+                        try {
+                            // Add payment details to order data
+                            const orderWithPayment = {
+                                ...orderData,
+                                paymentReference: response.reference,
+                                paymentStatus: "success",
+                                paymentDate: new Date().toISOString()
+                            };
+
+                            addDoc(collection(db, "orders"), orderWithPayment)
+                                .then(docRef => {
+                                    console.log("Order saved to Firestore with ID:", docRef.id);
+                                    // Clear cart and redirect on successful payment
+                                    saveCart([]);
+                                    showNotification("Payment successful! Order placed.");
+                                    setTimeout(() => {
+                                        window.location.href = "successful.html";
+                                    }, 1500);
+                                })
+                                .catch(error => {
+                                    console.error("Firestore error:", error);
+                                    showNotification("Error saving order after payment. Please contact support.", "error");
+                                    resetCheckoutButton();
+                                });
+                        } catch (error) {
+                            console.error("Error processing payment:", error);
+                            showNotification("Error processing payment. Please try again.", "error");
+                            resetCheckoutButton();
+                        }
+                    } else {
+                        showNotification("Payment failed. Please try again.", "error");
+                        resetCheckoutButton();
+                    }
+                };
+
+                // Define the onClose function separately
+                const paymentOnClose = function() {
+                    showNotification("Payment cancelled. You can try again.", "error");
+                    console.log("Paystack payment window closed by user.");
+                    resetCheckoutButton();
+                };
+
+                const handler = PaystackPop.setup({
+                    key: "pk_live_014478be275a6453efab7529d14bd938c8b9b964",
+                    email: persistentDetails.email,
+                    amount: Math.round(totalAmount * 100),
+                    currency: "GHS",
+                    ref: "ORDER_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9),
+                    metadata: {
+                        custom_fields: [
+                            {
+                                display_name: "Device ID",
+                                variable_name: "device_id",
+                                value: getDeviceId()
+                            },
+                            {
+                                display_name: "Order Items",
+                                variable_name: "order_items",
+                                value: sanitizedCart.length
+                            }
+                        ]
+                    },
+                    callback: paymentCallback,
+                    onClose: paymentOnClose
+                });
+
+                // Open payment modal
+                handler.openIframe();
             } catch (error) {
-                showNotification("Error saving order! Check your connection.", "error");
-                console.error("Checkout error:", error);
+                console.error("Payment setup error:", error);
+                showNotification(error.message || "Error initiating payment. Please try again.", "error");
                 resetCheckoutButton();
             }
         };
@@ -436,5 +519,7 @@ body::-webkit-scrollbar {
         window.addEventListener("offline", () => showNotification("You're offline! Some features may be limited.", "error"));
     </script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'928f54872e217b9b',t:'MTc0MzQxODY5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92b55ef5781b678b',t:'MTc0MzgxNzU3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92b5680498e1adcc',t:'MTc0MzgxNzk0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
