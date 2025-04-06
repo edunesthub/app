@@ -1,6 +1,6 @@
 // Updated on 2025-04-05 — version bump, cache cleanup, OneSignal support, and forced update logic added
 
-const CACHE_NAME = "Chawp-cache-v4";
+const CACHE_NAME = "Chawp-cache-v5";
 const urlsToCache = [
     "/",
     "/index.html",
