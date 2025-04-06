@@ -123,84 +123,6 @@
         body::-webkit-scrollbar {
             display: none; /* Chrome, Safari, and Opera */
         }
-
-        /* Install Prompt Styles */
-        .install-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .install-overlay.active {
-            display: block;
-            opacity: 1;
-        }
-        .install-prompt {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 400px;
-            background: #1a1a1a;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            z-index: 1001;
-            opacity: 0;
-            transform: translateX(-50%) translateY(20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .install-prompt.active {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        .install-prompt h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #fff;
-            margin: 0 0 10px;
-        }
-        .install-prompt p {
-            font-size: 1rem;
-            color: #b0b0b0;
-            margin: 0 0 20px;
-        }
-        .install-prompt .btn-install {
-            background: #00c8ff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease;
-        }
-        .install-prompt .btn-install:hover {
-            background: #00a8d6;
-            transform: scale(1.05);
-        }
-        .install-prompt .btn-dismiss {
-            background: none;
-            border: none;
-            color: #b0b0b0;
-            font-size: 0.9rem;
-            margin-top: 10px;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        .install-prompt .btn-dismiss:hover {
-            color: #fff;
-        }
     </style>
 </head>
 <body class="fixed-bottom-bar">
@@ -272,15 +194,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Install Prompt Overlay and Dialog -->
-    <div class="install-overlay" id="installOverlay"></div>
-    <div class="install-prompt" id="installPrompt">
-        <h3>Install Chawp</h3>
-        <p>Get the best experience by adding Chawp to your homescreen!</p>
-        <button class="btn-install" id="installButton">Add to Homescreen</button>
-        <button class="btn-dismiss" id="dismissButton">Not Now</button>
     </div>
 
     <script type="module">
@@ -411,56 +324,6 @@
                 document.querySelector(".trending-section").classList.add("loaded");
             }
         });
-
-        // Install Prompt Logic
-        let deferredPrompt;
-        const installOverlay = document.getElementById("installOverlay");
-        const installPrompt = document.getElementById("installPrompt");
-        const installButton = document.getElementById("installButton");
-        const dismissButton = document.getElementById("dismissButton");
-
-        function isInstalled() {
-            return window.matchMedia('(display-mode: standalone)').matches || 
-                   window.navigator.standalone === true;
-        }
-
-        window.addEventListener("beforeinstallprompt", (e) => {
-            if (!isInstalled() && !localStorage.getItem("installPromptDismissed")) {
-                e.preventDefault();
-                deferredPrompt = e;
-                installOverlay.classList.add("active");
-                installPrompt.classList.add("active");
-            }
-        });
-
-        installButton.addEventListener("click", () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === "accepted") {
-                        console.log("User installed the app");
-                    } else {
-                        console.log("User dismissed the install");
-                    }
-                    deferredPrompt = null;
-                    installOverlay.classList.remove("active");
-                    installPrompt.classList.remove("active");
-                });
-            }
-        });
-
-        dismissButton.addEventListener("click", () => {
-            localStorage.setItem("installPromptDismissed", "true");
-            installOverlay.classList.remove("active");
-            installPrompt.classList.remove("active");
-            deferredPrompt = null;
-        });
-
-        window.addEventListener("appinstalled", () => {
-            console.log("PWA was installed");
-            installOverlay.classList.remove("active");
-            installPrompt.classList.remove("active");
-        });
     </script>
     <script>
         if ('serviceWorker' in navigator) {
@@ -470,7 +333,7 @@
             }
           });
         }
-    </script>
+      </script>
       
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92c24b70fb4badc6',t:'MTc0Mzk1MzA5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
