@@ -4,18 +4,25 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="description" content="Chawp - Sleek Food Delivery">
-    <meta name="author" content="Askbootstrap">
+    <meta name="author" content="VON">
     <meta name="theme-color" content="#2c2c2c">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="icon" type="image/png" href="img/fav.png">
+    <link rel="icon" type="image/png" href="img/icon-192x192.png">
     <link rel="apple-touch-icon" href="img/icon-192x192.png">
     <title>Chawp</title>
     <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <link href="css/style.css" rel="stylesheet">
+
+    <!-- Preload critical assets -->
+    <link rel="preload" href="img/trending1.png" as="image">
+    <link rel="preload" href="img/popular4.png" as="image">
+    <link rel="preload" href="vendor/bootstrap/css/bootstrap.min.css" as="style">
+    <link rel="preload" href="vendor/icons/feather.css" as="style">
+    <link rel="preload" href="css/style.css" as="style">
 
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
@@ -28,51 +35,83 @@
     </script>
 
     <style>
-        body {background:#2c2c2c;font-family:'Poppins', sans-serif;color:#fff;overflow-x:hidden;transition:background 0.3s ease;}
-        .trending-section {padding:40px 0;opacity:0;transition:opacity 0.5s ease;}
-        .trending-section.loaded {opacity:1;}
-        .section-title {font-size:2rem;font-weight:700;margin-bottom:20px;color:#fff;text-align:center;}
-        #trending-list {display:grid;grid-template-columns:repeat(2,1fr);gap:20px;padding:15px;}
-        .list-card {background:#565656;border-radius:10px;overflow:hidden;transition:transform 0.3s ease,box-shadow 0.3s ease,opacity 0.5s ease;opacity:0;}
-        .list-card.loaded {opacity:1;}
-        .list-card:hover {transform:translateY(-8px);box-shadow:0 12px 24px rgba(0,0,0,0.3);}
-        .list-card-image img {height:110px;object-fit:cover;width:100%;border-radius:10px 10px 0 0;filter:brightness(0.9);transition:filter 0.3s ease;}
-        .list-card:hover .list-card-image img {filter:brightness(1);}
-        .list-card-body {padding:8px;text-align:left;height:60px;}
-        .list-card-body h6 {font-size:1rem;font-weight:600;color:#fff;margin-bottom:4px;overflow-wrap:break-word;white-space:normal;max-height:32px;line-height:1.1;}
-        .time {font-size:0.75rem;color:#b0b0b0;margin-top:2px;}
-        .time span {background:#4a4a4a;color:#fff;padding:3px 8px;border-radius:12px;}
-        .trending-text {color:#fff;font-weight:600;}
-        .text-danger {color:#00c8ff;transition:color 0.3s ease,transform 0.2s ease;}
-        .text-danger:hover {color:#00c8ff;transform:scale(1.05);}
-        html, body {-webkit-text-size-adjust:none;touch-action:manipulation;-webkit-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;padding-bottom:calc(70px + env(safe-area-inset-bottom));}
-        input, textarea {font-size:16px;outline:none;-webkit-user-select:text !important;user-select:text !important;-webkit-touch-callout:default !important;touch-action:auto !important;}
-        *:focus {zoom:1 !important;}
-        .offline-notice {display:none;text-align:center;padding:15px;color:#fff;background:#ff3b30;border-radius:12px;margin:20px 10px;font-size:0.9rem;opacity:0;transition:opacity 0.5s ease;}
-        body.offline .offline-notice {display:block;opacity:1;}
-        .welcome-header {padding:30px 20px;text-align:center;background:linear-gradient(135deg, #565656, #4a4a4a);border-radius:30px;margin:15px;box-shadow:0 8px 20px rgba(0,0,0,0.3);position:relative;overflow:hidden;opacity:0;transition:opacity 0.5s ease;}
-        .welcome-header.loaded {opacity:1;}
-        .welcome-header::before {content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle, rgba(255,255,255,0.05), transparent);animation:glow 6s infinite;}
-        .welcome-header h1 {font-size:2.5rem;font-weight:800;margin:0;letter-spacing:-0.5px;color:#fff;animation:fadeIn 1s ease-in;}
-        .welcome-header p {font-size:1.2rem;opacity:0.85;margin:8px 0 0;font-weight:300;color:#b0b0b0;animation:fadeIn 1.5s ease-in;}
-        .promo-banner {margin:25px 15px;padding:20px;background:#565656;border-radius:15px;text-align:center;color:#fff;box-shadow:0 6px 15px rgba(0,0,0,0.3);cursor:pointer;transition:transform 0.3s ease,box-shadow 0.3s ease,opacity 0.5s ease;opacity:0;}
-        .promo-banner.loaded {opacity:1;}
-        .promo-banner:hover {transform:scale(1.03);box-shadow:0 10px 25px rgba(0,0,0,0.35);}
-        .promo-banner h3 {font-size:1.8rem;margin:0;color:#00c8ff;font-weight:700;letter-spacing:-0.2px;}
-        .promo-banner p {font-size:1rem;margin:8px 0 0;opacity:0.9;font-weight:400;color:#b0b0b0;}
-        .osahan-menu-fotter {background:#1a1a1a;box-shadow:0 -4px 15px rgba(0,0,0,0.3);padding:15px 0;opacity:0;transition:opacity 0.5s ease,transform 0.3s ease;}
-        .osahan-menu-fotter.loaded {opacity:1;}
-        .osahan-menu-fotter a {transition:color 0.3s ease,transform 0.2s ease;}
-        .osahan-menu-fotter a:hover {transform:scale(1.1);}
-        @keyframes fadeIn {from {opacity:0;transform:translateY(10px);} to {opacity:1;transform:translateY(0);}}
-        @keyframes glow {0% {transform:rotate(0deg);} 50% {transform:rotate(180deg);} 100% {transform:rotate(360deg);}}
-        @media (max-width: 576px) {
-            .welcome-header h1 {font-size:2rem;}
-            .welcome-header p {font-size:1rem;}
-            .promo-banner h3 {font-size:1.5rem;}
-            .promo-banner p {font-size:0.9rem;}
+        body {
+            background: #2c2c2c;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+            transition: background 0.3s ease;
+            opacity: 1; /* Start fully visible */
         }
-        .bg-darks{background: #1a1a1a;}
+        /* Remove blinking by starting with base styles */
+        .trending-section, .welcome-header, .promo-banner, .osahan-menu-fotter {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            will-change: opacity, transform; /* GPU acceleration */
+        }
+        .trending-section.loaded, .welcome-header.loaded, .promo-banner.loaded, .osahan-menu-fotter.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .list-card {
+            background: #565656;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.4s ease-out;
+            opacity: 0;
+            transform: scale(0.95);
+            will-change: transform, opacity;
+        }
+        .list-card.loaded {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .list-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+        }
+        .list-card-image img {
+            height: 110px;
+            object-fit: cover;
+            width: 100%;
+            border-radius: 10px 10px 0 0;
+            filter: brightness(0.9);
+            transition: filter 0.3s ease;
+        }
+        .list-card:hover .list-card-image img {filter: brightness(1);}
+        .list-card-body {padding: 8px; text-align: left; height: 60px;}
+        .list-card-body h6 {font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 4px; overflow-wrap: break-word; white-space: normal; max-height: 32px; line-height: 1.1;}
+        .time {font-size: 0.75rem; color: #b0b0b0; margin-top: 2px;}
+        .time span {background: #4a4a4a; color: #fff; padding: 3px 8px; border-radius: 12px;}
+        .trending-text {color: #fff; font-weight: 600;}
+        .text-danger {color: #00c8ff; transition: color 0.3s ease, transform 0.2s ease;}
+        .text-danger:hover {color: #00c8ff; transform: scale(1.05);}
+        html, body {-webkit-text-size-adjust: none; touch-action: manipulation; -webkit-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; padding-bottom: calc(70px + env(safe-area-inset-bottom));}
+        input, textarea {font-size: 16px; outline: none; -webkit-user-select: text !important; user-select: text !important; -webkit-touch-callout: default !important; touch-action: auto !important;}
+        *:focus {zoom: 1 !important;}
+        .offline-notice {display: none; text-align: center; padding: 15px; color: #fff; background: #ff3b30; border-radius: 12px; margin: 20px 10px; font-size: 0.9rem; opacity: 0; transition: opacity 0.5s ease;}
+        body.offline .offline-notice {display: block; opacity: 1;}
+        .welcome-header {padding: 30px 20px; text-align: center; background: linear-gradient(135deg, #565656, #4a4a4a); border-radius: 30px; margin: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); position: relative; overflow: hidden;}
+        .welcome-header::before {content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.05), transparent); animation: glow 6s infinite;}
+        .welcome-header h1 {font-size: 2.5rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; color: #fff; transition: opacity 0.5s ease;}
+        .welcome-header p {font-size: 1.2rem; opacity: 0.85; margin: 8px 0 0; font-weight: 300; color: #b0b0b0; transition: opacity 0.5s ease;}
+        .promo-banner {margin: 25px 15px; padding: 20px; background: #565656; border-radius: 15px; text-align: center; color: #fff; box-shadow: 0 6px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;}
+        .promo-banner:hover {transform: scale(1.03); box-shadow: 0 10px 25px rgba(0,0,0,0.35);}
+        .promo-banner h3 {font-size: 1.8rem; margin: 0; color: #00c8ff; font-weight: 700; letter-spacing: -0.2px;}
+        .promo-banner p {font-size: 1rem; margin: 8px 0 0; opacity: 0.9; font-weight: 400; color: #b0b0b0;}
+        .osahan-menu-fotter {background: #1a1a1a; box-shadow: 0 -4px 15px rgba(0,0,0,0.3); padding: 15px 0;}
+        .osahan-menu-fotter a {transition: color 0.3s ease, transform 0.2s ease;}
+        .osahan-menu-fotter a:hover {transform: scale(1.1);}
+        @keyframes fadeIn {from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);}}
+        @keyframes glow {0% {transform: rotate(0deg);} 50% {transform: rotate(180deg);} 100% {transform: rotate(360deg);}}
+        @media (max-width: 576px) {
+            .welcome-header h1 {font-size: 2rem;}
+            .welcome-header p {font-size: 1rem;}
+            .promo-banner h3 {font-size: 1.5rem;}
+            .promo-banner p {font-size: 0.9rem;}
+        }
+        .bg-darks {background: #1a1a1a;}
         .footer-item {
             display: flex;
             justify-content: center;
@@ -81,157 +120,66 @@
             border-radius: 10px;
             transition: background 0.3s ease, transform 0.2s ease;
         }
-        .footer-item.selected {
-            background: rgba(0, 200, 255, 0.2);
-            transform: scale(1.05);
-        }
-        .footer-item a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .footer-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .footer-item.selected {
-            background: #00566d;
-            transform: scale(1.05);
-        }
-
-        /* Skeleton Loading Styles */
-        .skeleton-card {
-            background: #565656;
-            border-radius: 10px;
-            overflow: hidden;
-            height: 170px;
-            animation: shimmer 1.5s infinite linear;
-            opacity: 0.7;
-        }
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-            background: linear-gradient(to right, #565656 0%, #6a6a6a 50%, #565656 100%);
-            background-size: 200% 100%;
-        }
+        .footer-item.selected {background: rgba(0, 200, 255, 0.2); transform: scale(1.05);}
+        .footer-item a {display: flex; flex-direction: column; align-items: center;}
+        .footer-item:hover {background: rgba(255, 255, 255, 0.1);}
+        .footer-item.selected {background: #00566d; transform: scale(1.05);}
 
         /* Hide Scrollbar for PWA */
-        html, body {
-            overflow-y: scroll; /* Ensures scrolling is still possible */
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE and Edge */
-        }
-        body::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, and Opera */
-        }
+        html, body {overflow-y: scroll; scrollbar-width: none; -ms-overflow-style: none;}
+        body::-webkit-scrollbar {display: none;}
 
         :root {
-    --modal-bg: #1a1a1a;
-    --modal-color: #fff;
-    --modal-accent-bg: #2c2c2e;
-    --modal-border-radius: 16px;
-    --icon-bg: #3a3a3c;
-    --btn-bg: #fff;
-    --btn-color: #000;
-    --shadow-color: rgba(0, 0, 0, 0.6);
-  }
-
-  #ios-install-prompt {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: var(--modal-bg);
-    color: var(--modal-color);
-    padding: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    z-index: 1000;
-    box-shadow: 0 -2px 12px var(--shadow-color);
-    border-top-left-radius: var(--modal-border-radius);
-    border-top-right-radius: varonitrile: var(--modal-border-radius);
-    animation: slideUp 0.3s ease-out;
-  }
-
-  @keyframes slideUp {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-
-  .ios-modal .title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #fff;
-  }
-
-  .ios-modal .app-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--modal-accent-bg);
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-  }
-
-  .ios-modal .app-info img {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-  }
-
-  .ios-modal .app-info .name {
-    font-weight: 600;
-    margin: 0;
-    font-size: 15px;
-    color: #fff;
-  }
-
-  .ios-modal .app-info .url {
-    font-size: 13px;
-    color: #aaa;
-    margin: 0;
-  }
-
-  .ios-modal ol {
-    padding-left: 20px;
-    margin-bottom: 15px;
-    font-size: 14px;
-  }
-
-  .ios-modal li {
-    margin-bottom: 10px;
-    line-height: 1.4;
-  }
-
-  .share-icon {
-    display: inline-block;
-    background: #2c2c2e;
-    padding: 3px 5px;
-    border-radius: 6px;
-    vertical-align: middle;
-    margin: 0 4px;
-  }
-
-  .btn {
-    background: #2c2c2e;
-    color: #fff;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 500;
-  }
-
-  .ios-modal button {
-    width: 100%;
-    padding: 10px;
-    font-weight: bold;
-    background: var(--btn-bg);
-    color: var(--btn-color);
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-    </style>
+            --modal-bg: #1a1a1a;
+            --modal-color: #fff;
+            --modal-accent-bg: #2c2c2e;
+            --modal-border-radius: 16px;
+            --icon-bg: #3a3a3c;
+            --btn-bg: #fff;
+            --btn-color: #000;
+            --shadow-color: rgba(0, 0, 0, 0.6);
+        }
+        #ios-install-prompt {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--modal-bg);
+            color: var(--modal-color);
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            z-index: 1000;
+            box-shadow: 0 -2px 12px var(--shadow-color);
+            border-top-left-radius: var(--modal-border-radius);
+            border-top-right-radius: var(--modal-border-radius);
+            animation: slideUp 0.3s ease-out;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+        #ios-install-prompt.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        @keyframes slideUp {from {transform: translateY(100%); opacity: 0;} to {transform: translateY(0); opacity: 1;}}
+        .ios-modal .title {font-size: 18px; font-weight: 600; margin-bottom: 10px; color: #fff;}
+        .ios-modal .app-info {display: flex; align-items: center; gap: 10px; background: var(--modal-accent-bg); padding: 10px; border-radius: 10px; margin-bottom: 15px;}
+        .ios-modal .app-info img {width: 40px; height: 40px; border-radius: 8px;}
+        .ios-modal .app-info .name {font-weight: 600; margin: 0; font-size: 15px; color: #fff;}
+        .ios-modal .app-info .url {font-size: 13px; color: #aaa; margin: 0;}
+        .ios-modal ol {padding-left: 20px; margin-bottom: 15px; font-size: 14px;}
+        .ios-modal li {margin-bottom: 10px; line-height: 1.4;}
+        .share-icon {display: inline-block; background: #2c2c2e; padding: 3px 5px; border-radius: 6px; vertical-align: middle; margin: 0 4px;}
+        .btn {background: #2c2c2e; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-weight: 500;}
+        .ios-modal button {width: 100%; padding: 10px; font-weight: bold; background: var(--btn-bg); color: var(--btn-color); border: none; border-radius: 10px; font-size: 14px; cursor: pointer;}
+        #trending-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Ensures 2 columns */
+    gap: 20px;
+    padding: 15px;
+    width: 100%; /* Ensures it takes full container width */
+    box-sizing: border-box; /* Prevents overflow */
+}
+   </style>
 </head>
 <body class="fixed-bottom-bar">
     <div class="osahan-home-page">
@@ -246,7 +194,7 @@
             <p>Order now and enjoy delicious food in minutes.</p>
         </div>
     </div>
-
+<br><br>
     <div class="trending-section">
         <div class="container">
             <div class="d-flex align-items-center">
@@ -258,26 +206,25 @@
                 <div class="list-card loaded">
                     <div class="list-card-image">
                         <a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB">
-                            <img alt="Burger Haven" src="img/trending1.png" class="img-fluid item-img" loading="lazy">
+                            <img alt="Famous Dave's Bar-B-Que" src="img/trending1.png" class="img-fluid item-img" loading="eager">
                         </a>
                     </div>
                     <div class="list-card-body">
-                        <h6 class="mb-1"><a href="restaurant.html?id=1" class="text-white">Famous Dave's Bar-B-Que</a></h6>
-                        <p class="time"><a href="restaurant.html?id=1"><span><i class="feather-clock me-1"></i>15-30 mins</span></a></p>
+                        <h6 class="mb-1"><a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB" class="text-white">Famous Dave's Bar-B-Que</a></h6>
+                        <p class="time"><a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB"><span><i class="feather-clock me-1"></i>15-30 mins</span></a></p>
                     </div>
                 </div>
                 <div class="list-card loaded">
                     <div class="list-card-image">
                         <a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s">
-                            <img alt="Pizza Palace" src="img/popular4.png" class="img-fluid item-img" loading="lazy">
+                            <img alt="bitch" src="img/popular4.png" class="img-fluid item-img" loading="eager">
                         </a>
                     </div>
                     <div class="list-card-body">
-                        <h6 class="mb-1"><a href="restaurant.html?id=2" class="text-white">bitch</a></h6>
-                        <p class="time"><a href="restaurant.html?id=2"><span><i class="feather-clock me-1"></i>20-35 mins</span></a></p>
+                        <h6 class="mb-1"><a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s" class="text-white">bitch</a></h6>
+                        <p class="time"><a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s"><span><i class="feather-clock me-1"></i>20-35 mins</span></a></p>
                     </div>
                 </div>
-               
             </div>
         </div>
     </div>
@@ -335,7 +282,7 @@
           </div>
           <ol>
             <li>
-                &nbsp Press 
+                  Press 
               <span class="share-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 25 27" width="18">
                     <path d="M0 0h24v24H0V0z" fill="none"/>
@@ -344,8 +291,8 @@
               </span>
               in the browser menu
             </li>
-            <li> &nbsp Scroll down and tap <span class="btn">Add to Home Screen</span></li>
-            <li> &nbsp Look for the <img src="https://app.chawp.me/img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
+            <li>   Scroll down and tap <span class="btn">Add to Home Screen</span></li>
+            <li>   Look for the <img src="https://app.chawp.me/img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
           </ol>
           <button onclick="closePrompt()">Got it</button>
         </div>
@@ -390,12 +337,15 @@
         }
     
         document.addEventListener("DOMContentLoaded", () => {
-            // Add loaded classes for animations immediately
-            document.querySelector(".welcome-header").classList.add("loaded");
-            document.querySelector(".promo-banner").classList.add("loaded");
-            document.querySelector(".trending-section").classList.add("loaded");
-            document.querySelector(".osahan-menu-fotter").classList.add("loaded");
-    
+            // Apply loaded classes with a slight delay for smooth transition
+            setTimeout(() => {
+                document.querySelector(".welcome-header").classList.add("loaded");
+                document.querySelector(".promo-banner").classList.add("loaded");
+                document.querySelector(".trending-section").classList.add("loaded");
+                document.querySelector(".osahan-menu-fotter").classList.add("loaded");
+                document.querySelectorAll(".list-card").forEach(card => card.classList.add("loaded"));
+            }, 50); // Tiny delay for buttery effect
+
             // Load welcome message dynamically
             updateWelcomeMessage();
     
@@ -410,7 +360,7 @@
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistrations().then(regs => {
             for (let reg of regs) {
-              reg.update(); // force refresh
+              reg.update(); // Force refresh
             }
           });
         }
@@ -433,12 +383,15 @@
         window.onload = function () {
           if (isIosSafari()) {
             setTimeout(() => {
-              document.getElementById('ios-install-prompt').style.display = 'block';
-            }, 1000); // Show after 1 second
+              const prompt = document.getElementById('ios-install-prompt');
+              prompt.style.display = 'block';
+              setTimeout(() => prompt.classList.add('visible'), 10); // Smooth slide-in
+            }, 1000);
           }
         };
     </script>
     
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccecb43c58bf77',t:'MTc0NDA2NDU1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccfc3e5a5fda3f',t:'MTc0NDA2NTE5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

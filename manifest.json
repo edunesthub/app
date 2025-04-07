@@ -1,7 +1,7 @@
 {
   "name": "Chawp",
   "short_name": "Chawp",
-  "description": "Sleek Food Delivery App",
+  "description": "Eat Fast, Live Soft.",
   "start_url": "https://app.chawp.me/index.html",
   "display": "standalone",
   "background_color": "#565656",

@@ -1,6 +1,6 @@
 // Updated on 2025-04-05 — version bump, cache cleanup, OneSignal support, and forced update logic added
 
-const CACHE_NAME = "Chawp-cache-v8";
+const CACHE_NAME = "Chawp-cache-v9";
 const urlsToCache = [
     "/",
     "/index.html",
@@ -13,7 +13,7 @@ const urlsToCache = [
     "/vendor/slick/slick/slick.css",
     "/vendor/slick/slick/slick-theme.css",
     "/vendor/icons/feather.css",
-    "/img/fav.png",
+    "/img/icon-192x192.png",
     "/img/icon-192x192.png",
     "/img/icon-512x512.png",
     "/manifest.json"
@@ -69,7 +69,7 @@ self.addEventListener("push", event => {
     const options = {
         body: data.contents?.en || "Something new just dropped!",
         icon: "/img/icon-192x192.png",
-        badge: "/img/fav.png",
+        badge: "/img/icon-192x192.png",
         vibrate: [200, 100, 200],
         data: {
             url: data.url || "/index.html"
