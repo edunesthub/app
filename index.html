@@ -146,7 +146,7 @@
     z-index: 1000;
     box-shadow: 0 -2px 12px var(--shadow-color);
     border-top-left-radius: var(--modal-border-radius);
-    border-top-right-radius: var(--modal-border-radius);
+    border-top-right-radius: varonitrile: var(--modal-border-radius);
     animation: slideUp 0.3s ease-out;
   }
 
@@ -255,11 +255,29 @@
             </div>
             <div class="offline-notice">You’re offline...</div>
             <div id="trending-list">
-                <!-- Skeleton UI for trending items -->
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
+                <div class="list-card loaded">
+                    <div class="list-card-image">
+                        <a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB">
+                            <img alt="Burger Haven" src="img/trending1.png" class="img-fluid item-img" loading="lazy">
+                        </a>
+                    </div>
+                    <div class="list-card-body">
+                        <h6 class="mb-1"><a href="restaurant.html?id=1" class="text-white">Famous Dave's Bar-B-Que</a></h6>
+                        <p class="time"><a href="restaurant.html?id=1"><span><i class="feather-clock me-1"></i>15-30 mins</span></a></p>
+                    </div>
+                </div>
+                <div class="list-card loaded">
+                    <div class="list-card-image">
+                        <a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s">
+                            <img alt="Pizza Palace" src="img/popular4.png" class="img-fluid item-img" loading="lazy">
+                        </a>
+                    </div>
+                    <div class="list-card-body">
+                        <h6 class="mb-1"><a href="restaurant.html?id=2" class="text-white">bitch</a></h6>
+                        <p class="time"><a href="restaurant.html?id=2"><span><i class="feather-clock me-1"></i>20-35 mins</span></a></p>
+                    </div>
+                </div>
+               
             </div>
         </div>
     </div>
@@ -304,42 +322,38 @@
         </div>
     </div>
     
-
     <!-- iOS Install Prompt (bottom modal) -->
-<div id="ios-install-prompt" style="display: none;">
-    <div class="ios-modal">
-      <p class="title">Install the app</p>
-      <div class="app-info">
-        <img src="https://app.chawp.me/img/icon-192x192.png" alt="App Icon" />
-        <div>
-          <p class="name">Chawp</p>
-          <p class="url">app.chawp.me</p>
+    <div id="ios-install-prompt" style="display: none;">
+        <div class="ios-modal">
+          <p class="title">Install the app</p>
+          <div class="app-info">
+            <img src="https://app.chawp.me/img/icon-192x192.png" alt="App Icon" />
+            <div>
+              <p class="name">Chawp</p>
+              <p class="url">app.chawp.me</p>
+            </div>
+          </div>
+          <ol>
+            <li>
+                &nbsp Press 
+              <span class="share-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 25 27" width="18">
+                    <path d="M0 0h24v24H0V0z" fill="none"/>
+                    <path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .89 2 2z" fill="white"/>
+                  </svg>
+              </span>
+              in the browser menu
+            </li>
+            <li> &nbsp Scroll down and tap <span class="btn">Add to Home Screen</span></li>
+            <li> &nbsp Look for the <img src="https://app.chawp.me/img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
+          </ol>
+          <button onclick="closePrompt()">Got it</button>
         </div>
       </div>
-      <ol>
-        <li>
-            &nbsp Press 
-          <span class="share-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 25 27" width="18">
-                <path d="M0 0h24v24H0V0z" fill="none"/>
-                <path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .89 2 2z" fill="white"/>
-              </svg>
-              
-              
-          </span>
-          in the browser menu
-        </li>
-        <li> &nbsp Scroll down and tap <span class="btn">Add to Home Screen</span></li>
-        <li> &nbsp Look for the <img src="https://app.chawp.me/img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
-      </ol>
-      <button onclick="closePrompt()">Got it</button>
-    </div>
-  </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, query, orderBy, limit, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
     
         const firebaseConfig = {
             apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
@@ -352,70 +366,7 @@
         };
     
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
         const auth = getAuth(app);
-    
-        enableIndexedDbPersistence(db).catch(err => console.warn("Firestore persistence failed:", err));
-    
-        async function loadTrendingRestaurants() {
-            const trendingList = document.getElementById("trending-list");
-            const trendingSection = document.querySelector(".trending-section");
-    
-            // Show cached data immediately if available
-            const cachedData = localStorage.getItem("trendingRestaurants");
-            if (cachedData) {
-                trendingList.innerHTML = cachedData;
-                trendingSection.classList.add("loaded");
-                document.querySelectorAll(".list-card").forEach(card => card.classList.add("loaded"));
-                if (!navigator.onLine) {
-                    document.body.classList.add("offline");
-                }
-                return; // Exit early if cached data is used
-            }
-    
-            // If no cached data, proceed with fetching
-            try {
-                const q = query(collection(db, "restaurant"), orderBy("rating", "desc"), limit(6));
-                const querySnapshot = await getDocs(q);
-    
-                if (querySnapshot.empty) {
-                    trendingList.innerHTML = "<p style='color:#b0b0b0;'>No trending restaurants found.</p>";
-                    trendingSection.classList.add("loaded");
-                    return;
-                }
-    
-                let output = "";
-                querySnapshot.forEach(doc => {
-                    const data = doc.data();
-                    const restaurantId = doc.id;
-                    output += `
-                        <div class="list-card">
-                            <div class="list-card-image">
-                                <a href="restaurant.html?id=${restaurantId}">
-                                    <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
-                                </a>
-                            </div>
-                            <div class="list-card-body">
-                                <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unnamed'}</a></h6>
-                                <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, data.delivery_time - 15)}-${data.delivery_time} mins</span></a></p>
-                            </div>
-                        </div>
-                    `;
-                });
-    
-                trendingList.innerHTML = output;
-                localStorage.setItem("trendingRestaurants", output);
-                document.body.classList.remove("offline");
-                trendingSection.classList.add("loaded");
-                document.querySelectorAll(".list-card").forEach(card => card.classList.add("loaded"));
-            } catch (error) {
-                console.error("❌ ERROR fetching trending restaurants:", error);
-                if (!cachedData) {
-                    trendingList.innerHTML = "<p style='color:#b0b0b0;'>Failed to load restaurants. Please check your connection.</p>";
-                    trendingSection.classList.add("loaded");
-                }
-            }
-        }
     
         function updateWelcomeMessage() {
             const welcomeMessage = document.getElementById("welcome-message");
@@ -442,26 +393,16 @@
             // Add loaded classes for animations immediately
             document.querySelector(".welcome-header").classList.add("loaded");
             document.querySelector(".promo-banner").classList.add("loaded");
+            document.querySelector(".trending-section").classList.add("loaded");
             document.querySelector(".osahan-menu-fotter").classList.add("loaded");
     
-            // Load content
-            loadTrendingRestaurants();
+            // Load welcome message dynamically
             updateWelcomeMessage();
     
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("service-worker.js")
                     .then(() => console.log("PWA Ready!"))
                     .catch(error => console.error("PWA Error:", error));
-            }
-        });
-    
-        window.addEventListener("online", loadTrendingRestaurants);
-        window.addEventListener("offline", () => {
-            const cachedData = localStorage.getItem("trendingRestaurants");
-            if (cachedData) {
-                document.getElementById("trending-list").innerHTML = cachedData;
-                document.body.classList.add("offline");
-                document.querySelector(".trending-section").classList.add("loaded");
             }
         });
     </script>
@@ -473,33 +414,31 @@
             }
           });
         }
-      </script>
+    </script>
 
-
-<script>
-    function isIosSafari() {
-      const ua = window.navigator.userAgent;
-      const isIOS = /iPad|iPhone|iPod/.test(ua);
-      const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
-      const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
-  
-      return isIOS && isSafari && !isStandalone;
-    }
-  
-    function closePrompt() {
-      document.getElementById('ios-install-prompt').style.display = 'none';
-    }
-  
-    window.onload = function () {
-      if (isIosSafari()) {
-        setTimeout(() => {
-          document.getElementById('ios-install-prompt').style.display = 'block';
-        }, 1000); // Show after 1 second
-      }
-    };
-  </script>
-  
-      
-
+    <script>
+        function isIosSafari() {
+          const ua = window.navigator.userAgent;
+          const isIOS = /iPad|iPhone|iPod/.test(ua);
+          const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+          const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+    
+          return isIOS && isSafari && !isStandalone;
+        }
+    
+        function closePrompt() {
+          document.getElementById('ios-install-prompt').style.display = 'none';
+        }
+    
+        window.onload = function () {
+          if (isIosSafari()) {
+            setTimeout(() => {
+              document.getElementById('ios-install-prompt').style.display = 'block';
+            }, 1000); // Show after 1 second
+          }
+        };
+    </script>
+    
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccecb43c58bf77',t:'MTc0NDA2NDU1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
