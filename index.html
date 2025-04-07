@@ -123,6 +123,99 @@
         body::-webkit-scrollbar {
             display: none; /* Chrome, Safari, and Opera */
         }
+        #iosp-install-prompt {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #1c1c1e;
+    color: #fff;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    z-index: 1000;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.6);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    animation: iosp-slideUp 0.3s ease-out;
+  }
+
+  @keyframes iosp-slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .iosp-modal .iosp-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .iosp-app-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #2c2c2e;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+
+  .iosp-app-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+  }
+
+  .iosp-name {
+    font-weight: 600;
+    margin: 0;
+    font-size: 15px;
+  }
+
+  .iosp-url {
+    font-size: 13px;
+    color: #aaa;
+    margin: 0;
+  }
+
+  .iosp-steps {
+    padding-left: 20px;
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+
+  .iosp-steps li {
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .iosp-share-icon {
+    display: inline-block;
+    background: #3a3a3c;
+    padding: 3px 5px;
+    border-radius: 6px;
+    vertical-align: middle;
+    margin: 0 4px;
+  }
+
+  .iosp-btn {
+    background: #3a3a3c;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .iosp-modal button {
+    width: 100%;
+    padding: 10px;
+    font-weight: bold;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+  }
     </style>
 </head>
 <body class="fixed-bottom-bar">
@@ -195,6 +288,36 @@
             </div>
         </div>
     </div>
+
+    <!-- iOS Install Prompt (bottom modal) -->
+<div id="iosp-install-prompt" style="display: none;">
+    <div class="iosp-modal">
+      <p class="iosp-title">Install the app</p>
+      <div class="iosp-app-info">
+        <img src="img/icon-192x192.png" alt="App Icon" />
+        <div>
+          <p class="iosp-name">Chawp</p>
+          <p class="iosp-url">app.chawp.me</p>
+        </div>
+      </div>
+      <ol class="iosp-steps">
+        <li>
+          Press 
+          <span class="iosp-share-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 16C11.448 16 11 15.552 11 15V6.414L8.707 8.707C8.317 9.098 7.683 9.098 7.293 8.707C6.902 8.317 6.902 7.683 7.293 7.293L11.293 3.293C11.683 2.902 12.317 2.902 12.707 3.293L16.707 7.293C17.098 7.683 17.098 8.317 16.707 8.707C16.317 9.098 15.683 9.098 15.293 8.707L13 6.414V15C13 15.552 12.552 16 12 16Z"/>
+              <path d="M19 18H5V20H19V18ZM5 16H19C20.103 16 21 16.897 21 18V20C21 21.103 20.103 22 19 22H5C3.897 22 3 21.103 3 20V18C3 16.897 3.897 16 5 16Z"/>
+            </svg>
+          </span>
+          in the browser menu
+        </li>
+        <li>Scroll down and tap <span class="iosp-btn">Add to Home Screen</span></li>
+        <li>Look for the <img src="img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
+      </ol>
+      <button onclick="iospClosePrompt()">Got it</button>
+    </div>
+  </div>
+
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
@@ -323,8 +446,32 @@
                 document.body.classList.add("offline");
                 document.querySelector(".trending-section").classList.add("loaded");
             }
-        });
-    </script>
+        }); 
+</script>
+
+<script>
+    function isIos() {
+      return /iphone|ipad|ipod/i.test(navigator.userAgent);
+    }
+  
+    function showIosInstallPrompt() {
+      // Remove 'isInStandaloneMode()' check so it always shows for iOS
+      const promptShown = localStorage.getItem('iosInstallPromptShown');
+      if (isIos() && !promptShown) {
+        document.getElementById('ios-install-prompt').style.display = 'block';
+        localStorage.setItem('iosInstallPromptShown', 'true');
+      }
+    }
+  
+    function closePrompt() {
+      document.getElementById('ios-install-prompt').style.display = 'none';
+    }
+  
+    window.onload = function () {
+      setTimeout(showIosInstallPrompt, 2000); // Show after 2 seconds
+    };
+  </script>
+  
     <script>
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistrations().then(regs => {
