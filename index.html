@@ -125,7 +125,7 @@
         }
 
         :root {
-    --modal-bg: #1c1c1e;
+    --modal-bg: #1a1a1a;
     --modal-color: #fff;
     --modal-accent-bg: #2c2c2e;
     --modal-border-radius: 16px;
@@ -474,17 +474,32 @@
           });
         }
       </script>
-      <script>
-        function closePrompt() {
-          document.getElementById('ios-install-prompt').style.display = 'none';
-        }
+
+
+<script>
+    function isIosSafari() {
+      const ua = window.navigator.userAgent;
+      const isIOS = /iPad|iPhone|iPod/.test(ua);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+      const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+  
+      return isIOS && isSafari && !isStandalone;
+    }
+  
+    function closePrompt() {
+      document.getElementById('ios-install-prompt').style.display = 'none';
+    }
+  
+    window.onload = function () {
+      if (isIosSafari()) {
+        setTimeout(() => {
+          document.getElementById('ios-install-prompt').style.display = 'block';
+        }, 1000); // Show after 1 second
+      }
+    };
+  </script>
+  
       
-        window.onload = function () {
-          setTimeout(() => {
-            document.getElementById('ios-install-prompt').style.display = 'block';
-          }, 1000); // Show after 2 seconds for ALL devices
-        };
-      </script>
-      
+
 </body>
 </html>
