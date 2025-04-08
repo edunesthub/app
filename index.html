@@ -170,7 +170,10 @@
         .ios-modal li {margin-bottom: 10px; line-height: 1.4;}
         .share-icon {display: inline-block; background: #2c2c2e; padding: 3px 5px; border-radius: 6px; vertical-align: middle; margin: 0 4px;}
         .btn {background: #2c2c2e; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-weight: 500;}
-        .ios-modal button {width: 100%; padding: 10px; font-weight: bold; background: var(--btn-bg); color: var(--btn-color); border: none; border-radius: 10px; font-size: 14px; cursor: pointer;}
+        .ios-modal button {width: 100%; padding: 10px; font-weight: bold;
+             background: #006a87;
+              color: #fff;
+               border: none; border-radius: 10px; font-size: 14px; cursor: pointer;}
         #trending-list {
     display: grid;
     grid-template-columns: repeat(2, 1fr); /* Ensures 2 columns */
@@ -366,6 +369,7 @@
         }
     </script>
 
+<!--
     <script>
         function isIosSafari() {
           const ua = window.navigator.userAgent;
@@ -390,6 +394,22 @@
           }
         };
     </script>
+    -->
+    <script>
+        function closePrompt() {
+          document.getElementById('ios-install-prompt').style.display = 'none';
+        }
+      
+        window.onload = function () {
+          setTimeout(() => {
+            const prompt = document.getElementById('ios-install-prompt');
+            prompt.style.display = 'block';
+            setTimeout(() => prompt.classList.add('visible'), 10); // Smooth slide-in
+          }, 1000);
+        };
+      </script>
+      
+
     
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccecb43c58bf77',t:'MTc0NDA2NDU1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccfc3e5a5fda3f',t:'MTc0NDA2NTE5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
