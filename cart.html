@@ -9,8 +9,7 @@
     <title>Chawp - Your Cart</title>
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
-    <!-- Paystack Inline Script -->
-    <script src="https://js.paystack.co/v1/inline.js" defer></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     <style>
         body{font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,sans-serif;background:#2c2c2c;color:#ffffff;margin:0;padding:0;min-height:100vh;overflow-x:hidden;padding-bottom:calc(70px + env(safe-area-inset-bottom));transition:background 0.3s ease;}
         .cart-header{background:#2c2c2c;padding:15px 25px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,0.3);position:sticky;top:0;z-index:10;}
@@ -88,7 +87,7 @@
     transition: background 0.3s ease, transform 0.2s ease;
 }
 .footer-item.selected {
-    background: rgba(0, 200, 255, 0.2); /* Matches your #00c8ff theme color */
+    background: rgba(0, 200, 255, 0.2);
     transform: scale(1.05);
 }
 .footer-item a {
@@ -108,7 +107,7 @@
     transition: background 0.3s ease, transform 0.2s ease;
 }
 .footer-item.selected {
-    background: #00566d; /* Matches your #00c8ff theme color */
+    background: #00566d;
     transform: scale(1.05);
 }
 .footer-item a {
@@ -119,14 +118,13 @@
 .footer-item:hover {
     background: rgba(255, 255, 255, 0.1);
 }
-/* Hide Scrollbar for PWA */
 html, body {
-    overflow-y: scroll; /* Ensures scrolling is still possible */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 body::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
+    display: none;
 }
 </style>
 </head>
@@ -277,7 +275,7 @@ body::-webkit-scrollbar {
                 <div class="cart-items">${itemsHTML}</div>
                 <div class="delivery-details">
                     <h6>Delivery Details</h6><br>
-                    <label for="delivery-location">Location</label><input type="text" id="delivery-location" value="${persistentDetails.location}" placeholder="for e.g, Hostel C Room 919"><br><br>
+                    <label for="delivery-location">Location</label><input type="text" id="delivery-location" value="${persistentDetails.location}" placeholder="e.g., Hostel C Room 919"><br><br>
                     <label for="delivery-contact">Contact Number</label><input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number">
                 </div>
                 <div class="order-summary">
@@ -331,7 +329,67 @@ body::-webkit-scrollbar {
     
         let isProcessing = false;
     
-        const proceedToCheckout = async () => {
+        // Define payment callback as a global function
+        window.handlePaymentCallback = function(response) {
+            const checkoutBtn = document.getElementById("checkout-btn");
+            const cart = getCart();
+            const persistentDetails = getPersistentDeliveryDetails();
+    
+            if (response.status === "success") {
+                const sanitizedCart = cart.filter(item => 
+                    item.name && 
+                    typeof item.price === "number" && 
+                    !isNaN(item.price) && 
+                    typeof item.quantity === "number" && 
+                    !isNaN(item.quantity)
+                );
+    
+                const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 5;
+    
+                const orderData = {
+                    restaurantId: sanitizedCart[0].restaurantId,
+                    items: sanitizedCart.map(item => ({
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                        total: item.price * item.quantity,
+                        note: item.note || ""
+                    })),
+                    totalAmount: totalAmount,
+                    deliveryDetails: {
+                        location: persistentDetails.location,
+                        contactNumber: persistentDetails.contactNumber
+                    },
+                    timestamp: new Date().toISOString(),
+                    status: "pending",
+                    deviceId: getDeviceId(),
+                    paymentReference: response.reference,
+                    paymentStatus: "success",
+                    paymentDate: new Date().toISOString()
+                };
+    
+                addDoc(collection(db, "orders"), orderData)
+                    .then(() => {
+                        saveCart([]);
+                        showNotification("Payment successful! Order placed.");
+                        setTimeout(() => {
+                            window.location.href = "successful.html";
+                        }, 1500);
+                    })
+                    .catch(error => {
+                        console.error("Firestore error:", error);
+                        showNotification("Error saving order. Contact support.", "error");
+                    })
+                    .finally(() => {
+                        resetCheckoutButton();
+                    });
+            } else {
+                showNotification("Payment failed. Please try again.", "error");
+                resetCheckoutButton();
+            }
+        };
+    
+        const proceedToCheckout = () => {
             if (isProcessing) return;
             isProcessing = true;
     
@@ -341,24 +399,26 @@ body::-webkit-scrollbar {
     
             const cart = getCart();
             const persistentDetails = getPersistentDeliveryDetails();
-            const deliveryNotes = document.getElementById("delivery-notes").value.trim();
     
             if (!cart.length) {
                 showNotification("Your cart is empty!", "error");
                 resetCheckoutButton();
                 return;
             }
+    
             if (!persistentDetails.location || !persistentDetails.contactNumber) {
                 showNotification("Please enter your location and contact number!", "error");
                 resetCheckoutButton();
                 return;
             }
     
-            const sanitizedCart = cart.filter(item => {
-                const isValid = item.name && typeof item.price === "number" && !isNaN(item.price) && typeof item.quantity === "number" && !isNaN(item.quantity);
-                if (!isValid) console.warn("Invalid cart item:", item);
-                return isValid;
-            });
+            const sanitizedCart = cart.filter(item => 
+                item.name && 
+                typeof item.price === "number" && 
+                !isNaN(item.price) && 
+                typeof item.quantity === "number" && 
+                !isNaN(item.quantity)
+            );
     
             if (!sanitizedCart.length) {
                 showNotification("Invalid items in cart!", "error");
@@ -368,129 +428,36 @@ body::-webkit-scrollbar {
     
             const restaurantIds = [...new Set(sanitizedCart.map(item => item.restaurantId))];
             if (restaurantIds.length > 1) {
-                showNotification("Error: Cart contains items from multiple restaurants!", "error");
+                showNotification("Cart contains items from multiple restaurants!", "error");
                 resetCheckoutButton();
                 return;
             }
             if (!sanitizedCart[0].restaurantId) {
-                showNotification("Error: Restaurant ID is missing in cart items!", "error");
+                showNotification("Restaurant ID is missing in cart items!", "error");
                 resetCheckoutButton();
                 return;
             }
     
             const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 5;
-            const orderData = {
-                restaurantId: sanitizedCart[0].restaurantId,
-                items: sanitizedCart.map(item => ({
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    total: item.price * item.quantity,
-                    note: item.note || ""
-                })),
-                totalAmount: totalAmount,
-                deliveryDetails: {
-                    location: persistentDetails.location,
-                    deliveryNotes: deliveryNotes,
-                    contactNumber: persistentDetails.contactNumber
+    
+            const handler = PaystackPop.setup({
+                key: "pk_live_014478be275a6453efab7529d14bd938c8b9b964",
+                email: "customer@chawp.com",
+                amount: Math.round(totalAmount * 100),
+                currency: "GHS",
+                ref: "ORDER_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9),
+                metadata: {
+                    device_id: getDeviceId(),
+                    order_items: sanitizedCart.length
                 },
-                timestamp: new Date().toISOString(),
-                status: "pending",
-                deviceId: getDeviceId()
-            };
-    
-            // Ensure Paystack is loaded
-            if (typeof PaystackPop === "undefined") {
-                showNotification("Payment system not loaded. Please try again.", "error");
-                console.error("PaystackPop is not defined. Script may not have loaded.");
-                resetCheckoutButton();
-                return;
-            }
-    
-            // Paystack Payment Integration
-            try {
-                // Validate payment details before proceeding
-                if (totalAmount <= 0) {
-                    throw new Error("Invalid payment amount");
-                }
-
-                // Define the callback function separately
-                const paymentCallback = function(response) {
-                    console.log("Paystack callback response:", response);
-                    if (response.status === "success") {
-                        try {
-                            // Add payment details to order data
-                            const orderWithPayment = {
-                                ...orderData,
-                                paymentReference: response.reference,
-                                paymentStatus: "success",
-                                paymentDate: new Date().toISOString()
-                            };
-
-                            addDoc(collection(db, "orders"), orderWithPayment)
-                                .then(docRef => {
-                                    console.log("Order saved to Firestore with ID:", docRef.id);
-                                    // Clear cart and redirect on successful payment
-                                    saveCart([]);
-                                    showNotification("Payment successful! Order placed.");
-                                    setTimeout(() => {
-                                        window.location.href = "successful.html";
-                                    }, 1500);
-                                })
-                                .catch(error => {
-                                    console.error("Firestore error:", error);
-                                    showNotification("Error saving order after payment. Please contact support.", "error");
-                                    resetCheckoutButton();
-                                });
-                        } catch (error) {
-                            console.error("Error processing payment:", error);
-                            showNotification("Error processing payment. Please try again.", "error");
-                            resetCheckoutButton();
-                        }
-                    } else {
-                        showNotification("Payment failed. Please try again.", "error");
-                        resetCheckoutButton();
-                    }
-                };
-
-                // Define the onClose function separately
-                const paymentOnClose = function() {
-                    showNotification("Payment cancelled. You can try again.", "error");
-                    console.log("Paystack payment window closed by user.");
+                callback: window.handlePaymentCallback,
+                onClose: function() {
+                    showNotification("Payment cancelled.", "error");
                     resetCheckoutButton();
-                };
-
-                const handler = PaystackPop.setup({
-                    key: "pk_live_014478be275a6453efab7529d14bd938c8b9b964",
-                    email: "customer@chawp.com",
-                    amount: Math.round(totalAmount * 100),
-                    currency: "GHS",
-                    ref: "ORDER_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9),
-                    metadata: {
-                        custom_fields: [
-                            {
-                                display_name: "Device ID",
-                                variable_name: "device_id",
-                                value: getDeviceId()
-                            },
-                            {
-                                display_name: "Order Items",
-                                variable_name: "order_items",
-                                value: sanitizedCart.length
-                            }
-                        ]
-                    },
-                    callback: paymentCallback,
-                    onClose: paymentOnClose
-                });
-
-                // Open payment modal
-                handler.openIframe();
-            } catch (error) {
-                console.error("Payment setup error:", error);
-                showNotification(error.message || "Error initiating payment. Please try again.", "error");
-                resetCheckoutButton();
-            }
+                }
+            });
+    
+            handler.openIframe();
         };
     
         const resetCheckoutButton = () => {
@@ -509,8 +476,5 @@ body::-webkit-scrollbar {
         window.addEventListener("online", renderCart);
         window.addEventListener("offline", () => showNotification("You're offline! Some features may be limited.", "error"));
     </script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'928f54872e217b9b',t:'MTc0MzQxODY5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92b55ef5781b678b',t:'MTc0MzgxNzU3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92b5680498e1adcc',t:'MTc0MzgxNzk0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
