@@ -63,7 +63,13 @@ html, body {
 body::-webkit-scrollbar {
     display: none; /* Chrome, Safari, and Opera */
 }
-</style>
+html, body {
+    touch-action: pan-x pan-y;
+    -webkit-user-scalable: no;
+    -ms-user-scalable: no;
+    user-scalable: no;
+}
+    </style>
     <script defer src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>

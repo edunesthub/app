@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="description" content="Chawmp - Sleek Food Delivery">
     <meta name="author" content="VON">
     <meta name="theme-color" content="#565656">
@@ -89,7 +89,13 @@ html, body {
 body::-webkit-scrollbar {
     display: none; /* Chrome, Safari, and Opera */
 }
-</style>
+html, body {
+    touch-action: pan-x pan-y;
+    -webkit-user-scalable: no;
+    -ms-user-scalable: no;
+    user-scalable: no;
+}
+    </style>
 </head>
 <body class="fixed-bottom-bar">
     <div class="account-container">

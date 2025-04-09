@@ -183,7 +183,13 @@
     width: 100%; /* Ensures it takes full container width */
     box-sizing: border-box; /* Prevents overflow */
 }
-   </style>
+   html, body {
+    touch-action: pan-x pan-y;
+    -webkit-user-scalable: no;
+    -ms-user-scalable: no;
+    user-scalable: no;
+}
+    </style>
 </head>
 <body class="fixed-bottom-bar">
     <div class="osahan-home-page">
