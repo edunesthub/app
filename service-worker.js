@@ -1,5 +1,5 @@
 // Updated on 2025-04-09 — version bump, exclude HTML from caching for fresh updates
-const CACHE_NAME = "Chawp-cache-v13"; // Bump version to clear old cache
+const CACHE_NAME = "Chawp-cache-v14"; // Bump version to clear old cache
 const urlsToCache = [
     // Remove HTML files from initial cache, keep only static assets
     "/vendor/bootstrap/css/bootstrap.min.css",
