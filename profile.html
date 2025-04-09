@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="description" content="Chawp - Sleek Food Delivery">
     <meta name="author" content="VON">
-    <meta name="theme-color" content="#2c2c2c"> <!-- Swapped to #2c2c2c -->
+    <meta name="theme-color" content="#2c2c2c">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
@@ -18,7 +18,7 @@
     <link href="vendor/sidebar/demo.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <style>
-        body {background:#2c2c2c;} /* Swapped to #2c2c2c */
+        body {background:#2c2c2c;}
         .profile-details .user-info { padding: 20px; text-align: center; }
         .profile-details .btn-danger { background: #dc3545; border: none; padding: 10px 20px; border-radius: 50px; font-size: 1rem; font-weight: 600; transition: background 0.3s ease; }
         .profile-details .btn-danger:hover { background: #c82333; }
@@ -26,7 +26,7 @@
         .text-danger:hover { color: #00c8ff !important; transform: scale(1.05); }
         .osahan-profile { padding-bottom: 100px; }
         html, body { -webkit-text-size-adjust: none; touch-action: manipulation; }
-        .bg-dark {background:#2c2c2c !important;} /* Swapped to #565656 */
+        .bg-dark {background:#2c2c2c !important;}
         .profile-details .user-info h5 {
             font-size: 1.5rem;
             font-weight: 700;
@@ -61,60 +61,43 @@
             transform: translateY(0);
         }
         .footer-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1px;
-    border-radius: 10px;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-.footer-item.selected {
-    background: rgba(0, 200, 255, 0.2); /* Matches your #00c8ff theme color */
-    transform: scale(1.05);
-}
-.footer-item a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.footer-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-.footer-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1px;
-    border-radius: 10px;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-.footer-item.selected {
-    background: #00566d; /* Matches your #00c8ff theme color */
-    transform: scale(1.05);
-}
-.footer-item a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.footer-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-/* Hide Scrollbar for PWA */
-html, body {
-    overflow-y: scroll; /* Ensures scrolling is still possible */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-}
-body::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-}
-html, body {
-    touch-action: pan-x pan-y;
-    -webkit-user-scalable: no;
-    -ms-user-scalable: no;
-    user-scalable: no;
-}
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1px;
+            border-radius: 10px;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        .footer-item.selected {
+            background: rgba(0, 200, 255, 0.2);
+            transform: scale(1.05);
+        }
+        .footer-item a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .footer-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .footer-item.selected {
+            background: #00566d;
+            transform: scale(1.05);
+        }
+        html, body {
+            overflow-y: scroll;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        html, body {
+            touch-action: pan-x pan-y;
+            -webkit-user-scalable: no;
+            -ms-user-scalable: no;
+            user-scalable: no;
+        }
     </style>
 </head>
 <body class="fixed-bottom-bar">
@@ -151,6 +134,8 @@ html, body {
                                 <div class="right ms-auto"><span class="fw-bold m-0"><i class="feather-chevron-right h6 m-0"></i></span></div>
                             </a>
                             <div class="text-center px-3 py-4">
+                                <div id="update-notification" class="mb-2" style="display: none;"></div>
+                                <button id="force-update-btn" class="btn btn-primary w-100 mb-3" title="Refresh the app to the latest version">Force Update <i class="feather-refresh-cw"></i></button>
                                 <button id="logout-btn" class="btn btn-danger w-100">Logout <i class="feather-log-out"></i></button>
                             </div>
                         </div>
@@ -219,8 +204,10 @@ html, body {
         const elements = {
             userName: document.getElementById("user-name"),
             userEmail: document.getElementById("user-email"),
-            userId: document.getElementById("user-id"), // Added user-id element
-            logoutBtn: document.getElementById("logout-btn")
+            userId: document.getElementById("user-id"),
+            logoutBtn: document.getElementById("logout-btn"),
+            forceUpdateBtn: document.getElementById("force-update-btn"),
+            updateNotification: document.getElementById("update-notification")
         };
     
         const CACHE_KEY = "user-profile-cache";
@@ -234,28 +221,25 @@ html, body {
             
             if (cachedData && isCacheValid) {
                 const { name, email, userId } = JSON.parse(cachedData);
-                // Render cached data immediately with animation
                 requestAnimationFrame(() => {
                     elements.userName.textContent = name;
                     elements.userEmail.textContent = email;
-                    elements.userId.textContent = `ID: ${userId}`; // Display userId
+                    elements.userId.textContent = `ID: ${userId}`;
                     elements.userName.classList.add("loaded");
                     elements.userEmail.classList.add("loaded");
-                    elements.userId.classList.add("loaded"); // Apply animation to userId
+                    elements.userId.classList.add("loaded");
                 });
             } else {
-                // Fallback to basic user data while fetching
                 requestAnimationFrame(() => {
                     elements.userName.textContent = user.email.split("@")[0];
                     elements.userEmail.textContent = user.email;
-                    elements.userId.textContent = "ID: Loading..."; // Temporary placeholder
+                    elements.userId.textContent = "ID: Loading...";
                     elements.userName.classList.add("loaded");
                     elements.userEmail.classList.add("loaded");
                     elements.userId.classList.add("loaded");
                 });
             }
             
-            // Always check Firestore for updates
             updateProfileFromFirestore(user);
         };
     
@@ -267,34 +251,122 @@ html, body {
                 const userData = userDoc.exists() ? userDoc.data() : { name: user.email.split("@")[0] };
                 const profileData = { name: userData.name, email: user.email, userId: userData.userId || "N/A" };
                 
-                // Only update if the data has changed
                 if (elements.userName.textContent !== profileData.name || 
                     elements.userEmail.textContent !== profileData.email ||
                     elements.userId.textContent !== `ID: ${profileData.userId}`) {
                     
-                    // Remove loaded class for animation
                     elements.userName.classList.remove("loaded");
                     elements.userEmail.classList.remove("loaded");
                     elements.userId.classList.remove("loaded");
                     
-                    // Wait for next frame to ensure animation starts
                     requestAnimationFrame(() => {
                         elements.userName.textContent = profileData.name;
                         elements.userEmail.textContent = profileData.email;
-                        elements.userId.textContent = `ID: ${profileData.userId}`; // Display userId
+                        elements.userId.textContent = `ID: ${profileData.userId}`;
                         elements.userName.classList.add("loaded");
                         elements.userEmail.classList.add("loaded");
                         elements.userId.classList.add("loaded");
                     });
                 }
                 
-                // Cache the result with timestamp
                 localStorage.setItem(`${CACHE_KEY}-${user.uid}`, JSON.stringify(profileData));
                 localStorage.setItem(`${CACHE_KEY}-${user.uid}-timestamp`, Date.now().toString());
             } catch (e) {
                 console.error("Failed to fetch profile:", e);
             }
         };
+    
+        // Show notification
+        const showNotification = (message, type) => {
+            elements.updateNotification.style.display = 'block';
+            elements.updateNotification.textContent = message;
+            elements.updateNotification.className = `mb-2 small text-${type === 'success' ? 'success' : 'danger'}`;
+            setTimeout(() => {
+                elements.updateNotification.style.display = 'none';
+            }, 3000);
+        };
+    
+        // Force Update handler
+        elements.forceUpdateBtn.onclick = async () => {
+            try {
+                // Show updating state
+                elements.forceUpdateBtn.disabled = true;
+                elements.forceUpdateBtn.innerHTML = 'Updating... <i class="feather-refresh-cw spin"></i>';
+                
+                // Clear caches
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                }
+                
+                // Update service worker
+                if ('serviceWorker' in navigator) {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        await registration.update();
+                    }
+                }
+                
+                // Set success flag in localStorage before reload
+                localStorage.setItem('updateStatus', 'success');
+                
+                // Force reload bypassing cache
+                window.location.reload(true);
+            } catch (error) {
+                console.error("Force update failed:", error);
+                elements.forceUpdateBtn.innerHTML = 'Force Update <i class="feather-refresh-cw"></i>';
+                elements.forceUpdateBtn.disabled = false;
+                showNotification('Update failed. Try again.', 'danger');
+            }
+        };
+    
+        // Check for update status after reload
+        document.addEventListener("DOMContentLoaded", () => {
+            const updateStatus = localStorage.getItem('updateStatus');
+            if (updateStatus === 'success') {
+                elements.forceUpdateBtn.classList.remove('btn-primary');
+                elements.forceUpdateBtn.classList.add('btn-success');
+                elements.forceUpdateBtn.innerHTML = 'Updated! <i class="feather-check"></i>';
+                showNotification('App updated successfully!', 'success');
+                setTimeout(() => {
+                    elements.forceUpdateBtn.classList.remove('btn-success');
+                    elements.forceUpdateBtn.classList.add('btn-primary');
+                    elements.forceUpdateBtn.innerHTML = 'Force Update <i class="feather-refresh-cw"></i>';
+                    elements.forceUpdateBtn.disabled = false;
+                }, 2000);
+                localStorage.removeItem('updateStatus');
+            }
+        });
+    
+        // Add CSS for spinning animation and transitions
+        const style = document.createElement('style');
+        style.textContent = `
+            .spin {
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            .btn-primary, .btn-success {
+                border-radius: 50px;
+                font-weight: 600;
+                padding: 10px 20px;
+                transition: background-color 0.3s ease;
+            }
+            .btn-primary {
+                background: #007bff;
+                border: none;
+            }
+            .btn-primary:hover:not(:disabled) {
+                background: #0056b3;
+            }
+            .btn-success {
+                background: #28a745;
+                border: none;
+            }
+        `;
+        document.head.appendChild(style);
     
         // Logout handler
         elements.logoutBtn.onclick = () => {
@@ -306,14 +378,12 @@ html, body {
             });
         };
     
-        // Wait for DOM to be ready before checking auth state
+        // Auth state listener
         document.addEventListener("DOMContentLoaded", () => {
-            // Use onAuthStateChanged to properly handle auth state changes
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     loadUserProfileFast(user);
                 } else {
-                    // Only redirect if we're not already on the login page
                     if (!window.location.pathname.includes("login.html")) {
                         window.location.href = "login.html";
                     }
@@ -327,5 +397,5 @@ html, body {
     <script defer src="vendor/sidebar/hc-offcanvas-nav.js"></script>
     <script defer src="js/osahan.js"></script>
     <script defer>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9271c4989a124511',t:'MTc0MzEwODcwOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'927776aacf8353d3',t:'MTc0MzE2ODQzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92dae63f2f0331f2',t:'MTc0NDIxMTA5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'927776aacf8353d3',t:'MTc0MzE2ODQzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92dae63f2f0331f2',t:'MTc0NDIxMTA5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92db82c8aa722878',t:'MTc0NDIxNzUwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
