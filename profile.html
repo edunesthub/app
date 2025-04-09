@@ -132,6 +132,7 @@ html, body {
                                 <i class="feather-user bg-danger text-white p-3 rounded-circle" style="font-size: 2rem;"></i><br><br>
                                 <h5 id="user-name" class="fw-bold mt-2 text-white">.</h5>
                                 <p id="user-email" class="text-white-50 small">.</p>
+                                <p id="user-id" class="text-white-50 small">.</p>
                             </div>
                             <a href="account.html" class="d-flex w-100 align-items-center border-bottom px-3 py-4">
                                 <div class="left me-3"><h6 class="fw-bold m-0 text-white"><i class="feather-user bg-danger text-white p-2 rounded-circle me-2"></i> My Account</h6></div>
@@ -218,6 +219,7 @@ html, body {
         const elements = {
             userName: document.getElementById("user-name"),
             userEmail: document.getElementById("user-email"),
+            userId: document.getElementById("user-id"), // Added user-id element
             logoutBtn: document.getElementById("logout-btn")
         };
     
@@ -231,21 +233,25 @@ html, body {
             const isCacheValid = cacheTimestamp && (Date.now() - parseInt(cacheTimestamp)) < CACHE_DURATION;
             
             if (cachedData && isCacheValid) {
-                const { name, email } = JSON.parse(cachedData);
+                const { name, email, userId } = JSON.parse(cachedData);
                 // Render cached data immediately with animation
                 requestAnimationFrame(() => {
                     elements.userName.textContent = name;
                     elements.userEmail.textContent = email;
+                    elements.userId.textContent = `ID: ${userId}`; // Display userId
                     elements.userName.classList.add("loaded");
                     elements.userEmail.classList.add("loaded");
+                    elements.userId.classList.add("loaded"); // Apply animation to userId
                 });
             } else {
                 // Fallback to basic user data while fetching
                 requestAnimationFrame(() => {
                     elements.userName.textContent = user.email.split("@")[0];
                     elements.userEmail.textContent = user.email;
+                    elements.userId.textContent = "ID: Loading..."; // Temporary placeholder
                     elements.userName.classList.add("loaded");
                     elements.userEmail.classList.add("loaded");
+                    elements.userId.classList.add("loaded");
                 });
             }
             
@@ -259,22 +265,26 @@ html, body {
                 const userDocRef = doc(db, "users", user.uid);
                 const userDoc = await getDoc(userDocRef);
                 const userData = userDoc.exists() ? userDoc.data() : { name: user.email.split("@")[0] };
-                const profileData = { name: userData.name, email: user.email };
+                const profileData = { name: userData.name, email: user.email, userId: userData.userId || "N/A" };
                 
                 // Only update if the data has changed
                 if (elements.userName.textContent !== profileData.name || 
-                    elements.userEmail.textContent !== profileData.email) {
+                    elements.userEmail.textContent !== profileData.email ||
+                    elements.userId.textContent !== `ID: ${profileData.userId}`) {
                     
                     // Remove loaded class for animation
                     elements.userName.classList.remove("loaded");
                     elements.userEmail.classList.remove("loaded");
+                    elements.userId.classList.remove("loaded");
                     
                     // Wait for next frame to ensure animation starts
                     requestAnimationFrame(() => {
                         elements.userName.textContent = profileData.name;
                         elements.userEmail.textContent = profileData.email;
+                        elements.userId.textContent = `ID: ${profileData.userId}`; // Display userId
                         elements.userName.classList.add("loaded");
                         elements.userEmail.classList.add("loaded");
+                        elements.userId.classList.add("loaded");
                     });
                 }
                 
@@ -317,5 +327,5 @@ html, body {
     <script defer src="vendor/sidebar/hc-offcanvas-nav.js"></script>
     <script defer src="js/osahan.js"></script>
     <script defer>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9271c4989a124511',t:'MTc0MzEwODcwOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'927776aacf8353d3',t:'MTc0MzE2ODQzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'927776aacf8353d3',t:'MTc0MzE2ODQzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92dae63f2f0331f2',t:'MTc0NDIxMTA5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -239,7 +239,7 @@ html, body {
 
                 onSnapshot(q, (querySnapshot) => {
                     if (querySnapshot.empty) {
-                        ordersList.innerHTML = "<p class='text-center text-white'>No orders found for this device yet.</p>";
+                        ordersList.innerHTML = "<p class='text-center text-white'>No orders yet... ei, una no dey hung?</p>";
                         return;
                     }
 
@@ -248,7 +248,7 @@ html, body {
                         .filter(order => isValidOrder(order));
 
                     if (!validOrders.length) {
-                        ordersList.innerHTML = "<p class='text-center text-white'>No valid orders found for this device yet.</p>";
+                        ordersList.innerHTML = "<p class='text-center text-white'>No valid orders yet.</p>";
                         return;
                     }
 
