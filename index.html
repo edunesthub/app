@@ -9,6 +9,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
+    <!-- Cache control meta tags to prevent HTML caching -->
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="icon" type="image/png" href="img/icon-192x192.png">
     <link rel="apple-touch-icon" href="img/icon-192x192.png">
     <title>Chawp</title>
@@ -350,22 +354,40 @@
             updateWelcomeMessage();
     
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("service-worker.js")
-                    .then(() => console.log("PWA Ready!"))
+                navigator.serviceWorker.register("service-worker.js", { updateViaCache: "none" })
+                    .then(registration => {
+                        registration.update(); // Force immediate update in the background
+                    })
                     .catch(error => console.error("PWA Error:", error));
             }
         });
     </script>
+
+    <!-- Cache-busting for assets -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const timestamp = Date.now();
+            const links = document.querySelectorAll('link[rel="stylesheet"], script[src]');
+            links.forEach(link => {
+                const url = link.href || link.src;
+                if (url && !url.includes('firebase') && !url.includes('onesignal')) { // Exclude external scripts
+                    const newUrl = `${url}?v=${timestamp}`;
+                    if (link.href) link.href = newUrl;
+                    if (link.src) link.src = newUrl;
+                }
+            });
+        });
+    </script>
+
     <script>
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistrations().then(regs => {
             for (let reg of regs) {
-              reg.update(); // Force refresh
+              reg.update(); // Force refresh in the background
             }
           });
         }
     </script>
-
 
     <script>
         function isIosSafari() {
@@ -391,27 +413,8 @@
           }
         };
     </script>
-    
 
-    <!-- Script for all devices to see install prompt
-
-    <script>
-        function closePrompt() {
-          document.getElementById('ios-install-prompt').style.display = 'none';
-        }
-      
-        window.onload = function () {
-          setTimeout(() => {
-            const prompt = document.getElementById('ios-install-prompt');
-            prompt.style.display = 'block';
-            setTimeout(() => prompt.classList.add('visible'), 10); // Smooth slide-in
-          }, 1000);
-        };
-      </script>
-      -->
-
-    
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccecb43c58bf77',t:'MTc0NDA2NDU1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccfc3e5a5fda3f',t:'MTc0NDA2NTE5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92dab957eb46452f',t:'MTc0NDIwOTI1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

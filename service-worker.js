@@ -1,48 +1,26 @@
-// Updated on 2025-04-05 — version bump, cache cleanup, OneSignal support, and forced update logic added
-
-const CACHE_NAME = "Chawp-cache-v12";
+// Updated on 2025-04-09 — version bump, exclude HTML from caching for fresh updates
+const CACHE_NAME = "Chawp-cache-v13"; // Bump version to clear old cache
 const urlsToCache = [
-    "/",
-    "/index.html",
-    "/cart.html",
-    "/home.html",
-    "/orders.html",
-    "/profile.html",
-    "/contact-us.html",
+    // Remove HTML files from initial cache, keep only static assets
     "/vendor/bootstrap/css/bootstrap.min.css",
     "/vendor/slick/slick/slick.css",
     "/vendor/slick/slick/slick-theme.css",
     "/vendor/icons/feather.css",
     "/img/icon-192x192.png",
-    "/img/icon-192x192.png",
     "/img/icon-512x512.png",
     "/manifest.json"
 ];
 
-self.addEventListener("install", event => {
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => cache.addAll(urlsToCache))
-            .then(() => self.skipWaiting()) // Activate SW immediately
-    );
-});
-
-self.addEventListener("activate", event => {
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.filter(name => name !== CACHE_NAME)
-                    .map(name => caches.delete(name))
-            );
-        }).then(() => self.clients.claim()) // Take control of open tabs
-    );
-});
-
 self.addEventListener("fetch", event => {
     event.respondWith(
         caches.match(event.request)
-            .then(response => {
-                if (response) return response;
+            .then(cachedResponse => {
+                // If request is for an HTML file, always fetch fresh
+                if (event.request.url.endsWith('.html')) {
+                    return fetch(event.request).catch(() => cachedResponse || caches.match("/index.html"));
+                }
+                // For non-HTML, use cache-first strategy
+                if (cachedResponse) return cachedResponse;
                 return fetch(event.request)
                     .then(response => {
                         if (!response || response.status !== 200 || response.type !== "basic") {
@@ -52,49 +30,8 @@ self.addEventListener("fetch", event => {
                         caches.open(CACHE_NAME)
                             .then(cache => cache.put(event.request, responseToCache));
                         return response;
-                    });
+                    })
+                    .catch(() => caches.match("/index.html")); // Fallback for offline
             })
-            .catch(() => caches.match("/index.html")) // fallback for offline
-    );
-});
-
-// OneSignal Push Notification Handler
-self.addEventListener("push", event => {
-    let data = {};
-    if (event.data) {
-        data = event.data.json();
-    }
-
-    const title = data.headings?.en || "Chawp Update";
-    const options = {
-        body: data.contents?.en || "Something new just dropped!",
-        icon: "/img/icon-192x192.png",
-        badge: "/img/icon-192x192.png",
-        vibrate: [200, 100, 200],
-        data: {
-            url: data.url || "/index.html"
-        }
-    };
-
-    event.waitUntil(
-        self.registration.showNotification(title, options)
-    );
-});
-
-self.addEventListener("notificationclick", event => {
-    event.notification.close();
-    const url = event.notification.data.url || "/index.html";
-
-    event.waitUntil(
-        clients.matchAll({ type: "window", includeUncontrolled: true }).then(clientList => {
-            for (const client of clientList) {
-                if (client.url.includes(url) && "focus" in client) {
-                    return client.focus();
-                }
-            }
-            if (clients.openWindow) {
-                return clients.openWindow(url);
-            }
-        })
     );
 });
