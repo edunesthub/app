@@ -133,6 +133,9 @@
         </div>
     </div>
     <div class="menu-section" id="menu-section"></div>
+    <div id="closed-message" class="toast-container error" style="display: none; bottom: 80px; top: auto; opacity: 1; z-index: 1000;">
+        <span>This restaurant is currently closed. Please check back later!</span>
+    </div>
     <div id="options-panel" class="options-panel">
         <h5 id="options-title"></h5>
         <button class="close-btn" id="close-panel">×</button>
@@ -169,7 +172,7 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const restaurantId = urlParams.get("id");
-        let cartCount = 0, currentItem = null;
+        let cartCount = 0, currentItem = null, isRestaurantOpen = true;
         const elements = {
             restaurantName: document.getElementById("restaurant-name"),
             restaurantInfo: document.getElementById("restaurant-info"),
@@ -185,25 +188,41 @@
             vendorNote: document.getElementById("vendor-note"),
             toast: document.getElementById("toast"),
             toastMessage: document.getElementById("toast-message"),
-            viewCartBtn: document.getElementById("view-cart-btn")
+            viewCartBtn: document.getElementById("view-cart-btn"),
+            closedMessage: document.getElementById("closed-message")
         };
 
         const loadRestaurant = async () => {
+            console.log("Loading restaurant with ID:", restaurantId);
+            console.log("closedMessage element:", elements.closedMessage);
             const cachedData = localStorage.getItem(`restaurant-${restaurantId}`);
             if (cachedData) {
                 const data = JSON.parse(cachedData);
+                console.log("Cached data:", data);
                 elements.restaurantName.textContent = data.name;
-                elements.restaurantInfo.textContent = `🕓 ${data.delivery_time} mins`;
+                elements.restaurantInfo.textContent = `🕓 ${data.delivery_time} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
                 elements.restaurantImage.src = data.image || "img/placeholder.png";
+                isRestaurantOpen = data.isOpen !== false;
+                console.log("From cache - isOpen:", data.isOpen, "isRestaurantOpen:", isRestaurantOpen);
+                elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
+                console.log("closedMessage display set to:", elements.closedMessage.style.display);
             }
             const docRef = doc(db, "restaurant", restaurantId);
             const docSnap = await getDoc(docRef);
-            if (!docSnap.exists()) return;
+            if (!docSnap.exists()) {
+                console.log("No such restaurant document!");
+                return;
+            }
             const data = docSnap.data();
+            console.log("Firestore data:", data);
             localStorage.setItem(`restaurant-${restaurantId}`, JSON.stringify(data));
             elements.restaurantName.textContent = data.name;
-            elements.restaurantInfo.textContent = `🕓 ${data.delivery_time} mins`;
+            elements.restaurantInfo.textContent = `🕓 ${data.delivery_time} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
             elements.restaurantImage.src = data.image || "img/placeholder.png";
+            isRestaurantOpen = data.isOpen !== false;
+            console.log("From Firestore - isOpen:", data.isOpen, "isRestaurantOpen:", isRestaurantOpen);
+            elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
+            console.log("closedMessage display set to:", elements.closedMessage.style.display);
         };
 
         const loadMenu = async () => {
@@ -217,11 +236,15 @@
         };
 
         const renderMenu = items => {
-            const menuList = `<div class="menu-list">${items.map(item => `<div class="menu-item" data-item='${JSON.stringify(item)}'><div><h4>${item.name}</h4><p>GH₵${item.price.toFixed(2)}</p></div><button class="add-to-cart">Add +</button></div>`).join("")}</div>`;
+            const menuList = `<div class="menu-list">${items.map(item => `<div class="menu-item" data-item='${JSON.stringify(item)}'><div><h4>${item.name}</h4><p>GH₵${item.price.toFixed(2)}</p></div><button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add +</button></div>`).join("")}</div>`;
             elements.menuSection.innerHTML = `<h2 class="fw-bold">Menu</h2>${menuList}`;
         };
 
         const showOptionsPanel = item => {
+            if (!isRestaurantOpen) {
+                showToast("This restaurant is currently closed.", "error");
+                return;
+            }
             currentItem = item;
             elements.optionsTitle.textContent = item.name;
             elements.sizeGroup.style.display = item.sizes.length ? "block" : "none";
@@ -243,13 +266,11 @@
             elements.toast.className = `toast-container ${type}`;
             elements.toast.classList.add("show");
             
-            // Remove show class after animation
             setTimeout(() => {
                 elements.toast.classList.remove("show");
                 elements.toast.classList.add("hide");
             }, 5000);
             
-            // Remove hide class after fade out
             setTimeout(() => {
                 elements.toast.classList.remove("hide");
             }, 5300);
@@ -262,9 +283,12 @@
         };
 
         const addToCart = item => {
+            if (!isRestaurantOpen) {
+                showToast("This restaurant is currently closed.", "error");
+                return;
+            }
             const cart = JSON.parse(localStorage.getItem("cart") || "[]");
             
-            // Check if cart has items from a different restaurant
             if (cart.length > 0 && cart[0].restaurantId !== restaurantId) {
                 showToast("Please clear your cart or complete your current order before ordering from a different restaurant", "error");
                 return;
@@ -282,6 +306,10 @@
             const addButton = e.target.closest(".add-to-cart");
             if (addButton) {
                 const item = JSON.parse(menuItem.dataset.item);
+                if (!isRestaurantOpen) {
+                    showToast("This restaurant is currently closed.", "error");
+                    return;
+                }
                 if (!item.sizes.length && !item.extras.length) addToCart({ name: item.name, price: item.price, restaurantId, quantity: 1, id: Date.now(), extras: [], note: "" });
                 else showOptionsPanel(item);
             } else if (menuItem && !elements.optionsPanel.contains(e.target)) {
@@ -294,7 +322,10 @@
         document.getElementById("increase-qty").onclick = () => elements.quantity.textContent = parseInt(elements.quantity.textContent) + 1;
         document.getElementById("decrease-qty").onclick = () => elements.quantity.textContent = Math.max(1, parseInt(elements.quantity.textContent) - 1);
         document.getElementById("confirm-add").onclick = () => {
-            if (!currentItem) return;
+            if (!currentItem || !isRestaurantOpen) {
+                if (!isRestaurantOpen) showToast("This restaurant is currently closed.", "error");
+                return;
+            }
             const sizeIndex = document.querySelector('input[name="size"]:checked')?.value;
             const selectedSize = sizeIndex ? currentItem.sizes[sizeIndex] : null;
             const extras = Array.from(document.querySelectorAll('input[name="extra"]:checked')).map(input => ({ name: input.value, price: parseFloat(input.dataset.price) }));

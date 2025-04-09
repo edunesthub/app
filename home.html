@@ -261,6 +261,7 @@ body::-webkit-scrollbar {
                     const restaurantId = doc.id;
                     const deliveryTime = data.delivery_time || "N/A";
                     const deliveryFee = data.delivery_fee || "25.00";
+                    const isOpen = data.isOpen !== false; // Default to true if isOpen is undefined
                     allRestaurants.push({ id: restaurantId, ...data });
                     output += `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
         <a href="restaurant.html?id=${restaurantId}" class="d-block text-decoration-none">
@@ -274,7 +275,7 @@ body::-webkit-scrollbar {
                         <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
                     </p>
                 </div>
-                <div class="list-card-badge"><span>Open</span></div>
+                <div class="list-card-badge"><span>${isOpen ? 'Open' : 'Closed'}</span></div>
             </div>
         </a>
     </div>`;
@@ -302,6 +303,7 @@ body::-webkit-scrollbar {
             let output = filtered.length ? filtered.map(data => {
                 const deliveryTime = data.delivery_time || "N/A";
                 const deliveryFee = data.delivery_fee || "3.00";
+                const isOpen = data.isOpen !== false; // Default to true if isOpen is undefined
                 return `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
         <a href="restaurant.html?id=${data.id}" class="d-block text-decoration-none">
             <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
@@ -314,7 +316,7 @@ body::-webkit-scrollbar {
                         <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
                     </p>
                 </div>
-                <div class="list-card-badge"><span>Open</span></div>
+                <div class="list-card-badge"><span>${isOpen ? 'Open' : 'Closed'}</span></div>
             </div>
         </a>
     </div>`;
@@ -400,7 +402,7 @@ body::-webkit-scrollbar {
             });
     
             promoMessages.addEventListener('touchend', e => {
-                touchEndX = e.changedTouches[0].screenX;
+                touchEndX = e.changedTouches[0].screenXnX;
                 handleSwipe();
                 e.stopPropagation();
             });
