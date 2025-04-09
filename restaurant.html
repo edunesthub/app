@@ -7,121 +7,96 @@
     <title>Restaurant</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        body{font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,sans-serif;background:#2c2c2c;color:white;margin:0;padding:0;min-height:100vh;overflow-x:hidden;}
-        .restaurant-header{position:relative;height:300px;display:flex;align-items:center;justify-content:center;color:white;text-align:center;overflow:hidden;}
-        .restaurant-header img{width:100%;height:100%;object-fit:cover;filter:brightness(0.5);}
-        .restaurant-header:hover img{filter:brightness(0.6);}
-        .restaurant-info{position:absolute;text-align:center;}
-        .restaurant-info h1{font-size:2.5rem;font-weight:bold;margin-bottom:10px;}
-        .restaurant-info p{font-size:1.2rem;opacity:0.8;}
-        .menu-section{padding:50px 20px;max-width:600px;margin:auto;text-align:center;}
-        .menu-list{background:#4a4a4a;padding:20px;border-radius:12px;box-shadow:0 10px 20px rgba(0,0,0,0.1);}
-        .menu-item{background:#3f3f3f;padding:15px;border-radius:12px;box-shadow:0 10px 20px rgba(0,0,0,0.05);margin-bottom:15px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
-        .menu-item:hover{transform:scale(1.02);}
-        .menu-item h4{margin:0;font-size:1.2rem;font-weight:600;color:white;}
-        .menu-item p{margin:0;font-size:1rem;opacity:0.7;color:#fff;}
-        .add-to-cart{border:none;background:white;color:black;padding:8px 15px;border-radius:8px;font-size:1rem;}
-        .add-to-cart:hover{background:#ddd;}
-        .add-to-cart:disabled{opacity:0.6;cursor:not-allowed;}
-        .options-panel{position:fixed;bottom:-100%;left:0;width:100%;background:#3f3f3f;padding:20px;border-radius:20px 20px 0 0;box-shadow:0 -5px 15px rgba(0,0,0,0.3);z-index:10;}
-        .options-panel.show{bottom:0;}
-        .options-panel h5{font-size:1.2rem;font-weight:600;margin-bottom:15px;}
-        .close-btn{position:absolute;top:10px;right:10px;background:#2c2c2e;padding:5px 10px;border-radius:50%;cursor:pointer;}
-        .close-btn:hover{background:#4a4a4a;}
-        .option-group{margin-bottom:15px;}
-        .option-group label{display:block;margin:5px 0;font-size:0.9rem;}
-        .quantity-controls{display:flex;align-items:center;gap:10px;margin:15px 0;}
-        .quantity-btn{background:#2c2c2e;padding:5px 10px;border-radius:5px;cursor:pointer;}
-        .quantity-btn:hover{background:#4a4a4a;}
-        .note-input{width:100%;background:#2c2c2e;border:none;color:#fff;padding:10px;border-radius:8px;margin-bottom:15px;}
-        .note-input:focus{border:1px solid #00c8ff;}
-        .confirm-btn{background:#007aff;color:white;padding:10px;border-radius:12px;width:100%;border:none;}
-        .confirm-btn:hover{background:#0062cc;}
-        .confirm-btn:disabled{background:#4a4a4a;opacity:0.6;cursor:not-allowed;}
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.85);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            display: none;
-            z-index: 1000;
-            max-width: 90%;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.3s ease-out;
+        body { font-family: 'SF Pro Display', sans-serif; background: #1a1a1a; color: #fff; margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
+        .restaurant-header { position: relative; height: 300px; display: flex; align-items: center; justify-content: center; color: #fff; text-align: center; overflow: hidden; }
+        .restaurant-header img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
+        .restaurant-header:hover img { filter: brightness(0.6); }
+        .restaurant-info { position: absolute; text-align: center; }
+        .restaurant-info h1 { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; }
+        .restaurant-info p { font-size: 1.2rem; opacity: 0.8; }
+
+        /* Enhanced Menu Section (Dark Theme, No Images) */
+        .menu-section { padding: 20px; max-width: 700px; margin: auto; }
+        .menu-section h2 { text-align: center; margin-bottom: 20px; }
+        .menu-list { background: #2c2c2c; border-radius: 12px; padding: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .menu-item { display: flex; align-items: center; justify-content: space-between; background: #333; border-radius: 10px; margin-bottom: 15px; padding: 15px; transition: transform 0.2s; }
+        .menu-item:hover { transform: translateY(-2px); }
+        .menu-item-details { flex-grow: 1; display: flex; justify-content: space-between; align-items: center; }
+        .menu-item h4 { margin: 0; font-size: 1.1rem; font-weight: 600; color: #fff; }
+        .menu-item p { margin: 0; font-size: 0.9rem; color: #ccc; width: 80px; text-align: right; }
+        .menu-item .add-to-cart { background: #007aff; color: #fff; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; transition: background 0.2s; margin-left: 15px; }
+        .menu-item .add-to-cart:hover { background: #005bb5; }
+        .menu-item .add-to-cart:disabled { background: #555; cursor: not-allowed; }
+
+        /* Enhanced Options Panel (Dark Theme) */
+        .options-panel { position: fixed; bottom: -100%; left: 0; width: 100%; background: #2c2c2c; padding: 20px; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.4); transition: bottom 0.3s ease; z-index: 10; max-height: 80vh; overflow-y: auto; }
+        .options-panel.show { bottom: 0; }
+        .options-panel h5 { font-size: 1.3rem; font-weight: 600; color: #fff; margin-bottom: 15px; }
+        .close-btn { position: absolute; top: 10px; right: 10px; background: #444; color: #fff; border: none; padding: 5px 10px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; }
+        .close-btn:hover { background: #666; }
+        .option-group { margin-bottom: 20px; }
+        .option-group h6 { font-size: 1rem; color: #fff; margin-bottom: 5px; }
+        .option-group .instructions { font-size: 0.85rem; color: #ccc; margin-bottom: 10px; }
+        .option-group label { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #3a3a3a; border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
+        .option-group input[type="radio"], .option-group input[type="checkbox"] { margin-right: 10px; }
+        .option-group label span { flex-grow: 1; font-size: 0.95rem; color: #fff; text-transform: capitalize; }
+        .option-group label .price { font-size: 0.9rem; color: #ccc; width: 70px; text-align: right; }
+        .extra-quantity { display: flex; align-items: center; gap: 5px; }
+        .extra-quantity-btn { background: #007aff; color: #fff; border: none; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
+        .extra-quantity-btn:hover { background: #005bb5; }
+        .extra-quantity-btn:disabled { background: #555; cursor: not-allowed; }
+        .extra-quantity span { font-size: 0.9rem; color: #fff; }
+        .note-input { width: 100%; background: #3a3a3a; border: none; color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 15px; resize: none; }
+        .note-input:focus { outline: none; border: 1px solid #007aff; }
+        .total-price { font-size: 1.2rem; font-weight: 600; color: #fff; text-align: center; margin-bottom: 15px; padding: 10px; background: #3a3a3a; border-radius: 8px; }
+        .confirm-btn { background: #007aff; color: #fff; padding: 12px; border-radius: 12px; width: 100%; border: none; font-size: 1rem; font-weight: 600; }
+        .confirm-btn:hover { background: #005bb5; }
+        .confirm-btn:disabled { background: #555; cursor: not-allowed; }
+
+        /* Toast Styling */
+        .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 1rem; display: none; z-index: 1000; opacity: 0; transition: opacity 0.3s ease-out; }
+        .toast-container.show { display: flex; animation: slideDown 0.3s ease-out; opacity: 1; }
+        .toast-container.hide { opacity: 0; }
+        .toast-container.success { background: rgba(40,167,69,0.9); }
+        .toast-container.error { background: rgba(220,53,69,0.9); }
+        @keyframes slideDown { from { transform: translateX(-50%) translateY(-100%); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+
+        /* Enhanced Cart Button */
+        .view-cart-btn { 
+            position: fixed; 
+            bottom: 20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: #007aff; 
+            color: #fff; 
+            padding: 15px 50px; 
+            border-radius: 30px; 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+            text-decoration: none; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4); 
+            display: none; 
+            min-width: 200px; 
+            text-align: center; 
         }
-        
-        .toast-container.show {
-            display: flex;
-            animation: slideDown 0.3s ease-out;
-            opacity: 1;
-        }
-        
-        .toast-container.hide {
-            opacity: 0;
-        }
-        
-        .toast-container.error {
-            background: rgba(220, 53, 69, 0.9);
-        }
-        
-        .toast-container.success {
-            background: rgba(40, 167, 69, 0.9);
-        }
-        
-        @keyframes slideDown {
-            from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
-            to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-        .view-cart-btn{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:black;color:white;padding:16px 50px;border-radius:50px;font-size:1.2rem;font-weight:bold;text-decoration:none;box-shadow:0 5px 15px rgba(0,0,0,0.2);display:none;}
-        .view-cart-btn.show{display:block;}
-        .view-cart-btn:hover{background:#333;transform:translateX(-50%) scale(1.05);}
-        .back-arrow{position:absolute;top:20px;left:20px;background:rgba(0,0,0,0.647);color:white;padding:10px;border-radius:50%;}
-        .back-arrow:hover{background:rgba(0,0,0,0.8);transform:scale(1.1);}
-        .menu-loading{font-size:1.5rem;font-weight:600;opacity:0.7;margin:0;}
+        .view-cart-btn.show { display: block; }
+        .view-cart-btn:hover { background: #005bb5; transform: translateX(-50%) scale(1.05); }
+
+        /* Back Arrow */
+        .back-arrow { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.647); color: #fff; padding: 10px; border-radius: 50%; }
+        .back-arrow:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
+
+        /* Mobile Optimization */
         @media (max-width: 640px) {
-            .menu-section { padding: 30px 10px; }
+            .menu-section { padding: 15px; }
             .menu-item { padding: 10px; }
+            .menu-item h4 { font-size: 1rem; }
+            .menu-item p { font-size: 0.85rem; }
             .options-panel { padding: 15px; }
+            .view-cart-btn { padding: 12px 40px; font-size: 1rem; min-width: 180px; }
         }
-        input, textarea {font-size:16px;outline:none;}
-        *:focus {zoom:1 !important;}
-        html, body {-webkit-text-size-adjust:none;touch-action:manipulation;overflow-y:scroll;scrollbar-width:none;-ms-overflow-style:none;}
-        body::-webkit-scrollbar {display:none;}
-        .footer-item {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 1px;
-            border-radius: 10px;
-        }
-        .footer-item.selected {
-            background: rgba(0, 200, 255, 0.2);
-            transform: scale(1.05);
-        }
-        .footer-item a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .footer-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-    html, body {
-    touch-action: pan-x pan-y;
-    -webkit-user-scalable: no;
-    -ms-user-scalable: no;
-    user-scalable: no;
-}
+        html, body { touch-action: manipulation; overflow-y: scroll; scrollbar-width: none; -ms-overflow-style: none; }
+        body::-webkit-scrollbar { display: none; }
     </style>
     <script defer src="https://unpkg.com/feather-icons"></script>
 </head>
@@ -145,20 +120,24 @@
     <div id="options-panel" class="options-panel">
         <h5 id="options-title"></h5>
         <button class="close-btn" id="close-panel">×</button>
-        <div id="size-group"><h6>Size</h6><div id="size-options"></div></div>
-        <div id="extra-group"><h6>Extras</h6><div id="extra-options"></div></div>
-        <div class="quantity-controls">
-            <button class="quantity-btn" id="decrease-qty">-</button>
-            <span id="quantity">1</span>
-            <button class="quantity-btn" id="increase-qty">+</button>
+        <div id="size-group" class="option-group">
+            <h6>Choose a Size</h6>
+            <div class="instructions">Pick one size that fits your appetite.</div>
+            <div id="size-options"></div>
         </div>
-        <textarea id="vendor-note" class="note-input" placeholder="Add a note..."></textarea>
+        <div id="extra-group" class="option-group">
+            <h6>Add Extras</h6>
+            <div class="instructions">Select any extras you’d like, and adjust the quantity.</div>
+            <div id="extra-options"></div>
+        </div>
+        <textarea id="vendor-note" class="note-input" placeholder="Add a note (e.g., no onions)"></textarea>
+        <div class="total-price" id="total-price">Total: GH₵0.00</div>
         <button id="confirm-add" class="confirm-btn">Add to Cart</button>
     </div>
     <div id="toast" class="toast-container">
         <span id="toast-message"></span>
     </div>
-    <a href="cart.html" class="view-cart-btn" id="view-cart-btn">View Cart</a>
+    <a href="cart.html" class="view-cart-btn" id="view-cart-btn">View Cart - GH₵0.00</a>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
@@ -190,45 +169,34 @@
             extraGroup: document.getElementById("extra-group"),
             sizeOptions: document.getElementById("size-options"),
             extraOptions: document.getElementById("extra-options"),
-            quantity: document.getElementById("quantity"),
             vendorNote: document.getElementById("vendor-note"),
             toast: document.getElementById("toast"),
             toastMessage: document.getElementById("toast-message"),
             viewCartBtn: document.getElementById("view-cart-btn"),
-            closedMessage: document.getElementById("closed-message")
+            closedMessage: document.getElementById("closed-message"),
+            totalPrice: document.getElementById("total-price")
         };
 
         const loadRestaurant = async () => {
-            console.log("Loading restaurant with ID:", restaurantId);
-            console.log("closedMessage element:", elements.closedMessage);
             const cachedData = localStorage.getItem(`restaurant-${restaurantId}`);
             if (cachedData) {
                 const data = JSON.parse(cachedData);
-                console.log("Cached data:", data);
                 elements.restaurantName.textContent = data.name;
                 elements.restaurantInfo.textContent = `🕓 ${data.delivery_time} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
                 elements.restaurantImage.src = data.image || "img/placeholder.png";
                 isRestaurantOpen = data.isOpen !== false;
-                console.log("From cache - isOpen:", data.isOpen, "isRestaurantOpen:", isRestaurantOpen);
                 elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
-                console.log("closedMessage display set to:", elements.closedMessage.style.display);
             }
             const docRef = doc(db, "restaurant", restaurantId);
             const docSnap = await getDoc(docRef);
-            if (!docSnap.exists()) {
-                console.log("No such restaurant document!");
-                return;
-            }
+            if (!docSnap.exists()) return;
             const data = docSnap.data();
-            console.log("Firestore data:", data);
             localStorage.setItem(`restaurant-${restaurantId}`, JSON.stringify(data));
             elements.restaurantName.textContent = data.name;
             elements.restaurantInfo.textContent = `🕓 ${data.delivery_time} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
             elements.restaurantImage.src = data.image || "img/placeholder.png";
             isRestaurantOpen = data.isOpen !== false;
-            console.log("From Firestore - isOpen:", data.isOpen, "isRestaurantOpen:", isRestaurantOpen);
             elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
-            console.log("closedMessage display set to:", elements.closedMessage.style.display);
         };
 
         const loadMenu = async () => {
@@ -236,14 +204,40 @@
             if (cachedMenu) renderMenu(JSON.parse(cachedMenu));
             const menuRef = collection(db, "restaurant", restaurantId, "menu");
             const querySnapshot = await getDocs(menuRef);
-            const menuItems = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), price: parseFloat(doc.data().price) || 0, sizes: doc.data().sizes || [], extras: doc.data().extras || [] }));
+            const menuItems = querySnapshot.docs.map(doc => ({ 
+                id: doc.id, 
+                ...doc.data(), 
+                price: parseFloat(doc.data().price) || 0, 
+                sizes: doc.data().sizes || [], 
+                extras: doc.data().extras || []
+            }));
             localStorage.setItem(`menu-${restaurantId}`, JSON.stringify(menuItems));
             renderMenu(menuItems);
         };
 
         const renderMenu = items => {
-            const menuList = `<div class="menu-list">${items.map(item => `<div class="menu-item" data-item='${JSON.stringify(item)}'><div><h4>${item.name}</h4><p>GH₵${item.price.toFixed(2)}</p></div><button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add +</button></div>`).join("")}</div>`;
-            elements.menuSection.innerHTML = `<h2 class="fw-bold">Menu</h2>${menuList}`;
+            const menuList = `<div class="menu-list">${items.map(item => `
+                <div class="menu-item" data-item='${JSON.stringify(item)}'>
+                    <div class="menu-item-details">
+                        <h4>${item.name}</h4>
+                        ${(item.sizes.length === 0 && item.extras.length === 0) ? `<p>GH₵${item.price.toFixed(2)}</p>` : '<p></p>'}
+                    </div>
+                    <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
+                </div>`).join("")}</div>`;
+            elements.menuSection.innerHTML = `<h2 class="fw-bold" style="color: #fff;">Menu</h2>${menuList}`;
+        };
+
+        const updateTotalPrice = () => {
+            if (!currentItem) return;
+            const sizeIndex = document.querySelector('input[name="size"]:checked')?.value;
+            const selectedSize = sizeIndex ? currentItem.sizes[sizeIndex] : null;
+            let total = selectedSize ? selectedSize.price : currentItem.price;
+            const extras = Array.from(document.querySelectorAll('input[name="extra"]:checked')).map(input => {
+                const qty = parseInt(input.closest('label').querySelector('.extra-qty').textContent);
+                return { price: parseFloat(input.dataset.price), quantity: qty };
+            });
+            extras.forEach(extra => total += extra.price * extra.quantity);
+            elements.totalPrice.textContent = `Total: GH₵${total.toFixed(2)}`;
         };
 
         const showOptionsPanel = item => {
@@ -255,11 +249,62 @@
             elements.optionsTitle.textContent = item.name;
             elements.sizeGroup.style.display = item.sizes.length ? "block" : "none";
             elements.extraGroup.style.display = item.extras.length ? "block" : "none";
-            elements.sizeOptions.innerHTML = item.sizes.length ? item.sizes.map((size, i) => `<label><input type="radio" name="size" value="${i}" ${i === 0 ? "checked" : ""}> ${size.name} (GH₵${size.price.toFixed(2)})</label>`).join("") : "";
-            elements.extraOptions.innerHTML = item.extras.length ? item.extras.map(extra => `<label><input type="checkbox" name="extra" value="${extra.name}" data-price="${extra.price}"> ${extra.name} (GH₵${extra.price.toFixed(2)})</label>`).join("") : "";
-            elements.quantity.textContent = "1";
+            elements.sizeOptions.innerHTML = item.sizes.length ? item.sizes.map((size, i) => `
+                <label>
+                    <input type="radio" name="size" value="${i}" ${i === 0 ? "checked" : ""}>
+                    <span>${size.name.charAt(0).toUpperCase() + size.name.slice(1)}</span>
+                    <span class="price">GH₵${size.price.toFixed(2)}</span>
+                </label>`).join("") : "";
+            elements.extraOptions.innerHTML = item.extras.length ? item.extras.map(extra => `
+                <label>
+                    <input type="checkbox" name="extra" value="${extra.name}" data-price="${extra.price}">
+                    <span>${extra.name.charAt(0).toUpperCase() + extra.name.slice(1)}</span>
+                    <div class="extra-quantity" data-extra="${extra.name}">
+                        <span class="price">GH₵${extra.price.toFixed(2)}</span>
+                        <button class="extra-quantity-btn decrease">-</button>
+                        <span class="extra-qty">0</span>
+                        <button class="extra-quantity-btn increase">+</button>
+                    </div>
+                </label>`).join("") : "";
             elements.vendorNote.value = "";
             elements.optionsPanel.classList.add("show");
+            updateTotalPrice();
+
+            // Initialize extra quantities and behavior
+            document.querySelectorAll('.extra-quantity').forEach(group => {
+                const decreaseBtn = group.querySelector('.decrease');
+                const increaseBtn = group.querySelector('.increase');
+                const qtySpan = group.querySelector('.extra-qty');
+                const checkbox = group.closest('label').querySelector('input[type="checkbox"]');
+                
+                decreaseBtn.onclick = () => {
+                    let qty = parseInt(qtySpan.textContent);
+                    if (qty > 0) {
+                        qtySpan.textContent = qty - 1;
+                        checkbox.checked = qty > 0;
+                        updateTotalPrice();
+                    }
+                };
+                increaseBtn.onclick = () => {
+                    let qty = parseInt(qtySpan.textContent);
+                    qtySpan.textContent = qty + 1;
+                    checkbox.checked = true;
+                    updateTotalPrice();
+                };
+                checkbox.onchange = () => {
+                    if (checkbox.checked && parseInt(qtySpan.textContent) === 0) {
+                        qtySpan.textContent = "1"; // Set to 1 when checked
+                    } else if (!checkbox.checked) {
+                        qtySpan.textContent = "0"; // Reset to 0 when unchecked
+                    }
+                    updateTotalPrice();
+                };
+            });
+
+            // Update total price when size changes
+            document.querySelectorAll('input[name="size"]').forEach(radio => {
+                radio.onchange = updateTotalPrice;
+            });
         };
 
         const hideOptionsPanel = () => {
@@ -271,18 +316,22 @@
             elements.toastMessage.textContent = message;
             elements.toast.className = `toast-container ${type}`;
             elements.toast.classList.add("show");
-            
             setTimeout(() => {
                 elements.toast.classList.remove("show");
                 elements.toast.classList.add("hide");
             }, 5000);
-            
             setTimeout(() => {
                 elements.toast.classList.remove("hide");
             }, 5300);
         };
 
-        const updateCartButton = () => elements.viewCartBtn.classList.toggle("show", cartCount > 0);
+        const updateCartButton = () => {
+            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            const totalCartPrice = cart.reduce((sum, item) => sum + item.price, 0);
+            elements.viewCartBtn.textContent = `View Cart - GH₵${totalCartPrice.toFixed(2)}`;
+            elements.viewCartBtn.classList.toggle("show", cartCount > 0);
+        };
+
         const loadCartCount = () => {
             cartCount = JSON.parse(localStorage.getItem("cart") || "[]").length;
             updateCartButton();
@@ -294,17 +343,15 @@
                 return;
             }
             const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-            
             if (cart.length > 0 && cart[0].restaurantId !== restaurantId) {
                 showToast("Please clear your cart or complete your current order before ordering from a different restaurant", "error");
                 return;
             }
-            
             cart.push(item);
             localStorage.setItem("cart", JSON.stringify(cart));
             cartCount++;
             updateCartButton();
-            showToast(`${item.name} added!`);
+            showToast(`${item.name} added to cart!`, "success");
         };
 
         document.onclick = e => {
@@ -325,8 +372,7 @@
         };
 
         document.getElementById("close-panel").onclick = hideOptionsPanel;
-        document.getElementById("increase-qty").onclick = () => elements.quantity.textContent = parseInt(elements.quantity.textContent) + 1;
-        document.getElementById("decrease-qty").onclick = () => elements.quantity.textContent = Math.max(1, parseInt(elements.quantity.textContent) - 1);
+
         document.getElementById("confirm-add").onclick = () => {
             if (!currentItem || !isRestaurantOpen) {
                 if (!isRestaurantOpen) showToast("This restaurant is currently closed.", "error");
@@ -334,17 +380,23 @@
             }
             const sizeIndex = document.querySelector('input[name="size"]:checked')?.value;
             const selectedSize = sizeIndex ? currentItem.sizes[sizeIndex] : null;
-            const extras = Array.from(document.querySelectorAll('input[name="extra"]:checked')).map(input => ({ name: input.value, price: parseFloat(input.dataset.price) }));
+            const extras = Array.from(document.querySelectorAll('input[name="extra"]:checked')).map(input => {
+                const qty = parseInt(input.closest('label').querySelector('.extra-qty').textContent);
+                return { name: input.value, price: parseFloat(input.dataset.price), quantity: qty };
+            }).filter(extra => extra.quantity > 0);
             const item = {
                 name: selectedSize ? `${currentItem.name} (${selectedSize.name})` : currentItem.name,
                 price: selectedSize ? selectedSize.price : currentItem.price,
                 restaurantId,
-                quantity: parseInt(elements.quantity.textContent),
+                quantity: 1, // Default quantity of 1 for the main item
                 id: Date.now(),
                 extras,
                 note: elements.vendorNote.value.trim()
             };
-            extras.forEach(extra => { item.name += ` + ${extra.name}`; item.price += extra.price; });
+            extras.forEach(extra => { 
+                item.name += ` + ${extra.name} (x${extra.quantity})`; 
+                item.price += extra.price * extra.quantity; 
+            });
             addToCart(item);
             hideOptionsPanel();
         };
