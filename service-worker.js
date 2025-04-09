@@ -1,6 +1,6 @@
 // Updated on 2025-04-08 — Aggressive update strategy, version bump, and cleanup
 
-const CACHE_NAME = "Chawp-cache-v11"; // Bump version for updates
+const CACHE_NAME = "Chawp-cache-v12"; // Bump version for updates
 const urlsToCache = [
     "/",
     "/index.html",

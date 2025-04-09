@@ -301,7 +301,7 @@
         </div>
       </div>
 
-      <script type="module">
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
     
@@ -347,50 +347,15 @@
                 document.querySelector(".trending-section").classList.add("loaded");
                 document.querySelector(".osahan-menu-fotter").classList.add("loaded");
                 document.querySelectorAll(".list-card").forEach(card => card.classList.add("loaded"));
-            }, 50);
-    
+            }, 50); // Tiny delay for buttery effect
+
+            // Load welcome message dynamically
             updateWelcomeMessage();
     
             if ("serviceWorker" in navigator) {
-                // Register with a timestamp to bust cache
-                navigator.serviceWorker.register(`/service-worker.js?v=${Date.now()}`)
-                    .then(registration => {
-                        console.log("Service Worker Registered");
-    
-                        // Force immediate update check
-                        registration.update();
-    
-                        // Handle new service worker installation
-                        registration.addEventListener("updatefound", () => {
-                            const newWorker = registration.installing;
-                            console.log("New service worker found");
-                            newWorker.addEventListener("statechange", () => {
-                                if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-                                    // New content available, skip waiting and reload
-                                    newWorker.postMessage({ type: "SKIP_WAITING" });
-                                }
-                            });
-                        });
-    
-                        // Handle controller change (new SW takes control)
-                        navigator.serviceWorker.addEventListener("controllerchange", () => {
-                            console.log("New service worker activated, reloading...");
-                            window.location.reload();
-                        });
-    
-                        // If there's a waiting worker, activate it
-                        if (registration.waiting) {
-                            registration.waiting.postMessage({ type: "SKIP_WAITING" });
-                        }
-                    })
-                    .catch(error => console.error("Service Worker Registration Failed:", error));
-    
-                // Periodically check for updates (every 5 minutes)
-                setInterval(() => {
-                    navigator.serviceWorker.getRegistration().then(reg => {
-                        if (reg) reg.update();
-                    });
-                }, 5 * 60 * 1000);
+                navigator.serviceWorker.register("service-worker.js")
+                    .then(() => console.log("PWA Ready!"))
+                    .catch(error => console.error("PWA Error:", error));
             }
         });
     </script>
