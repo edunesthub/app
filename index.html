@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+
     <meta name="description" content="Chawp - Sleek Food Delivery">
     <meta name="author" content="VON">
     <meta name="theme-color" content="#2c2c2c">
@@ -39,20 +40,38 @@
     </script>
 
     <style>
+        html {
+            height: 100%;
+            min-height: -webkit-fill-available;
+            overscroll-behavior-y: none;
+            scroll-behavior: smooth;
+            margin: 0;
+        }
         body {
             background: #2c2c2c;
             font-family: 'Poppins', sans-serif;
             color: #fff;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            min-height: -webkit-fill-available;
             overflow-x: hidden;
-            transition: background 0.3s ease;
-            opacity: 1; /* Start fully visible */
+            overscroll-behavior-y: none;
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Ensure main content takes available space */
+        .osahan-home-page {
+            flex: 1 0 auto;
+            padding-bottom: env(safe-area-inset-bottom);
         }
         /* Remove blinking by starting with base styles */
         .trending-section, .welcome-header, .promo-banner, .osahan-menu-fotter {
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-            will-change: opacity, transform; /* GPU acceleration */
+            will-change: opacity, transform;
         }
         .trending-section.loaded, .welcome-header.loaded, .promo-banner.loaded, .osahan-menu-fotter.loaded {
             opacity: 1;
@@ -71,7 +90,6 @@
             opacity: 1;
             transform: scale(1);
         }
-        
         .list-card-image img {
             height: 110px;
             object-fit: cover;
@@ -88,8 +106,19 @@
         .trending-text {color: #fff; font-weight: 600;}
         .text-danger {color: #00c8ff; transition: color 0.3s ease, transform 0.2s ease;}
         .text-danger:hover {color: #00c8ff; transform: scale(1.05);}
-        html, body {-webkit-text-size-adjust: none; touch-action: manipulation; -webkit-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; padding-bottom: calc(70px + env(safe-area-inset-bottom));}
-        input, textarea {font-size: 16px; outline: none; -webkit-user-select: text !important; user-select: text !important; -webkit-touch-callout: default !important; touch-action: auto !important;}
+        /* Adjusted touch and select for better UX */
+        html, body {
+            -webkit-text-size-adjust: none;
+            touch-action: manipulation;
+        }
+        input, textarea {
+            font-size: 16px;
+            outline: none;
+            -webkit-user-select: text !important;
+            user-select: text !important;
+            -webkit-touch-callout: default !important;
+            touch-action: auto !important;
+        }
         *:focus {zoom: 1 !important;}
         .offline-notice {
             display: none;
@@ -109,7 +138,6 @@
             display: block;
             opacity: 1;
         }
-        /* --- ADDED CSS FOR NETWORK ALERTS --- */
         .network-slow-notice {
             display: none;
             text-align: center;
@@ -146,7 +174,6 @@
             background: #e0e0e0;
             transform: scale(1.05);
         }
-        /* --- END ADDED CSS --- */
         .welcome-header {
             padding: 30px 20px;
             text-align: center;
@@ -216,6 +243,14 @@
             background: #1a1a1a;
             box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
             padding: 15px 0;
+            /* Changed: Ensure footer sticks to bottom */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            /* Account for safe area */
+            padding-bottom: env(safe-area-inset-bottom);
         }
         .osahan-menu-fotter a {
             transition: color 0.3s ease, transform 0.2s ease;
@@ -237,7 +272,6 @@
             .welcome-header p {font-size: 1rem;}
             .promo-banner h3 {font-size: 1.5rem;}
             .promo-banner p {font-size: 0.9rem;}
-            /* --- ADDED MEDIA QUERY FOR ALERTS --- */
             .offline-notice, .network-slow-notice {
                 font-size: 0.85rem;
                 padding: 10px;
@@ -247,7 +281,6 @@
                 padding: 5px 10px;
                 font-size: 0.8rem;
             }
-            /* --- END ADDED MEDIA QUERY --- */
         }
         .bg-darks {background: #1a1a1a;}
         .footer-item {
@@ -274,17 +307,14 @@
             background: #00566d;
             transform: scale(1.05);
         }
-
         /* Hide Scrollbar for PWA */
         html, body {
-            overflow-y: scroll;
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
         body::-webkit-scrollbar {
             display: none;
         }
-
         :root {
             --modal-bg: #1a1a1a;
             --modal-color: #fff;
@@ -389,66 +419,63 @@
         }
         #trending-list {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Ensures 2 columns */
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             padding: 15px;
-            width: 100%; /* Ensures it takes full container width */
-            box-sizing: border-box; /* Prevents overflow */
+            width: 100%;
+            box-sizing: border-box;
         }
+        /* Changed: Allow scrolling but constrain to content */
         html, body {
-            touch-action: pan-x pan-y;
-            -webkit-user-scalable: no;
-            -ms-user-scalable: no;
-            user-scalable: no;
+            touch-action: pan-y;
         }
-
-         /* Loading Screen Styles */
-         #loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    opacity: 1;
-    transition: opacity 0.5s ease-out;
-    /* Extend into safe areas */
-    -webkit-overflow-scrolling: touch;
-    overflow: hidden;
-    /* Ensure full coverage */
-    min-height: -webkit-fill-available;
-    min-height: 100vh;
-}
-
-#loading-screen.fade-out {
-    opacity: 0;
-}
-
-#loading-screen h1 {
-    font-family: 'Poppins', sans-serif;
-    font-size: 3rem;
-    font-weight: 700;
-    color: #00c8ff;
-    margin: 0;
-    text-align: center;
-}
-
-/* Ensure main content is hidden until loader is done */
-#main-content.loaded {
-    opacity: 1;
-    transition: opacity 0.3s ease-in;
-}
-
-
+        /* Loading Screen Styles */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+            -webkit-overflow-scrolling: touch;
+            overflow: hidden;
+            min-height: -webkit-fill-available;
+        }
+        #loading-screen.fade-out {
+            opacity: 0;
+        }
+        #loading-screen h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #00c8ff;
+            margin: 0;
+            text-align: center;
+        }
+        /* Ensure main content is hidden until loader is done */
+        #main-content.loaded {
+            opacity: 1;
+            transition: opacity 0.3s ease-in;
+        }
+        /* Changed: Remove extra spacing */
+        .trending-section {
+            margin-bottom: 0;
+        }
+        /* Remove unnecessary <br> spacing */
+        .spacer {
+            display: none;
+        }
     </style>
 </head>
 <body class="fixed-bottom-bar">
     <!-- Loading Screen -->
-    <div id="loading-screen" style="display: none;">
+    <div id="loading-screen">
         <h1>CHAWP</h1>
     </div>
 
@@ -463,46 +490,42 @@
             <h3>Swift Delivery, At Your Door!</h3>
             <p>Order now and enjoy delicious food in minutes.</p>
         </div>
-    </div>
-    <br><br>
-    <div class="trending-section">
-        <div class="container">
-            <div class="d-flex align-items-center">
-                <h5 class="trending-text">Trending Now 🔥</h5>
-                <a class="fw-bold ms-auto text-white" href="home.html">All <i class="feather-chevrons-right"></i></a>
-            </div>
-            <!-- --- MODIFIED OFFLINE NOTICE --- -->
-            <div class="offline-notice">
-                No Internet Connection. Your network appears to be offline. Please check your connection.
-                <button onclick="hideOfflineNotice()">Dismiss</button>
-            </div>
-            <!-- --- ADDED SLOW NETWORK NOTICE --- -->
-            <div class="network-slow-notice">
-                Slow Network Detected. Your connection is taking longer than usual. Please check your network.
-                <button onclick="hideSlowNotice()">Dismiss</button>
-            </div>
-            <!-- --- END ADDED/MODIFIED NOTICES --- -->
-            <div id="trending-list">
-                <div class="list-card loaded">
-                    <div class="list-card-image">
-                        <a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB">
-                            <img alt="Famous Dave's Bar-B-Que" src="img/trending1.png" class="img-fluid item-img" loading="eager">
-                        </a>
-                    </div>
-                    <div class="list-card-body">
-                        <h6 class="mb-1"><a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB" class="text-white">Famous Dave's Bar-B-Que</a></h6>
-                        <p class="time"><a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB"><span><i class="feather-clock me-1"></i>15-30 mins</span></a></p>
-                    </div>
+        <div class="trending-section">
+            <div class="container">
+                <div class="d-flex align-items-center">
+                    <h5 class="trending-text">Trending Now 🔥</h5>
+                    <a class="fw-bold ms-auto text-white" href="home.html">All <i class="feather-chevrons-right"></i></a>
                 </div>
-                <div class="list-card loaded">
-                    <div class="list-card-image">
-                        <a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s">
-                            <img alt="bitch" src="img/popular4.png" class="img-fluid item-img" loading="eager">
-                        </a>
+                <div class="offline-notice">
+                    No Internet Connection. Your network appears to be offline. Please check your connection.
+                    <button onclick="hideOfflineNotice()">Dismiss</button>
+                </div>
+                <div class="network-slow-notice">
+                    Slow Network Detected. Your connection is taking longer than usual. Please check your network.
+                    <button onclick="hideSlowNotice()">Dismiss</button>
+                </div>
+                <div id="trending-list">
+                    <div class="list-card loaded">
+                        <div class="list-card-image">
+                            <a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB">
+                                <img alt="Famous Dave's Bar-B-Que" src="img/trending1.png" class="img-fluid item-img" loading="eager">
+                            </a>
+                        </div>
+                        <div class="list-card-body">
+                            <h6 class="mb-1"><a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB" class="text-white">Famous Dave's Bar-B-Que</a></h6>
+                            <p class="time"><a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB"><span><i class="feather-clock me-1"></i>15-30 mins</span></a></p>
+                        </div>
                     </div>
-                    <div class="list-card-body">
-                        <h6 class="mb-1"><a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s" class="text-white">bitch</a></h6>
-                        <p class="time"><a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s"><span><i class="feather-clock me-1"></i>20-35 mins</span></a></p>
+                    <div class="list-card loaded">
+                        <div class="list-card-image">
+                            <a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s">
+                                <img alt="bitch" src="img/popular4.png" class="img-fluid item-img" loading="eager">
+                            </a>
+                        </div>
+                        <div class="list-card-body">
+                            <h6 class="mb-1"><a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s" class="text-white">bitch</a></h6>
+                            <p class="time"><a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s"><span><i class="feather-clock me-1"></i>20-35 mins</span></a></p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -552,31 +575,31 @@
     <!-- iOS Install Prompt (bottom modal) -->
     <div id="ios-install-prompt" style="display: none;">
         <div class="ios-modal">
-          <p class="title">Install the app</p>
-          <div class="app-info">
-            <img src="https://app.chawp.me/img/icon-192x192.png" alt="App Icon" />
-            <div>
-              <p class="name">Chawp</p>
-              <p class="url">app.chawp.me</p>
+            <p class="title">Install the app</p>
+            <div class="app-info">
+                <img src="https://app.chawp.me/img/icon-192x192.png" alt="App Icon" />
+                <div>
+                    <p class="name">Chawp</p>
+                    <p class="url">app.chawp.me</p>
+                </div>
             </div>
-          </div>
-          <ol>
-            <li>
-                  Press 
-              <span class="share-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 25 27" width="18">
-                    <path d="M0 0h24v24H0V0z" fill="none"/>
-                    <path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .89 2 2z" fill="white"/>
-                  </svg>
-              </span>
-              in the browser menu
-            </li>
-            <li>   Scroll down and tap <span class="btn">Add to Home Screen</span></li>
-            <li>   Look for the <img src="https://app.chawp.me/img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
-          </ol>
-          <button onclick="closePrompt()">OK, Got it</button>
+            <ol>
+                <li>
+                    Press 
+                    <span class="share-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 25 27" width="18">
+                            <path d="M0 0h24v24H0V0z" fill="none"/>
+                            <path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .89 2 2z" fill="white"/>
+                        </svg>
+                    </span>
+                    in the browser menu
+                </li>
+                <li>Scroll down and tap <span class="btn">Add to Home Screen</span></li>
+                <li>Look for the <img src="https://app.chawp.me/img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
+            </ol>
+            <button onclick="closePrompt()">OK, Got it</button>
         </div>
-      </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
@@ -616,7 +639,6 @@
             }
         }
 
-        // --- ADDED NETWORK MONITORING SCRIPT ---
         function hideOfflineNotice() {
             document.querySelector('.offline-notice').style.display = 'none';
         }
@@ -629,7 +651,6 @@
             const offlineNotice = document.querySelector('.offline-notice');
             const slowNotice = document.querySelector('.network-slow-notice');
 
-            // Immediate offline detection
             window.addEventListener('online', () => {
                 document.body.classList.remove('offline');
                 offlineNotice.style.display = 'none';
@@ -643,7 +664,6 @@
                 slowNotice.style.display = 'none';
             });
 
-            // Monitor fetch requests for slow network
             const originalFetch = window.fetch;
             window.fetch = function (...args) {
                 const startTime = performance.now();
@@ -651,13 +671,13 @@
 
                 request.then(response => {
                     const duration = performance.now() - startTime;
-                    if (duration > 2000 && navigator.onLine) { // 2 seconds threshold
+                    if (duration > 2000 && navigator.onLine) {
                         slowNotice.style.display = 'block';
                         setTimeout(() => slowNotice.classList.add('visible'), 10);
                         setTimeout(() => {
                             slowNotice.classList.remove('visible');
                             slowNotice.style.display = 'none';
-                        }, 5000); // Auto-dismiss after 5 seconds
+                        }, 5000);
                     }
                 }).catch(() => {
                     if (!navigator.onLine) {
@@ -670,7 +690,6 @@
                 return request;
             };
         }
-        // --- END ADDED NETWORK MONITORING ---
 
         document.addEventListener("DOMContentLoaded", () => {
             const loadingScreen = document.getElementById("loading-screen");
@@ -678,28 +697,23 @@
             const hasSeenLoader = sessionStorage.getItem("hasSeenLoader");
 
             if (!hasSeenLoader) {
-                // Show loading screen
                 loadingScreen.style.display = "flex";
                 sessionStorage.setItem("hasSeenLoader", "true");
 
-                // Load content in background
                 setTimeout(() => {
-                    // Fade out loading screen
                     loadingScreen.classList.add("fade-out");
                     setTimeout(() => {
                         loadingScreen.style.display = "none";
-                        // Show main content
                         mainContent.classList.add("loaded");
-                        // Apply loaded classes for other animations
                         document.querySelector(".welcome-header").classList.add("loaded");
                         document.querySelector(".promo-banner").classList.add("loaded");
                         document.querySelector(".trending-section").classList.add("loaded");
                         document.querySelector(".osahan-menu-fotter").classList.add("loaded");
                         document.querySelectorAll(".list-card").forEach(card => card.classList.add("loaded"));
-                    }, 500); // Matches CSS transition duration
-                }, 2000); // 2-second delay
+                    }, 500);
+                }, 2000);
             } else {
-                // Skip loading screen, show content immediately
+                loadingScreen.style.display = "none";
                 mainContent.classList.add("loaded");
                 document.querySelector(".welcome-header").classList.add("loaded");
                 document.querySelector(".promo-banner").classList.add("loaded");
@@ -708,10 +722,7 @@
                 document.querySelectorAll(".list-card").forEach(card => card.classList.add("loaded"));
             }
 
-            // Load welcome message dynamically
             updateWelcomeMessage();
-
-            // Start network monitoring
             monitorNetwork();
 
             if ("serviceWorker" in navigator) {
@@ -726,42 +737,43 @@
 
     <script>
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(regs => {
-            for (let reg of regs) {
-              reg.update(); // Force refresh in the background
-            }
-          });
+            navigator.serviceWorker.getRegistrations().then(regs => {
+                for (let reg of regs) {
+                    reg.update();
+                }
+            });
         }
     </script>
 
     <script>
         function isIosSafari() {
-          const ua = window.navigator.userAgent;
-          const isIOS = /iPad|iPhone|iPod/.test(ua);
-          const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
-          const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+            const ua = window.navigator.userAgent;
+            const isIOS = /iPad|iPhone|iPod/.test(ua);
+            const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+            const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
     
-          return isIOS && isSafari && !isStandalone;
+            return isIOS && isSafari && !isStandalone;
         }
     
         function closePrompt() {
-          document.getElementById('ios-install-prompt').style.display = 'none';
+            document.getElementById('ios-install-prompt').style.display = 'none';
         }
     
         window.onload = function () {
-          if (isIosSafari()) {
-            setTimeout(() => {
-              const prompt = document.getElementById('ios-install-prompt');
-              prompt.style.display = 'block';
-              setTimeout(() => prompt.classList.add('visible'), 10); // Smooth slide-in
-            }, 1000);
-          }
+            if (isIosSafari()) {
+                setTimeout(() => {
+                    const prompt = document.getElementById('ios-install-prompt');
+                    prompt.style.display = 'block';
+                    setTimeout(() => prompt.classList.add('visible'), 10);
+                }, 1000);
+            }
         };
     </script>
 
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccecb43c58bf77',t:'MTc0NDA2NDU1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccfc3e5a5fda3f',t:'MTc0NDA2NTE5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92dab957eb46452f',t:'MTc0NDIwOTI1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92f6deea7cad0c0a',t:'MTc0NDUwNDM5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92f6deea7cad0c0a',t:'MTc0NDUwNDM5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading' !== document.readyState && (document.onreadystatechange = e, c())}}}})();</script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92f6f84d4df4bf86',t:'MTc0NDUwNTQzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
