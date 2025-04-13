@@ -18,11 +18,13 @@
             overflow-y: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
-            -webkit-text-size-adjust: none;
-            touch-action: pan-x pan-y;
+            touch-action: pan-y;
             -webkit-user-scalable: no;
             -ms-user-scalable: no;
             user-scalable: no;
+            overscroll-behavior-y: none;
+            -webkit-text-size-adjust: none;
+            -webkit-overflow-scrolling: touch;
         }
         body::-webkit-scrollbar {
             display: none;
@@ -31,9 +33,6 @@
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #2c2c2c;
             color: #ffffff;
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 70px; /* Matches footer height */
             transition: background 0.3s ease;
             display: flex;
             flex-direction: column;
@@ -95,7 +94,8 @@
             margin: 0 auto;
             opacity: 0;
             animation: fadeIn 0.5s ease forwards;
-            flex: 1; /* Ensures container takes available space */
+            flex: 1 0 auto;
+            padding-bottom: 70px;
         }
         .empty-cart {
             text-align: center;
@@ -477,11 +477,9 @@
             </div>
         </div>
     </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-    
         const firebaseConfig = {
             apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
             authDomain: "von600-7982d.firebaseapp.com",
@@ -491,23 +489,19 @@
             appId: "1:164591218045:web:afe17512e16573e7903014",
             measurementId: "G-E69DMPLXBK"
         };
-    
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-    
         const elements = {
             cartContainer: document.getElementById("cart-container"),
             notification: document.getElementById("notification"),
             notificationMessage: document.getElementById("notification-message")
         };
-    
         const showNotification = (message, type = "success") => {
             elements.notificationMessage.textContent = message;
             elements.notification.className = `notification ${type === "error" ? "error" : ""}`;
             elements.notification.classList.add("show");
             setTimeout(() => elements.notification.classList.remove("show"), 2000);
         };
-    
         const getCart = () => JSON.parse(localStorage.getItem("cart") || "[]");
         const saveCart = cart => localStorage.setItem("cart", JSON.stringify(cart));
         const getPersistentDeliveryDetails = () => {
@@ -528,16 +522,13 @@
             }
             return deviceId;
         };
-    
         const renderCart = () => {
             const cart = getCart();
             const persistentDetails = getPersistentDeliveryDetails();
-    
             if (!cart.length) {
                 elements.cartContainer.innerHTML = `<div class="empty-cart"><h2>Your Cart is Empty</h2><p>Looks like you haven't added anything yet.<br>Explore the shops and treat yourself🍔</p><a href="index.html" class="btn btn-primary">Start Shopping</a></div>`;
                 return;
             }
-    
             let subtotal = 0;
             const groupedCart = new Map();
             cart.forEach(item => {
@@ -550,7 +541,6 @@
                     groupedCart.set(key, { ...item, ids: [item.id] });
                 }
             });
-    
             const itemsHTML = Array.from(groupedCart.values()).map(item => {
                 const itemTotal = item.price * item.quantity;
                 subtotal += itemTotal;
@@ -565,7 +555,6 @@
                     </div>
                 </div>`;
             }).join("");
-    
             elements.cartContainer.innerHTML = `
                 <div class="cart-items">${itemsHTML}</div>
                 <div class="delivery-details">
@@ -585,7 +574,6 @@
                     <button id="remove-all-btn" class="btn btn-danger w-100">Remove All <i class="feather-trash-2"></i></button>
                 </div>
             `;
-    
             elements.cartContainer.querySelectorAll(".increase").forEach(btn => btn.onclick = () => updateItemQuantity(btn.closest(".cart-item").dataset.key, 1));
             elements.cartContainer.querySelectorAll(".decrease").forEach(btn => btn.onclick = () => updateItemQuantity(btn.closest(".cart-item").dataset.key, -1));
             elements.cartContainer.querySelectorAll(".remove").forEach(btn => btn.onclick = () => removeItem(btn.closest(".cart-item").dataset.key));
@@ -594,14 +582,12 @@
             document.getElementById("checkout-btn").onclick = proceedToCheckout;
             document.getElementById("remove-all-btn").onclick = removeAllItems;
         };
-    
         const updateItemQuantity = (key, delta) => {
             const cart = getCart();
             cart.filter(item => `${item.name}-${item.price}` === key).forEach(item => item.quantity = Math.max(1, item.quantity + delta));
             saveCart(cart.filter(item => item.quantity > 0));
             renderCart();
         };
-    
         const removeItem = key => {
             const cart = getCart();
             const firstItem = cart.find(item => `${item.name}-${item.price}` === key);
@@ -609,27 +595,21 @@
             renderCart();
             showNotification(`${firstItem.name} removed from cart`);
         };
-    
         const removeAllItems = () => {
             saveCart([]);
             renderCart();
             showNotification("All items removed from cart");
         };
-    
         const saveDeliveryInputs = () => {
             const location = document.getElementById("delivery-location").value.trim();
             const contactNumber = document.getElementById("delivery-contact").value.trim();
             savePersistentDeliveryDetails(location, contactNumber);
         };
-    
         let isProcessing = false;
-    
-        // Define payment callback as a global function
         window.handlePaymentCallback = function(response) {
             const checkoutBtn = document.getElementById("checkout-btn");
             const cart = getCart();
             const persistentDetails = getPersistentDeliveryDetails();
-    
             if (response.status === "success") {
                 const sanitizedCart = cart.filter(item => 
                     item.name && 
@@ -638,9 +618,7 @@
                     typeof item.quantity === "number" && 
                     !isNaN(item.quantity)
                 );
-    
                 const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 5;
-    
                 const orderData = {
                     restaurantId: sanitizedCart[0].restaurantId,
                     items: sanitizedCart.map(item => ({
@@ -662,7 +640,6 @@
                     paymentStatus: "success",
                     paymentDate: new Date().toISOString()
                 };
-    
                 addDoc(collection(db, "orders"), orderData)
                     .then(() => {
                         saveCart([]);
@@ -683,30 +660,24 @@
                 resetCheckoutButton();
             }
         };
-    
         const proceedToCheckout = () => {
             if (isProcessing) return;
             isProcessing = true;
-    
             const checkoutBtn = document.getElementById("checkout-btn");
             checkoutBtn.disabled = true;
             checkoutBtn.classList.add("loading");
-    
             const cart = getCart();
             const persistentDetails = getPersistentDeliveryDetails();
-    
             if (!cart.length) {
                 showNotification("Your cart is empty!", "error");
                 resetCheckoutButton();
                 return;
             }
-    
             if (!persistentDetails.location || !persistentDetails.contactNumber) {
                 showNotification("Please enter your location and contact number!", "error");
                 resetCheckoutButton();
                 return;
             }
-    
             const sanitizedCart = cart.filter(item => 
                 item.name && 
                 typeof item.price === "number" && 
@@ -714,13 +685,11 @@
                 typeof item.quantity === "number" && 
                 !isNaN(item.quantity)
             );
-    
             if (!sanitizedCart.length) {
                 showNotification("Invalid items in cart!", "error");
                 resetCheckoutButton();
                 return;
             }
-    
             const restaurantIds = [...new Set(sanitizedCart.map(item => item.restaurantId))];
             if (restaurantIds.length > 1) {
                 showNotification("Cart contains items from multiple restaurants!", "error");
@@ -732,9 +701,7 @@
                 resetCheckoutButton();
                 return;
             }
-    
             const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 5;
-    
             const handler = PaystackPop.setup({
                 key: "pk_test_93dd3909dd59a3ae47c5a531d8370b49052465ec",
                 email: "customer@chawp.com",
@@ -751,10 +718,8 @@
                     resetCheckoutButton();
                 }
             });
-    
             handler.openIframe();
         };
-    
         const resetCheckoutButton = () => {
             const checkoutBtn = document.getElementById("checkout-btn");
             checkoutBtn.disabled = false;
@@ -762,15 +727,14 @@
             checkoutBtn.innerHTML = `Proceed to Checkout <i class="feather-arrow-right"></i><span class="spinner"></span>`;
             isProcessing = false;
         };
-    
         document.addEventListener("DOMContentLoaded", () => {
             renderCart();
             feather.replace();
         });
-    
         window.addEventListener("online", renderCart);
         window.addEventListener("offline", () => showNotification("You're offline! Some features may be limited.", "error"));
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92fab5f95d967bcc',t:'MTc0NDU0NDY1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92fadc49ba70bfec',t:'MTc0NDU0NjIyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
