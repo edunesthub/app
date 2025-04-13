@@ -98,6 +98,34 @@
             -ms-user-scalable: no;
             user-scalable: no;
         }
+        /* Added styles to remove extra white space */
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .osahan-profile {
+            flex: 1;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 70px; /* Reduced from 100px */
+        }
+        .container {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .py-5 {
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
+        }
+        .osahan-menu-fotter {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
     </style>
 </head>
 <body class="fixed-bottom-bar">
