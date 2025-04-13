@@ -1,5 +1,5 @@
 // Updated on 2025-04-12 — added critical assets for faster load, exclude HTML
-const CACHE_NAME = "Chawp-cache-v18"; // Bump version for new assets
+const CACHE_NAME = "Chawp-cache-v19"; // Bump version for new assets
 const urlsToCache = [
     // Critical assets for initial load
     "/vendor/bootstrap/css/bootstrap.min.css",
