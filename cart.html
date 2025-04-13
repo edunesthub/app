@@ -95,7 +95,7 @@
             opacity: 0;
             animation: fadeIn 0.5s ease forwards;
             flex: 1 0 auto;
-            padding-bottom: 70px;
+            padding-bottom: 100px;
         }
         .empty-cart {
             text-align: center;
@@ -219,7 +219,7 @@
             display: block;
             margin-bottom: 5px;
         }
-        .delivery-details input, .delivery-details textarea {
+        .delivery-details select, .delivery-details input, .delivery-details textarea {
             background: #2c2c2c;
             border: none;
             color: #fff;
@@ -228,9 +228,11 @@
             width: 100%;
             margin-bottom: 10px;
             transition: border 0.3s ease;
+            font-size: 16px;
         }
-        .delivery-details input:focus, .delivery-details textarea:focus {
+        .delivery-details select:focus, .delivery-details input:focus, .delivery-details textarea:focus {
             border: 1px solid #00c8ff;
+            outline: none;
         }
         .order-summary hr, .delivery-details hr {
             border-color: rgba(255,255,255,0.2);
@@ -247,6 +249,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            padding-bottom: 10px; /* Ensures remove button is not blocked by footer */
         }
         .action-buttons .btn {
             padding: 12px;
@@ -317,7 +320,7 @@
             margin-top: 20px;
             font-style: italic;
         }
-        input, textarea {
+        input, select, textarea {
             font-size: 16px;
             outline: none;
             -webkit-user-select: text !important;
@@ -479,7 +482,7 @@
     </div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
         const firebaseConfig = {
             apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
             authDomain: "von600-7982d.firebaseapp.com",
@@ -507,12 +510,13 @@
         const getPersistentDeliveryDetails = () => {
             const details = JSON.parse(localStorage.getItem("deliveryDetails") || "{}");
             return { 
-                location: details.location || "", 
+                hostel: details.hostel || "Hostel A", // Default to Hostel A
+                location: details.location || "",
                 contactNumber: details.contactNumber || ""
             };
         };
-        const savePersistentDeliveryDetails = (location, contactNumber) => {
-            localStorage.setItem("deliveryDetails", JSON.stringify({ location, contactNumber }));
+        const savePersistentDeliveryDetails = (hostel, location, contactNumber) => {
+            localStorage.setItem("deliveryDetails", JSON.stringify({ hostel, location, contactNumber }));
         };
         const getDeviceId = () => {
             let deviceId = localStorage.getItem("deviceId");
@@ -522,7 +526,30 @@
             }
             return deviceId;
         };
-        const renderCart = () => {
+        let deliveryFees = [
+            { id: "hostel_a", name: "Hostel A", fee: 3.00 },
+            { id: "hostel_b", name: "Hostel B", fee: 4.00 },
+            { id: "hostel_c", name: "Hostel C", fee: 5.00 }
+        ];
+        const fetchDeliveryFees = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "deliveryFees"));
+                deliveryFees = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    name: doc.data().name,
+                    fee: doc.data().fee
+                }));
+            } catch (error) {
+                console.error("Error fetching delivery fees:", error);
+                showNotification("Failed to load delivery fees. Using defaults.", "error");
+            }
+        };
+        const getDeliveryFee = (hostelName) => {
+            const hostel = deliveryFees.find(h => h.name === hostelName) || deliveryFees[0];
+            return hostel.fee;
+        };
+        const renderCart = async () => {
+            await fetchDeliveryFees();
             const cart = getCart();
             const persistentDetails = getPersistentDeliveryDetails();
             if (!cart.length) {
@@ -555,18 +582,26 @@
                     </div>
                 </div>`;
             }).join("");
+            const deliveryFee = getDeliveryFee(persistentDetails.hostel);
+            const hostelOptions = deliveryFees.map(hostel => 
+                `<option value="${hostel.name}" ${persistentDetails.hostel === hostel.name ? "selected" : ""}>${hostel.name}</option>`
+            ).join("");
             elements.cartContainer.innerHTML = `
                 <div class="cart-items">${itemsHTML}</div>
                 <div class="delivery-details">
                     <h6>Delivery Details</h6><br>
-                    <label for="delivery-location">Location</label><input type="text" id="delivery-location" value="${persistentDetails.location}" placeholder="e.g., Hostel C Room 919"><br><br>
-                    <label for="delivery-contact">Active Contact Number</label><input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number">
+                    <label for="delivery-hostel">Hostel</label>
+                    <select id="delivery-hostel">${hostelOptions}</select><br><br>
+                    <label for="delivery-location">Room</label>
+                    <input type="text" id="delivery-location" value="${persistentDetails.location}" placeholder="Enter only room number (e.g, 555)"><br><br>
+                    <label for="delivery-contact">Active Contact Number</label>
+                    <input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number">
                 </div>
                 <div class="order-summary">
                     <p>Subtotal <span class="float-end">GH₵${subtotal.toFixed(2)}</span></p>
                     <p>Processing Fee <span class="float-end">GH₵2.00</span></p>
-                    <p>Delivery Fee <span class="float-end">GH₵3.00</span></p>
-                    <hr><h6>Total <span class="float-end">GH₵${(subtotal + 5).toFixed(2)}</span></h6>
+                    <p>Delivery Fee <span class="float-end">GH₵${deliveryFee.toFixed(2)}</span></p>
+                    <hr><h6>Total <span class="float-end">GH₵${(subtotal + 2 + deliveryFee).toFixed(2)}</span></h6>
                 </div>
                 <p class="refund-note"><i class="feather-info"></i> By proceeding with checkout, you agree to our <a href="refund.html">refund policy</a>.</p>
                 <div class="action-buttons">
@@ -577,6 +612,7 @@
             elements.cartContainer.querySelectorAll(".increase").forEach(btn => btn.onclick = () => updateItemQuantity(btn.closest(".cart-item").dataset.key, 1));
             elements.cartContainer.querySelectorAll(".decrease").forEach(btn => btn.onclick = () => updateItemQuantity(btn.closest(".cart-item").dataset.key, -1));
             elements.cartContainer.querySelectorAll(".remove").forEach(btn => btn.onclick = () => removeItem(btn.closest(".cart-item").dataset.key));
+            document.getElementById("delivery-hostel").onchange = saveDeliveryInputs;
             document.getElementById("delivery-location").onchange = saveDeliveryInputs;
             document.getElementById("delivery-contact").onchange = saveDeliveryInputs;
             document.getElementById("checkout-btn").onclick = proceedToCheckout;
@@ -601,9 +637,11 @@
             showNotification("All items removed from cart");
         };
         const saveDeliveryInputs = () => {
+            const hostel = document.getElementById("delivery-hostel").value;
             const location = document.getElementById("delivery-location").value.trim();
             const contactNumber = document.getElementById("delivery-contact").value.trim();
-            savePersistentDeliveryDetails(location, contactNumber);
+            savePersistentDeliveryDetails(hostel, location, contactNumber);
+            renderCart(); // Re-render to update delivery fee
         };
         let isProcessing = false;
         window.handlePaymentCallback = function(response) {
@@ -618,7 +656,8 @@
                     typeof item.quantity === "number" && 
                     !isNaN(item.quantity)
                 );
-                const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 5;
+                const deliveryFee = getDeliveryFee(persistentDetails.hostel);
+                const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 2 + deliveryFee;
                 const orderData = {
                     restaurantId: sanitizedCart[0].restaurantId,
                     items: sanitizedCart.map(item => ({
@@ -630,9 +669,12 @@
                     })),
                     totalAmount: totalAmount,
                     deliveryDetails: {
+                        hostel: persistentDetails.hostel,
                         location: persistentDetails.location,
                         contactNumber: persistentDetails.contactNumber
                     },
+                    deliveryFee: deliveryFee,
+                    processingFee: 2.00,
                     timestamp: new Date().toISOString(),
                     status: "pending",
                     deviceId: getDeviceId(),
@@ -660,7 +702,7 @@
                 resetCheckoutButton();
             }
         };
-        const proceedToCheckout = () => {
+        const proceedToCheckout = async () => {
             if (isProcessing) return;
             isProcessing = true;
             const checkoutBtn = document.getElementById("checkout-btn");
@@ -673,8 +715,8 @@
                 resetCheckoutButton();
                 return;
             }
-            if (!persistentDetails.location || !persistentDetails.contactNumber) {
-                showNotification("Please enter your location and contact number!", "error");
+            if (!persistentDetails.hostel || !persistentDetails.location || !persistentDetails.contactNumber) {
+                showNotification("Please select a hostel, enter your room number, and contact number!", "error");
                 resetCheckoutButton();
                 return;
             }
@@ -701,7 +743,8 @@
                 resetCheckoutButton();
                 return;
             }
-            const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 5;
+            const deliveryFee = getDeliveryFee(persistentDetails.hostel);
+            const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 2 + deliveryFee;
             const handler = PaystackPop.setup({
                 key: "pk_test_93dd3909dd59a3ae47c5a531d8370b49052465ec",
                 email: "customer@chawp.com",
@@ -734,7 +777,5 @@
         window.addEventListener("online", renderCart);
         window.addEventListener("offline", () => showNotification("You're offline! Some features may be limited.", "error"));
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92fab5f95d967bcc',t:'MTc0NDU0NDY1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92fadc49ba70bfec',t:'MTc0NDU0NjIyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
