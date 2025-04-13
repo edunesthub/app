@@ -15,182 +15,379 @@
     <link href="vendor/sidebar/demo.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
     <style>
-        body {background:#2c2c2c; font-family: 'Poppins', sans-serif; color: #fff; transition:background 0.3s ease;}
-        .text-danger {color: #00c8ff !important; transition: color 0.3s ease, transform 0.3s ease;}
-        .text-danger:hover {color: #00c8ff !important; transform: scale(1.05);}
-        input, textarea {font-size: 16px; outline: none; -webkit-appearance: none; transition:border 0.3s ease;}
-        input:focus, textarea:focus {border:1px solid #00c8ff;}
-        *:focus {zoom: 1 !important;}
-        html, body {-webkit-text-size-adjust: none; touch-action: manipulation;}
-        .most_popular .list-card {background: #565656; border-radius: 12px; overflow: hidden; position: relative; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); transition: transform 0.3s ease, box-shadow 0.3s ease; opacity: 0; animation: fadeIn 0.5s ease forwards;}
-        .most_popular .list-card:hover {transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0, 200, 255, 0.2);}
-        .most_popular .list-card-image {position: relative; height: 160px; overflow: hidden;}
-        .most_popular .list-card-image img {height: 100%; width: 100%; object-fit: cover; transition: transform 0.3s ease, opacity 0.3s ease; opacity: 0.9;}
-        .most_popular .list-card-image img.loaded {opacity: 1;}
-        .most_popular .list-card:hover .list-card-image img {transform: scale(1.08);}
-        .most_popular .list-card-image::after {content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);}
-        .most_popular .list-card-body {padding: 12px; height: 80px; position: relative;}
-        .most_popular .list-card-body h6 {font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 6px; overflow-wrap: break-word; white-space: normal; max-height: 36px; line-height: 1.2; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);}
-        .most_popular .list-card-body p {font-size: 0.8rem; color: #d0d0d0; margin-bottom: 0; margin-top: 4px; display: flex; flex-wrap: wrap;}
-        .most_popular .list-card-badge {position: absolute; top: 10px; right: 10px;}
-        .most_popular .list-card-badge span {background: #00c8ff; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; color: #fff; font-weight: 600;}
+        html, body {
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+            touch-action: pan-y;
+            -webkit-user-scalable: no;
+            -ms-user-scalable: no;
+            user-scalable: no;
+            overscroll-behavior-y: none;
+            -webkit-text-size-adjust: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
+        }
+        body {
+            background: #2c2c2c;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            transition: background 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .osahan-home-page {
+            flex: 1 0 auto;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .all {
+            padding-bottom: 70px; /* Matches footer height */
+            flex: 1;
+        }
+        .container {
+            flex: 1;
+        }
+        .text-danger {
+            color: #00c8ff !important;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .text-danger:hover {
+            color: #00c8ff !important;
+            transform: scale(1.05);
+        }
+        input, textarea {
+            font-size: 16px;
+            outline: none;
+            -webkit-appearance: none;
+            transition: border 0.3s ease;
+        }
+        input:focus, textarea:focus {
+            border: 1px solid #00c8ff;
+        }
+        *:focus {
+            zoom: 1 !important;
+        }
+        .most_popular .list-card {
+            background: #565656;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .most_popular .list-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 200, 255, 0.2);
+        }
+        .most_popular .list-card-image {
+            position: relative;
+            height: 160px;
+            overflow: hidden;
+        }
+        .most_popular .list-card-image img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0.9;
+        }
+        .most_popular .list-card-image img.loaded {
+            opacity: 1;
+        }
+        .most_popular .list-card:hover .list-card-image img {
+            transform: scale(1.08);
+        }
+        .most_popular .list-card-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+        }
+        .most_popular .list-card-body {
+            padding: 12px;
+            height: 80px;
+            position: relative;
+        }
+        .most_popular .list-card-body h6 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+            overflow-wrap: break-word;
+            white-space: normal;
+            max-height: 36px;
+            line-height: 1.2;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        .most_popular .list-card-body p {
+            font-size: 0.8rem;
+            color: #d0d0d0;
+            margin-bottom: 0;
+            margin-top: 4px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .most_popular .list-card-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .most_popular .list-card-badge span {
+            background: #00c8ff;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #fff;
+            font-weight: 600;
+        }
         .most_popular .list-card-badge span:where(.closed) {
-    background: #ff3b30; /* Red for closed */
-}
-        .all {padding-bottom: 100px;}
-        .search-dropdown {position: absolute; top: 100%; left: 0; width: 100%; background: #161616; border: 1px solid #ddd; border-radius: 0 0 5px 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); max-height: 200px; overflow-y: auto; display: none; z-index: 1000;}
-        .search-dropdown div {padding: 10px; cursor: pointer; transition: background 0.2s ease;}
-        .search-dropdown div:hover {background: #000000;}
-        .offline-notice {display: none; text-align: center; padding: 20px; color: #fff; background: #ff3b30; border-radius: 10px; margin: 20px; opacity: 0; transition: opacity 0.5s ease;}
-        body.offline .offline-notice {display: block; opacity: 1;}
-        .time span, .fee span {background: #4a4a4a; color: #fff; padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 500; margin-right: 8px;}
-        .list-card {background: #565656; border-radius: 12px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; opacity: 0; animation: fadeIn 0.5s ease forwards;}
-        .list-card:hover {transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0, 200, 255, 0.2);}
-        .list-card-image {height: 140px; position: relative;}
-        .list-card-image img {height: 100%; width: 100%; object-fit: cover;}
-        .list-card-body {height: 80px; padding: 12px; text-align: left;}
-        .list-card-body h6 {font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; max-height: 36px;}
-        .bg-darker {background: #565656 !important;}
-        .bg-darks {background: #1a1a1a !important;}
-        @keyframes fadeIn {from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);}}
-        .list-card a, .list-card h6 {color: inherit; overflow: hidden; white-space: nowrap; font-size: 15px; text-overflow: ellipsis;}
-        .promo-messages {position: relative; width: 95%; max-width: 800px; height: 100px; overflow: hidden; margin: 0 auto 10px; user-select: none; border-radius: 40px; display: flex; justify-content: center; align-items: center; opacity: 0; animation: fadeIn 0.5s ease forwards;}
-        .promo-messages.hidden {display: none;}
-        .promo-messages .message {position: absolute; top: 0; left: 100%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.1); border-radius: 40px; transition: left 0.8s ease-in-out;}
-        .promo-messages .message.active {left: 0;}
-        .promo-messages .message.exit {left: -100%;}
-        .promo-messages .message h4 {color: #fff; font-weight: 700; font-size: 1.5rem; text-align: center; padding: 0 20px; margin: 0; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);}
+            background: #ff3b30; /* Red for closed */
+        }
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #161616;
+            border: 1px solid #ddd;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+        .search-dropdown div {
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .search-dropdown div:hover {
+            background: #000000;
+        }
+        .offline-notice {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #fff;
+            background: #ff3b30;
+            border-radius: 10px;
+            margin: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        body.offline .offline-notice {
+            display: block;
+            opacity: 1;
+        }
+        .time span, .fee span {
+            background: #4a4a4a;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 8px;
+        }
+        .list-card {
+            background: #565656;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .list-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 200, 255, 0.2);
+        }
+        .list-card-image {
+            height: 140px;
+            position: relative;
+        }
+        .list-card-image img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+        .list-card-body {
+            height: 80px;
+            padding: 12px;
+            text-align: left;
+        }
+        .list-card-body h6 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+            max-height: 36px;
+        }
+        .bg-darker {
+            background: #565656 !important;
+        }
+        .bg-darks {
+            background: #1a1a1a !important;
+        }
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(10px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        .list-card a, .list-card h6 {
+            color: inherit;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 15px;
+            text-overflow: ellipsis;
+        }
+        .promo-messages {
+            position: relative;
+            width: 95%;
+            max-width: 800px;
+            height: 100px;
+            overflow: hidden;
+            margin: 0 auto 10px;
+            user-select: none;
+            border-radius: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .promo-messages.hidden {
+            display: none;
+        }
+        .promo-messages .message {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            transition: left 0.8s ease-in-out;
+        }
+        .promo-messages .message.active {
+            left: 0;
+        }
+        .promo-messages .message.exit {
+            left: -100%;
+        }
+        .promo-messages .message h4 {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 0 20px;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
         .footer-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1px;
-    border-radius: 10px;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-.footer-item.selected {
-    background: rgba(0, 200, 255, 0.2); /* Matches your #00c8ff theme color */
-    transform: scale(1.05);
-}
-.footer-item a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.footer-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-.footer-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1px;
-    border-radius: 10px;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-.footer-item.selected {
-    background: #00566d; /* Matches your #00c8ff theme color */
-    transform: scale(1.05);
-}
-.footer-item a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.footer-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-/* Hide Scrollbar for PWA */
-html, body {
-    overflow-y: scroll; /* Ensures scrolling is still possible */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-}
-body::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-}
-html, body {
-    touch-action: pan-x pan-y;
-    -webkit-user-scalable: no;
-    -ms-user-scalable: no;
-    user-scalable: no;
-}
-
-/* --- NETWORK ALERTS CSS --- */
-.offline-notice {
-    display: none;
-    text-align: center;
-    padding: 15px;
-    color: #fff;
-    background: #ff3b30;
-    border-radius: 12px;
-    margin: 20px 10px;
-    font-size: 0.9rem;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-body.offline .offline-notice {
-    display: block;
-    opacity: 1;
-}
-.network-slow-notice {
-    display: none;
-    text-align: center;
-    padding: 12px;
-    color: #fff;
-    background: #ffa500;
-    border-radius: 12px;
-    margin: 20px 10px;
-    font-size: 0.9rem;
-    opacity: 0;
-    transition: opacity 0.5s ease, transform 0.3s ease;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    transform: translateY(-10px);
-}
-.network-slow-notice.visible {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
-}
-.offline-notice button, .network-slow-notice button {
-    background: #fff;
-    color: #000;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-left: 10px;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
-}
-.offline-notice button:hover, .network-slow-notice button:hover {
-    background: #e0e0e0;
-    transform: scale(1.05);
-}
-@media (max-width: 576px) {
-    .offline-notice, .network-slow-notice {
-        font-size: 0.85rem;
-        padding: 10px;
-        margin: 15px 8px;
-    }
-    .offline-notice button, .network-slow-notice button {
-        padding: 5px 10px;
-        font-size: 0.8rem;
-    }
-}
-/* --- END NETWORK ALERTS CSS --- */
-
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1px;
+            border-radius: 10px;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        .footer-item.selected {
+            background: #00566d; /* Matches your #00c8ff theme color */
+            transform: scale(1.05);
+        }
+        .footer-item a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .footer-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        /* Network Alerts */
+        .offline-notice {
+            display: none;
+            text-align: center;
+            padding: 15px;
+            color: #fff;
+            background: #ff3b30;
+            border-radius: 12px;
+            margin: 20px 10px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        body.offline .offline-notice {
+            display: block;
+            opacity: 1;
+        }
+        .network-slow-notice {
+            display: none;
+            text-align: center;
+            padding: 12px;
+            color: #fff;
+            background: #ffa500;
+            border-radius: 12px;
+            margin: 20px 10px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transform: translateY(-10px);
+        }
+        .network-slow-notice.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .offline-notice button, .network-slow-notice button {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .offline-notice button:hover, .network-slow-notice button:hover {
+            background: #e0e0e0;
+            transform: scale(1.05);
+        }
+        @media (max-width: 576px) {
+            .offline-notice, .network-slow-notice {
+                font-size: 0.85rem;
+                padding: 10px;
+                margin: 15px 8px;
+            }
+            .offline-notice button, .network-slow-notice button {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body class="fixed-bottom-bar">
     <div class="osahan-home-page">
         <div class="bg-transparent p-3">
             <div class="text-white title d-flex align-items-center">
-                <a href="home.html" class="text-white small fw-bold text-decoration-none"><p class="h4"><i class="feather-map-pin"></i></p></a>  
+                <a href="home.html" class="text-white small fw-bold text-decoration-none"><p class="h4"><i class="feather-map-pin"></i></p></a>&nbsp;
                 <h4 class="fw-bold">UPSA</h4>
             </div>
             <div class="input-group bg-white rounded shadow-sm mt-3 position-relative">
@@ -204,43 +401,18 @@ body.offline .offline-notice {
             <div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div>
             <div class="message"><h4>Eat, Get Energy and Study.</h4></div>
             <div class="message"><h4>Don't overstress yourself though...</h4></div>
-            <!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
-    <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
-    </div><!--Duplicate for seamless cycle-->
+            <!-- Duplicate for seamless cycle -->
+            <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div>
+            <div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div>
+            <div class="message"><h4>Eat, Get Energy and Study.</h4></div>
+            <div class="message"><h4>Don't overstress yourself though...</h4></div>
         </div><br>
         <div class="container">
             <div class="all">
                 <div class="body-color title d-flex align-items-center" style="padding-top: 0; padding-bottom: 15px;">
                     <h5 class="m-0">All Restaurants</h5>
                 </div>
-
-                <!--Offline html and script-->
+                <!-- Offline html and script -->
                 <div class="offline-notice">
                     You’re offline. Check your connection.
                 </div>
@@ -249,54 +421,45 @@ body.offline .offline-notice {
                 </div>
                 <script>
                     function monitorNetwork() {
-                const offlineNotice = document.querySelector('.offline-notice');
-                const slowNotice = document.querySelector('.network-slow-notice');
-            
-                // Immediate offline detection
-                window.addEventListener('online', () => {
-                    document.body.classList.remove('offline');
-                    offlineNotice.style.display = 'none';
-                    slowNotice.style.display = 'none';
-                });
-            
-                window.addEventListener('offline', () => {
-                    document.body.classList.add('offline');
-                    offlineNotice.style.display = 'block';
-                    setTimeout(() => offlineNotice.style.opacity = '1', 10);
-                    slowNotice.style.display = 'none';
-                });
-            
-                // Monitor fetch requests for slow network
-                const originalFetch = window.fetch;
-                window.fetch = function (...args) {
-                    const startTime = performance.now();
-                    const request = originalFetch.apply(this, args);
-            
-                    request.then(response => {
-                        const duration = performance.now() - startTime;
-                        if (duration > 2000 && navigator.onLine) { // 2 seconds threshold
-                            slowNotice.style.display = 'block';
-                            setTimeout(() => slowNotice.classList.add('visible'), 10);
-                            setTimeout(() => {
-                                slowNotice.classList.remove('visible');
-                                slowNotice.style.display = 'none';
-                            }, 5000); // Auto-dismiss after 5 seconds
-                        }
-                    }).catch(() => {
-                        if (!navigator.onLine) {
+                        const offlineNotice = document.querySelector('.offline-notice');
+                        const slowNotice = document.querySelector('.network-slow-notice');
+                        window.addEventListener('online', () => {
+                            document.body.classList.remove('offline');
+                            offlineNotice.style.display = 'none';
+                            slowNotice.style.display = 'none';
+                        });
+                        window.addEventListener('offline', () => {
                             document.body.classList.add('offline');
                             offlineNotice.style.display = 'block';
                             setTimeout(() => offlineNotice.style.opacity = '1', 10);
-                        }
-                    });
-            
-                    return request;
-                };
-            }
-            // --- END NETWORK MONITORING ---
+                            slowNotice.style.display = 'none';
+                        });
+                        const originalFetch = window.fetch;
+                        window.fetch = function (...args) {
+                            const startTime = performance.now();
+                            const request = originalFetch.apply(this, args);
+                            request.then(response => {
+                                const duration = performance.now() - startTime;
+                                if (duration > 2000 && navigator.onLine) {
+                                    slowNotice.style.display = 'block';
+                                    setTimeout(() => slowNotice.classList.add('visible'), 10);
+                                    setTimeout(() => {
+                                        slowNotice.classList.remove('visible');
+                                        slowNotice.style.display = 'none';
+                                    }, 5000);
+                                }
+                            }).catch(() => {
+                                if (!navigator.onLine) {
+                                    document.body.classList.add('offline');
+                                    offlineNotice.style.display = 'block';
+                                    setTimeout(() => offlineNotice.style.opacity = '1', 10);
+                                }
+                            });
+                            return request;
+                        };
+                    }
                 </script>
-                <!-- End of Offline html and script-->
-
+                <!-- End of Offline html and script -->
                 <div class="most_popular">
                     <div class="row" id="all-restaurants"></div>
                 </div>
@@ -315,12 +478,12 @@ body.offline .offline-notice {
             <div class="col">
                 <div class="footer-item selected">
                     <a href="home.html" class="text-white small fw-bold text-decoration-none">
-                        <p class="h4 m-0"><i class="feather-home text-white"></i></p>&nbsp;&nbsp;Home&nbsp; 
+                        <p class="h4 m-0"><i class="feather-home text-white"></i></p>&nbsp;&nbsp;Home&nbsp;
                     </a>
                 </div>
             </div>
             <div class="col">
-                <div class="footer-item ">
+                <div class="footer-item">
                     <a href="cart.html" class="text-white small fw-bold text-decoration-none">
                         <p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart
                     </a>
@@ -334,7 +497,7 @@ body.offline .offline-notice {
                 </div>
             </div>
             <div class="col">
-                <div class="footer-item ">
+                <div class="footer-item">
                     <a href="profile.html" class="text-white small fw-bold text-decoration-none">
                         <p class="h4 m-0"><i class="feather-user"></i></p>Profile
                     </a>
@@ -342,18 +505,14 @@ body.offline .offline-notice {
             </div>
         </div>
     </div>
-
-   
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
     <script src="vendor/slick/slick/slick.min.js" defer></script>
     <script src="vendor/sidebar/hc-offcanvas-nav.js" defer></script>
     <script src="js/osahan.js" defer></script>
     <script src="cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="111d9aae73bae4dc8762fda2-|49" defer></script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-    
         const firebaseConfig = {
             apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
             authDomain: "von600-7982d.firebaseapp.com",
@@ -363,12 +522,10 @@ body.offline .offline-notice {
             appId: "1:164591218045:web:afe17512e16573e7903014",
             measurementId: "G-E69DMPLXBK"
         };
-    
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         let allRestaurants = [];
         const restaurantList = document.getElementById("all-restaurants");
-    
         const loadAllRestaurants = async () => {
             const cachedData = localStorage.getItem("allRestaurantsIndex");
             if (cachedData) {
@@ -380,16 +537,13 @@ body.offline .offline-notice {
             } else {
                 restaurantList.innerHTML = "<div class='col-12 text-center'><p>Loading...</p></div>";
             }
-    
             try {
                 const q = query(collection(db, "restaurant"), orderBy("delivery_time", "asc"));
                 const querySnapshot = await getDocs(q);
-    
                 if (querySnapshot.empty) {
                     restaurantList.innerHTML = "<div class='col-12 text-center'><p>No restaurants found.</p></div>";
                     return;
                 }
-    
                 allRestaurants = [];
                 let output = "";
                 querySnapshot.forEach(doc => {
@@ -397,28 +551,27 @@ body.offline .offline-notice {
                     const restaurantId = doc.id;
                     const deliveryTime = data.delivery_time || "N/A";
                     const deliveryFee = data.delivery_fee || "25.00";
-                    const isOpen = data.isOpen !== false; // Default to true if isOpen is undefined
+                    const isOpen = data.isOpen !== false;
                     allRestaurants.push({ id: restaurantId, ...data });
                     output += `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
-        <a href="restaurant.html?id=${restaurantId}" class="d-block text-decoration-none">
-            <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
-                <div class="list-card-image">
-                    <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
-                </div>
-                <div class="list-card-body">
-                    <h6 class="mb-1 text-white">${data.name}</h6>
-                    <p class="mb-0">
-                        <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
-                    </p>
-                </div>
-                <div class="list-card-badge">
-        <span class="${isOpen ? 'open' : 'closed'}">${isOpen ? 'Open' : 'Closed'}</span>
-    </div>
-            </div>
-        </a>
-    </div>`;
+                        <a href="restaurant.html?id=${restaurantId}" class="d-block text-decoration-none">
+                            <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
+                                <div class="list-card-image">
+                                    <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
+                                </div>
+                                <div class="list-card-body">
+                                    <h6 class="mb-1 text-white">${data.name}</h6>
+                                    <p class="mb-0">
+                                        <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
+                                    </p>
+                                </div>
+                                <div class="list-card-badge">
+                                    <span class="${isOpen ? 'open' : 'closed'}">${isOpen ? 'Open' : 'Closed'}</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>`;
                 });
-    
                 requestAnimationFrame(() => {
                     restaurantList.innerHTML = output;
                     document.querySelectorAll(".list-card-image img").forEach(img => {
@@ -435,29 +588,28 @@ body.offline .offline-notice {
                 document.body.classList.add("offline");
             }
         };
-    
         const filterRestaurants = searchTerm => {
             const filtered = allRestaurants.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()));
             let output = filtered.length ? filtered.map(data => {
                 const deliveryTime = data.delivery_time || "N/A";
                 const deliveryFee = data.delivery_fee || "3.00";
-                const isOpen = data.isOpen !== false; // Default to true if isOpen is undefined
+                const isOpen = data.isOpen !== false;
                 return `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
-        <a href="restaurant.html?id=${data.id}" class="d-block text-decoration-none">
-            <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
-                <div class="list-card-image">
-                    <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
-                </div>
-                <div class="list-card-body">
-                    <h6 class="mb-1 text-white">${data.name}</h6>
-                    <p class="mb-0">
-                        <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
-                    </p>
-                </div>
-                <div class="list-card-badge"><span>${isOpen ? 'Open' : 'Closed'}</span></div>
-            </div>
-        </a>
-    </div>`;
+                    <a href="restaurant.html?id=${data.id}" class="d-block text-decoration-none">
+                        <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
+                            <div class="list-card-image">
+                                <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
+                            </div>
+                            <div class="list-card-body">
+                                <h6 class="mb-1 text-white">${data.name}</h6>
+                                <p class="mb-0">
+                                    <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
+                                </p>
+                            </div>
+                            <div class="list-card-badge"><span>${isOpen ? 'Open' : 'Closed'}</span></div>
+                        </div>
+                    </a>
+                </div>`;
             }).join("") : "<div class='col-12 text-center'><p>No matching restaurants found.</p></div>";
             requestAnimationFrame(() => {
                 restaurantList.innerHTML = output;
@@ -467,12 +619,10 @@ body.offline .offline-notice {
                 });
             });
         };
-    
         const updateDropdown = searchTerm => {
             const dropdown = document.getElementById("search-dropdown");
             dropdown.innerHTML = "";
             if (!searchTerm) return dropdown.style.display = "none";
-    
             const suggestions = allRestaurants.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, 5);
             if (suggestions.length) {
                 suggestions.forEach(r => {
@@ -490,7 +640,6 @@ body.offline .offline-notice {
                 dropdown.style.display = "none";
             }
         };
-    
         const debounce = (func, wait) => {
             let timeout;
             return (...args) => {
@@ -498,7 +647,6 @@ body.offline .offline-notice {
                 timeout = setTimeout(() => func(...args), wait);
             };
         };
-    
         document.addEventListener("DOMContentLoaded", () => {
             loadAllRestaurants();
             const searchInput = document.getElementById("search-input");
@@ -507,22 +655,18 @@ body.offline .offline-notice {
             let currentMessage = 0;
             let touchStartX = 0;
             let touchEndX = 0;
-    
             const debouncedFilter = debounce(term => {
                 updateDropdown(term);
                 term ? filterRestaurants(term) : loadAllRestaurants();
                 promoMessages.classList.toggle('hidden', !!term);
             }, 300);
-    
             searchInput.oninput = e => debouncedFilter(e.target.value.trim());
-    
             document.onclick = e => {
                 const dropdown = document.getElementById("search-dropdown");
                 if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
                     dropdown.style.display = "none";
                 }
             };
-    
             function showNextMessage() {
                 messages[currentMessage].classList.remove('active');
                 messages[currentMessage].style.left = '-100%';
@@ -533,24 +677,20 @@ body.offline .offline-notice {
                     messages[currentMessage].style.left = '0';
                 }, 50);
             }
-    
             promoMessages.addEventListener('touchstart', e => {
                 touchStartX = e.changedTouches[0].screenX;
                 e.stopPropagation();
             });
-    
             promoMessages.addEventListener('touchend', e => {
-                touchEndX = e.changedTouches[0].screenXnX;
+                touchEndX = e.changedTouches[0].screenX;
                 handleSwipe();
                 e.stopPropagation();
             });
-    
             promoMessages.addEventListener('mousedown', e => {
                 touchStartX = e.screenX;
                 promoMessages.addEventListener('mousemove', onMouseMove);
                 e.stopPropagation();
             });
-    
             document.addEventListener('mouseup', e => {
                 if (promoMessages.contains(e.target)) {
                     touchEndX = e.screenX;
@@ -558,12 +698,10 @@ body.offline .offline-notice {
                     handleSwipe();
                 }
             });
-    
             function onMouseMove(e) {
                 touchEndX = e.screenX;
                 e.stopPropagation();
             }
-    
             function handleSwipe() {
                 const swipeDistance = touchStartX - touchEndX;
                 if (swipeDistance > 50) {
@@ -579,12 +717,10 @@ body.offline .offline-notice {
                     }, 50);
                 }
             }
-    
             messages[currentMessage].classList.add('active');
             messages[currentMessage].style.left = '0';
             setInterval(showNextMessage, 3800);
         });
-    
         window.ononline = () => {
             document.body.classList.remove("offline");
             loadAllRestaurants();
@@ -598,5 +734,9 @@ body.offline .offline-notice {
             document.body.classList.add("offline");
         };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9277cf1a288c7221',t:'MTc0MzE3MjA1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92785e7add8532fe',t:'MTc0MzE3NzkyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9278d6b33beb44d8',t:'MTc0MzE4Mjg1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9277cf1a288c7221',t:'MTc0MzE3MjA1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92785e7add8532fe',t:'MTc0MzE3NzkyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9278d6b33beb44d8',t:'MTc0MzE4Mjg1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92facaa63b90bd2b',t:'MTc0NDU0NTUwNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
 </html>
