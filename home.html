@@ -106,6 +106,10 @@ html, body {
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
 }
+/* Changed: Allow scrolling but constrain to content */
+html, body {
+            touch-action: pan-y;
+        }
 body::-webkit-scrollbar {
     display: none; /* Chrome, Safari, and Opera */
 }
