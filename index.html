@@ -189,11 +189,53 @@
     -ms-user-scalable: no;
     user-scalable: no;
 }
+
+/* Loading Screen Styles */
+#loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+        #loading-screen.fade-out {
+            opacity: 0;
+        }
+        #loading-screen h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #00c8ff;
+            margin: 0;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        /* Ensure main content is hidden until loader is done */
+        #main-content.loaded {
+            opacity: 1;
+            transition: opacity 0.3s ease-in;
+        }
+
     </style>
 </head>
 <body class="fixed-bottom-bar">
-    <div class="osahan-home-page">
-        <div class="welcome-header">
+    <!-- Loading Screen -->
+    <div id="loading-screen" style="display: none;">
+        <h1>CHAWP</h1>
+    </div>
+
+<div class="osahan-home-page" id="main-content">        
+    <div class="welcome-header">
             <div class="title d-flex align-items-center justify-content-center">
                 <h1 id="welcome-message">Hi!</h1>
             </div>
@@ -205,7 +247,7 @@
         </div>
     </div>
 <br><br>
-    <div class="trending-section">
+    <div class="trending-section" >
         <div class="container">
             <div class="d-flex align-items-center">
                 <h5 class="trending-text">Trending Now 🔥</h5>
@@ -345,43 +387,53 @@
                 });
             }
         }
-    
+
         document.addEventListener("DOMContentLoaded", () => {
-            // Apply loaded classes with a slight delay for smooth transition
-            setTimeout(() => {
+            const loadingScreen = document.getElementById("loading-screen");
+            const mainContent = document.getElementById("main-content");
+            const hasSeenLoader = sessionStorage.getItem("hasSeenLoader");
+
+            if (!hasSeenLoader) {
+                // Show loading screen
+                loadingScreen.style.display = "flex";
+                sessionStorage.setItem("hasSeenLoader", "true");
+
+                // Load content in background
+                setTimeout(() => {
+                    // Fade out loading screen
+                    loadingScreen.classList.add("fade-out");
+                    setTimeout(() => {
+                        loadingScreen.style.display = "none";
+                        // Show main content
+                        mainContent.classList.add("loaded");
+                        // Apply loaded classes for other animations
+                        document.querySelector(".welcome-header").classList.add("loaded");
+                        document.querySelector(".promo-banner").classList.add("loaded");
+                        document.querySelector(".trending-section").classList.add("loaded");
+                        document.querySelector(".osahan-menu-fotter").classList.add("loaded");
+                        document.querySelectorAll(".list-card").forEach(card => card.classList.add("loaded"));
+                    }, 500); // Matches CSS transition duration
+                }, 2000); // 2-second delay
+            } else {
+                // Skip loading screen, show content immediately
+                mainContent.classList.add("loaded");
                 document.querySelector(".welcome-header").classList.add("loaded");
                 document.querySelector(".promo-banner").classList.add("loaded");
                 document.querySelector(".trending-section").classList.add("loaded");
                 document.querySelector(".osahan-menu-fotter").classList.add("loaded");
                 document.querySelectorAll(".list-card").forEach(card => card.classList.add("loaded"));
-            }, 50); // Tiny delay for buttery effect
+            }
 
             // Load welcome message dynamically
             updateWelcomeMessage();
-    
+
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("service-worker.js", { updateViaCache: "none" })
                     .then(registration => {
-                        registration.update(); // Force immediate update in the background
+                        registration.update();
                     })
                     .catch(error => console.error("PWA Error:", error));
             }
-        });
-    </script>
-
-    <!-- Cache-busting for assets -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const timestamp = Date.now();
-            const links = document.querySelectorAll('link[rel="stylesheet"], script[src]');
-            links.forEach(link => {
-                const url = link.href || link.src;
-                if (url && !url.includes('firebase') && !url.includes('onesignal')) { // Exclude external scripts
-                    const newUrl = `${url}?v=${timestamp}`;
-                    if (link.href) link.href = newUrl;
-                    if (link.src) link.src = newUrl;
-                }
-            });
         });
     </script>
 
