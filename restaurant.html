@@ -65,19 +65,20 @@
             opacity: 0.8;
         }
         .menu-section {
-            padding: 20px;
-            max-width: 700px;
+            padding: 30px;
+            max-width: 800px; /* Increased from 700px */
             margin: auto;
             flex: 1 0 auto;
         }
         .menu-section h2 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-size: 2rem; /* Slightly larger heading */
         }
         .menu-list {
             background: #2c2c2c;
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px; /* Increased from 15px */
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         .menu-item {
@@ -86,8 +87,8 @@
             justify-content: space-between;
             background: #333;
             border-radius: 10px;
-            margin-bottom: 15px;
-            padding: 15px;
+            margin-bottom: 20px; /* Increased from 15px */
+            padding: 20px; /* Increased from 15px */
             transition: transform 0.2s;
         }
         .menu-item:hover {
@@ -101,26 +102,26 @@
         }
         .menu-item h4 {
             margin: 0;
-            font-size: 1.1rem;
+            font-size: 1.3rem; /* Increased from 1.1rem */
             font-weight: 600;
             color: #fff;
         }
         .menu-item p {
             margin: 0;
-            font-size: 0.9rem;
+            font-size: 1rem; /* Increased from 0.9rem */
             color: #ccc;
-            width: 80px;
+            width: 90px; /* Slightly wider for better alignment */
             text-align: right;
         }
         .menu-item .add-to-cart {
             background: #007aff;
             color: #fff;
             border: none;
-            padding: 8px 12px;
+            padding: 10px 16px; /* Increased from 8px 12px */
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 1rem; /* Increased from 0.9rem */
             transition: background 0.2s;
-            margin-left: 15px;
+            margin-left: 20px; /* Increased from 15px */
         }
         .menu-item .add-to-cart:hover {
             background: #005bb5;
@@ -343,16 +344,20 @@
         }
         @media (max-width: 640px) {
             .menu-section {
-                padding: 15px;
+                padding: 20px; /* Adjusted from 15px */
             }
             .menu-item {
-                padding: 10px;
+                padding: 15px; /* Increased from 10px */
             }
             .menu-item h4 {
-                font-size: 1rem;
+                font-size: 1.2rem; /* Increased from 1rem */
             }
             .menu-item p {
-                font-size: 0.85rem;
+                font-size: 0.95rem; /* Increased from 0.85rem */
+            }
+            .menu-item .add-to-cart {
+                padding: 8px 14px; /* Adjusted for mobile */
+                font-size: 0.95rem; /* Slightly larger */
             }
             .options-panel {
                 padding: 15px;
