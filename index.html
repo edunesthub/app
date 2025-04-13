@@ -497,12 +497,10 @@
                     <a class="fw-bold ms-auto text-white" href="home.html">All <i class="feather-chevrons-right"></i></a>
                 </div>
                 <div class="offline-notice">
-                    No Internet Connection. Your network appears to be offline. Please check your connection.
-                    <button onclick="hideOfflineNotice()">Dismiss</button>
+                    You’re offline. Check your connection.
                 </div>
                 <div class="network-slow-notice">
                     Slow Network Detected. Your connection is taking longer than usual. Please check your network.
-                    <button onclick="hideSlowNotice()">Dismiss</button>
                 </div>
                 <div id="trending-list">
                     <div class="list-card loaded">
@@ -639,13 +637,9 @@
             }
         }
 
-        function hideOfflineNotice() {
-            document.querySelector('.offline-notice').style.display = 'none';
-        }
+        
 
-        function hideSlowNotice() {
-            document.querySelector('.network-slow-notice').style.display = 'none';
-        }
+        
 
         function monitorNetwork() {
             const offlineNotice = document.querySelector('.offline-notice');

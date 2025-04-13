@@ -115,6 +115,75 @@ html, body {
     -ms-user-scalable: no;
     user-scalable: no;
 }
+
+/* --- NETWORK ALERTS CSS --- */
+.offline-notice {
+    display: none;
+    text-align: center;
+    padding: 15px;
+    color: #fff;
+    background: #ff3b30;
+    border-radius: 12px;
+    margin: 20px 10px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+body.offline .offline-notice {
+    display: block;
+    opacity: 1;
+}
+.network-slow-notice {
+    display: none;
+    text-align: center;
+    padding: 12px;
+    color: #fff;
+    background: #ffa500;
+    border-radius: 12px;
+    margin: 20px 10px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.3s ease;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transform: translateY(-10px);
+}
+.network-slow-notice.visible {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+.offline-notice button, .network-slow-notice button {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+.offline-notice button:hover, .network-slow-notice button:hover {
+    background: #e0e0e0;
+    transform: scale(1.05);
+}
+@media (max-width: 576px) {
+    .offline-notice, .network-slow-notice {
+        font-size: 0.85rem;
+        padding: 10px;
+        margin: 15px 8px;
+    }
+    .offline-notice button, .network-slow-notice button {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+}
+/* --- END NETWORK ALERTS CSS --- */
+
     </style>
 </head>
 <body class="fixed-bottom-bar">
@@ -165,12 +234,69 @@ html, body {
     <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div><div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div><div class="message"><h4>Eat, Get Energy and Study.</h4></div><div class="message"><h4>Don't overstress yourself though...</h4>
     </div><!--Duplicate for seamless cycle-->
         </div><br>
-        <div class="offline-notice">You’re offline. Check your internet connection.</div>
         <div class="container">
             <div class="all">
                 <div class="body-color title d-flex align-items-center" style="padding-top: 0; padding-bottom: 15px;">
                     <h5 class="m-0">All Restaurants</h5>
                 </div>
+
+                <!--Offline html and script-->
+                <div class="offline-notice">
+                    You’re offline. Check your connection.
+                </div>
+                <div class="network-slow-notice">
+                    Slow Network Detected. Your connection is taking longer than usual. Please check your network.
+                </div>
+                <script>
+                    function monitorNetwork() {
+                const offlineNotice = document.querySelector('.offline-notice');
+                const slowNotice = document.querySelector('.network-slow-notice');
+            
+                // Immediate offline detection
+                window.addEventListener('online', () => {
+                    document.body.classList.remove('offline');
+                    offlineNotice.style.display = 'none';
+                    slowNotice.style.display = 'none';
+                });
+            
+                window.addEventListener('offline', () => {
+                    document.body.classList.add('offline');
+                    offlineNotice.style.display = 'block';
+                    setTimeout(() => offlineNotice.style.opacity = '1', 10);
+                    slowNotice.style.display = 'none';
+                });
+            
+                // Monitor fetch requests for slow network
+                const originalFetch = window.fetch;
+                window.fetch = function (...args) {
+                    const startTime = performance.now();
+                    const request = originalFetch.apply(this, args);
+            
+                    request.then(response => {
+                        const duration = performance.now() - startTime;
+                        if (duration > 2000 && navigator.onLine) { // 2 seconds threshold
+                            slowNotice.style.display = 'block';
+                            setTimeout(() => slowNotice.classList.add('visible'), 10);
+                            setTimeout(() => {
+                                slowNotice.classList.remove('visible');
+                                slowNotice.style.display = 'none';
+                            }, 5000); // Auto-dismiss after 5 seconds
+                        }
+                    }).catch(() => {
+                        if (!navigator.onLine) {
+                            document.body.classList.add('offline');
+                            offlineNotice.style.display = 'block';
+                            setTimeout(() => offlineNotice.style.opacity = '1', 10);
+                        }
+                    });
+            
+                    return request;
+                };
+            }
+            // --- END NETWORK MONITORING ---
+                </script>
+                <!-- End of Offline html and script-->
+
                 <div class="most_popular">
                     <div class="row" id="all-restaurants"></div>
                 </div>
@@ -217,6 +343,7 @@ html, body {
         </div>
     </div>
 
+   
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
     <script src="vendor/slick/slick/slick.min.js" defer></script>
     <script src="vendor/sidebar/hc-offcanvas-nav.js" defer></script>
