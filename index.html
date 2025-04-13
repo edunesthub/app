@@ -91,26 +91,163 @@
         html, body {-webkit-text-size-adjust: none; touch-action: manipulation; -webkit-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; padding-bottom: calc(70px + env(safe-area-inset-bottom));}
         input, textarea {font-size: 16px; outline: none; -webkit-user-select: text !important; user-select: text !important; -webkit-touch-callout: default !important; touch-action: auto !important;}
         *:focus {zoom: 1 !important;}
-        .offline-notice {display: none; text-align: center; padding: 15px; color: #fff; background: #ff3b30; border-radius: 12px; margin: 20px 10px; font-size: 0.9rem; opacity: 0; transition: opacity 0.5s ease;}
-        body.offline .offline-notice {display: block; opacity: 1;}
-        .welcome-header {padding: 30px 20px; text-align: center; background: linear-gradient(135deg, #565656, #4a4a4a); border-radius: 30px; margin: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); position: relative; overflow: hidden;}
-        .welcome-header::before {content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.05), transparent); animation: glow 6s infinite;}
-        .welcome-header h1 {font-size: 2.5rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; color: #fff; transition: opacity 0.5s ease;}
-        .welcome-header p {font-size: 1.2rem; opacity: 0.85; margin: 8px 0 0; font-weight: 300; color: #b0b0b0; transition: opacity 0.5s ease;}
-        .promo-banner {margin: 25px 15px; padding: 20px; background: #565656; border-radius: 15px; text-align: center; color: #fff; box-shadow: 0 6px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;}
-        .promo-banner:hover {transform: scale(1.03); box-shadow: 0 10px 25px rgba(0,0,0,0.35);}
-        .promo-banner h3 {font-size: 1.8rem; margin: 0; color: #00c8ff; font-weight: 700; letter-spacing: -0.2px;}
-        .promo-banner p {font-size: 1rem; margin: 8px 0 0; opacity: 0.9; font-weight: 400; color: #b0b0b0;}
-        .osahan-menu-fotter {background: #1a1a1a; box-shadow: 0 -4px 15px rgba(0,0,0,0.3); padding: 15px 0;}
-        .osahan-menu-fotter a {transition: color 0.3s ease, transform 0.2s ease;}
-        .osahan-menu-fotter a:hover {transform: scale(1.1);}
-        @keyframes fadeIn {from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);}}
-        @keyframes glow {0% {transform: rotate(0deg);} 50% {transform: rotate(180deg);} 100% {transform: rotate(360deg);}}
+        .offline-notice {
+            display: none;
+            text-align: center;
+            padding: 15px;
+            color: #fff;
+            background: #ff3b30;
+            border-radius: 12px;
+            margin: 20px 10px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        body.offline .offline-notice {
+            display: block;
+            opacity: 1;
+        }
+        /* --- ADDED CSS FOR NETWORK ALERTS --- */
+        .network-slow-notice {
+            display: none;
+            text-align: center;
+            padding: 12px;
+            color: #fff;
+            background: #ffa500;
+            border-radius: 12px;
+            margin: 20px 10px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transform: translateY(-10px);
+        }
+        .network-slow-notice.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .offline-notice button, .network-slow-notice button {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .offline-notice button:hover, .network-slow-notice button:hover {
+            background: #e0e0e0;
+            transform: scale(1.05);
+        }
+        /* --- END ADDED CSS --- */
+        .welcome-header {
+            padding: 30px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #565656, #4a4a4a);
+            border-radius: 30px;
+            margin: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .welcome-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05), transparent);
+            animation: glow 6s infinite;
+        }
+        .welcome-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+            color: #fff;
+            transition: opacity 0.5s ease;
+        }
+        .welcome-header p {
+            font-size: 1.2rem;
+            opacity: 0.85;
+            margin: 8px 0 0;
+            font-weight: 300;
+            color: #b0b0b0;
+            transition: opacity 0.5s ease;
+        }
+        .promo-banner {
+            margin: 25px 15px;
+            padding: 20px;
+            background: #565656;
+            border-radius: 15px;
+            text-align: center;
+            color: #fff;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .promo-banner:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+        }
+        .promo-banner h3 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: #00c8ff;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+        .promo-banner p {
+            font-size: 1rem;
+            margin: 8px 0 0;
+            opacity: 0.9;
+            font-weight: 400;
+            color: #b0b0b0;
+        }
+        .osahan-menu-fotter {
+            background: #1a1a1a;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+            padding: 15px 0;
+        }
+        .osahan-menu-fotter a {
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .osahan-menu-fotter a:hover {
+            transform: scale(1.1);
+        }
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(10px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        @keyframes glow {
+            0% {transform: rotate(0deg);}
+            50% {transform: rotate(180deg);}
+            100% {transform: rotate(360deg);}
+        }
         @media (max-width: 576px) {
             .welcome-header h1 {font-size: 2rem;}
             .welcome-header p {font-size: 1rem;}
             .promo-banner h3 {font-size: 1.5rem;}
             .promo-banner p {font-size: 0.9rem;}
+            /* --- ADDED MEDIA QUERY FOR ALERTS --- */
+            .offline-notice, .network-slow-notice {
+                font-size: 0.85rem;
+                padding: 10px;
+                margin: 15px 8px;
+            }
+            .offline-notice button, .network-slow-notice button {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+            /* --- END ADDED MEDIA QUERY --- */
         }
         .bg-darks {background: #1a1a1a;}
         .footer-item {
@@ -121,14 +258,32 @@
             border-radius: 10px;
             transition: background 0.3s ease, transform 0.2s ease;
         }
-        .footer-item.selected {background: rgba(0, 200, 255, 0.2); transform: scale(1.05);}
-        .footer-item a {display: flex; flex-direction: column; align-items: center;}
-        .footer-item:hover {background: rgba(255, 255, 255, 0.1);}
-        .footer-item.selected {background: #00566d; transform: scale(1.05);}
+        .footer-item.selected {
+            background: rgba(0, 200, 255, 0.2);
+            transform: scale(1.05);
+        }
+        .footer-item a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .footer-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .footer-item.selected {
+            background: #00566d;
+            transform: scale(1.05);
+        }
 
         /* Hide Scrollbar for PWA */
-        html, body {overflow-y: scroll; scrollbar-width: none; -ms-overflow-style: none;}
-        body::-webkit-scrollbar {display: none;}
+        html, body {
+            overflow-y: scroll;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        body::-webkit-scrollbar {
+            display: none;
+        }
 
         :root {
             --modal-bg: #1a1a1a;
@@ -161,37 +316,94 @@
             transform: translateY(0);
             opacity: 1;
         }
-        @keyframes slideUp {from {transform: translateY(100%); opacity: 0;} to {transform: translateY(0); opacity: 1;}}
-        .ios-modal .title {font-size: 18px; font-weight: 600; margin-bottom: 10px; color: #fff;}
-        .ios-modal .app-info {display: flex; align-items: center; gap: 10px; background: var(--modal-accent-bg); padding: 10px; border-radius: 10px; margin-bottom: 15px;}
-        .ios-modal .app-info img {width: 40px; height: 40px; border-radius: 8px;}
-        .ios-modal .app-info .name {font-weight: 600; margin: 0; font-size: 15px; color: #fff;}
-        .ios-modal .app-info .url {font-size: 13px; color: #aaa; margin: 0;}
-        .ios-modal ol {padding-left: 20px; margin-bottom: 15px; font-size: 14px;}
-        .ios-modal li {margin-bottom: 10px; line-height: 1.4;}
-        .share-icon {display: inline-block; background: #2c2c2e; padding: 3px 5px; border-radius: 6px; vertical-align: middle; margin: 0 4px;}
-        .btn {background: #2c2c2e; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-weight: 500;}
-        .ios-modal button {width: 100%; padding: 10px; font-weight: bold;
-             background: #0098c2;
-              color: #fff;
-               border: none; border-radius: 10px; font-size: 14px; cursor: pointer;}
+        @keyframes slideUp {
+            from {transform: translateY(100%); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
+        }
+        .ios-modal .title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .ios-modal .app-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--modal-accent-bg);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .ios-modal .app-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+        .ios-modal .app-info .name {
+            font-weight: 600;
+            margin: 0;
+            font-size: 15px;
+            color: #fff;
+        }
+        .ios-modal .app-info .url {
+            font-size: 13px;
+            color: #aaa;
+            margin: 0;
+        }
+        .ios-modal ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .ios-modal li {
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .share-icon {
+            display: inline-block;
+            background: #2c2c2e;
+            padding: 3px 5px;
+            border-radius: 6px;
+            vertical-align: middle;
+            margin: 0 4px;
+        }
+        .btn {
+            background: #2c2c2e;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .ios-modal button {
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+            background: #0098c2;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
         #trending-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Ensures 2 columns */
-    gap: 20px;
-    padding: 15px;
-    width: 100%; /* Ensures it takes full container width */
-    box-sizing: border-box; /* Prevents overflow */
-}
-   html, body {
-    touch-action: pan-x pan-y;
-    -webkit-user-scalable: no;
-    -ms-user-scalable: no;
-    user-scalable: no;
-}
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Ensures 2 columns */
+            gap: 20px;
+            padding: 15px;
+            width: 100%; /* Ensures it takes full container width */
+            box-sizing: border-box; /* Prevents overflow */
+        }
+        html, body {
+            touch-action: pan-x pan-y;
+            -webkit-user-scalable: no;
+            -ms-user-scalable: no;
+            user-scalable: no;
+        }
 
-/* Loading Screen Styles */
-#loading-screen {
+        /* Loading Screen Styles */
+        #loading-screen {
     position: fixed;
     inset: 0;
     width: 100vw;
@@ -234,8 +446,8 @@
         <h1>CHAWP</h1>
     </div>
 
-<div class="osahan-home-page" id="main-content">        
-    <div class="welcome-header">
+    <div class="osahan-home-page" id="main-content">        
+        <div class="welcome-header">
             <div class="title d-flex align-items-center justify-content-center">
                 <h1 id="welcome-message">Hi!</h1>
             </div>
@@ -246,14 +458,24 @@
             <p>Order now and enjoy delicious food in minutes.</p>
         </div>
     </div>
-<br><br>
-    <div class="trending-section" >
+    <br><br>
+    <div class="trending-section">
         <div class="container">
             <div class="d-flex align-items-center">
                 <h5 class="trending-text">Trending Now 🔥</h5>
                 <a class="fw-bold ms-auto text-white" href="home.html">All <i class="feather-chevrons-right"></i></a>
             </div>
-            <div class="offline-notice">You’re offline...</div>
+            <!-- --- MODIFIED OFFLINE NOTICE --- -->
+            <div class="offline-notice">
+                No Internet Connection. Your network appears to be offline. Please check your connection.
+                <button onclick="hideOfflineNotice()">Dismiss</button>
+            </div>
+            <!-- --- ADDED SLOW NETWORK NOTICE --- -->
+            <div class="network-slow-notice">
+                Slow Network Detected. Your connection is taking longer than usual. Please check your network.
+                <button onclick="hideSlowNotice()">Dismiss</button>
+            </div>
+            <!-- --- END ADDED/MODIFIED NOTICES --- -->
             <div id="trending-list">
                 <div class="list-card loaded">
                     <div class="list-card-image">
@@ -388,6 +610,62 @@
             }
         }
 
+        // --- ADDED NETWORK MONITORING SCRIPT ---
+        function hideOfflineNotice() {
+            document.querySelector('.offline-notice').style.display = 'none';
+        }
+
+        function hideSlowNotice() {
+            document.querySelector('.network-slow-notice').style.display = 'none';
+        }
+
+        function monitorNetwork() {
+            const offlineNotice = document.querySelector('.offline-notice');
+            const slowNotice = document.querySelector('.network-slow-notice');
+
+            // Immediate offline detection
+            window.addEventListener('online', () => {
+                document.body.classList.remove('offline');
+                offlineNotice.style.display = 'none';
+                slowNotice.style.display = 'none';
+            });
+
+            window.addEventListener('offline', () => {
+                document.body.classList.add('offline');
+                offlineNotice.style.display = 'block';
+                setTimeout(() => offlineNotice.style.opacity = '1', 10);
+                slowNotice.style.display = 'none';
+            });
+
+            // Monitor fetch requests for slow network
+            const originalFetch = window.fetch;
+            window.fetch = function (...args) {
+                const startTime = performance.now();
+                const request = originalFetch.apply(this, args);
+
+                request.then(response => {
+                    const duration = performance.now() - startTime;
+                    if (duration > 2000 && navigator.onLine) { // 2 seconds threshold
+                        slowNotice.style.display = 'block';
+                        setTimeout(() => slowNotice.classList.add('visible'), 10);
+                        setTimeout(() => {
+                            slowNotice.classList.remove('visible');
+                            slowNotice.style.display = 'none';
+                        }, 5000); // Auto-dismiss after 5 seconds
+                    }
+                }).catch(() => {
+                    if (!navigator.onLine) {
+                        document.body.classList.add('offline');
+                        offlineNotice.style.display = 'block';
+                        setTimeout(() => offlineNotice.style.opacity = '1', 10);
+                    }
+                });
+
+                return request;
+            };
+        }
+        // --- END ADDED NETWORK MONITORING ---
+
         document.addEventListener("DOMContentLoaded", () => {
             const loadingScreen = document.getElementById("loading-screen");
             const mainContent = document.getElementById("main-content");
@@ -426,6 +704,9 @@
 
             // Load welcome message dynamically
             updateWelcomeMessage();
+
+            // Start network monitoring
+            monitorNetwork();
 
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("service-worker.js", { updateViaCache: "none" })
@@ -474,5 +755,7 @@
 
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccecb43c58bf77',t:'MTc0NDA2NDU1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccfc3e5a5fda3f',t:'MTc0NDA2NTE5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92dab957eb46452f',t:'MTc0NDIwOTI1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92dab957eb46452f',t:'MTc0NDIwOTI1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92f6deea7cad0c0a',t:'MTc0NDUwNDM5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
 </html>
