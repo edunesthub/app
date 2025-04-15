@@ -489,11 +489,18 @@
             50% {opacity: 0.8;}
             100% {opacity: 0.6;}
         }
-        .lock-emoji {
-    font-size: 0.8rem; /* Small to match text */
-    color: #ff3b30; /* Red to match home.html */
-    vertical-align: middle; /* Aligns with text */
-    margin-left: 4px; /* Slight spacing from name */
+        .closed-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    background: #ff3b30; /* Red color matching home.html */
+    padding: 2px 6px;
+    border-radius: 4px;
+    pointer-events: none;
 }
     </style>
 </head>
@@ -659,7 +666,7 @@
 
         if (querySnapshot.empty) {
             trendingList.innerHTML = `
-                <div class="text-center text-white">No trending restaurants found.</div>
+                <div class="text-wrap text-white">No trending restaurants found...</div>
             `;
             console.log("No restaurants found in Firestore.");
             return;
@@ -679,10 +686,11 @@
                 <div class="list-card-image">
                     <a href="restaurant.html?id=${restaurantId}">
                         <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="eager">
+                        ${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
                     </a>
                 </div>
                 <div class="list-card-body">
-                    <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}${isOpen ? '' : '<span class="lock-emoji">😴</span>'}</a></h6>
+                    <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
                     <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
                 </div>
             `;
@@ -703,17 +711,7 @@
     } catch (error) {
         console.error("Error fetching restaurants:", error);
         trendingList.innerHTML = `
-            <div class="list-card loaded">
-                <div class="list-card-image">
-                    <a href="restaurant.html?id=fallback1">
-                        <img alt="Sample Restaurant" src="img/placeholder.png" class="img-fluid item-img" loading="eager">
-                    </a>
-                </div>
-                <div class="list-card-body">
-                    <h6 class="mb-1"><a href="restaurant.html?id=fallback1" class="text-white">Sample Restaurant<span class="lock-emoji">😴</span></a></h6>
-                    <p class="time"><a href="restaurant.html?id=fallback1"><span><i class="feather-clock me-1"></i>20-30 mins</span></a></p>
-                </div>
-            </div>
+            
         `;
     }
 }
