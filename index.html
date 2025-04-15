@@ -779,40 +779,52 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            const loadingScreen = document.getElementById("loading-screen");
-            const mainContent = document.getElementById("main-content");
-            const hasSeenLoader = sessionStorage.getItem("hasSeenLoader");
+    const loadingScreen = document.getElementById("loading-screen");
+    const mainContent = document.getElementById("main-content");
+    const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+    const hasSeenLoader = sessionStorage.getItem("hasSeenLoader");
 
-            // Ensure loading screen fades out even if scripts fail
+    // Show loading screen only when opening the PWA for the first time in the session
+    if ((isStandalone || window.matchMedia('(display-mode: standalone)').matches) && !hasSeenLoader) {
+        loadingScreen.style.display = "block";
+        sessionStorage.setItem("hasSeenLoader", "true");
+
+        setTimeout(() => {
+            loadingScreen.classList.add("fade-out");
             setTimeout(() => {
-                loadingScreen.classList.add("fade-out");
-                setTimeout(() => {
-                    loadingScreen.style.display = "none";
-                    mainContent.style.display = "block";
-                    mainContent.classList.add("loaded");
-                    document.querySelector(".welcome-header").classList.add("loaded");
-                    document.querySelector(".promo-banner").classList.add("loaded");
-                    document.querySelector(".trending-section").classList.add("loaded");
-                    document.querySelector(".osahan-menu-fotter").classList.add("loaded");
-                    fetchTrendingRestaurants();
-                }, 500);
-            }, hasSeenLoader ? 0 : 2000);
+                loadingScreen.style.display = "none";
+                mainContent.style.display = "block";
+                mainContent.classList.add("loaded");
+                document.querySelector(".welcome-header").classList.add("loaded");
+                document.querySelector(".promo-banner").classList.add("loaded");
+                document.querySelector(".trending-section").classList.add("loaded");
+                document.querySelector(".osahan-menu-fotter").classList.add("loaded");
+                fetchTrendingRestaurants();
+            }, 500);
+        }, 2000);
+    } else {
+        // Skip loading screen for in-app navigation
+        loadingScreen.style.display = "none";
+        mainContent.style.display = "block";
+        mainContent.classList.add("loaded");
+        document.querySelector(".welcome-header").classList.add("loaded");
+        document.querySelector(".promo-banner").classList.add("loaded");
+        document.querySelector(".trending-section").classList.add("loaded");
+        document.querySelector(".osahan-menu-fotter").classList.add("loaded");
+        fetchTrendingRestaurants();
+    }
 
-            if (!hasSeenLoader) {
-                sessionStorage.setItem("hasSeenLoader", "true");
-            }
+    updateWelcomeMessage();
+    monitorNetwork();
 
-            updateWelcomeMessage();
-            monitorNetwork();
-
-            if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("service-worker.js?ver=1.0.1", { updateViaCache: "none" })
-                    .then(registration => {
-                        registration.update();
-                    })
-                    .catch(error => console.error("PWA Error:", error));
-            }
-        });
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("service-worker.js?ver=1.0.1", { updateViaCache: "none" })
+            .then(registration => {
+                registration.update();
+            })
+            .catch(error => console.error("PWA Error:", error));
+    }
+});
     </script>
 
     <script>
