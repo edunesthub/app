@@ -550,7 +550,7 @@
                     const data = doc.data();
                     const restaurantId = doc.id;
                     const deliveryTime = data.delivery_time || "N/A";
-                    const deliveryFee = data.delivery_fee || "25.00";
+                    const deliveryFee = data.delivery_fee || "5.00";
                     const isOpen = data.isOpen !== false;
                     allRestaurants.push({ id: restaurantId, ...data });
                     output += `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">

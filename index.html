@@ -9,26 +9,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <!-- Cache control meta tags to prevent HTML caching -->
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <link rel="icon" type="image/png" href="img/icon-192x192.png">
     <link rel="apple-touch-icon" href="img/icon-192x192.png">
     <title>Chawp</title>
-    <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/icons/feather.css?ver=1.0.1" rel="stylesheet" type="text/css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css?ver=1.0.1" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="css/style.css?ver=1.0.1" rel="stylesheet">
 
-    <!-- Preload critical assets -->
-    <link rel="preload" href="img/trending1.png" as="image">
-    <link rel="preload" href="img/popular4.png" as="image">
-    <link rel="preload" href="vendor/bootstrap/css/bootstrap.min.css" as="style">
-    <link rel="preload" href="vendor/icons/feather.css" as="style">
-    <link rel="preload" href="css/style.css" as="style">
-
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js?ver=1.0.1" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
@@ -60,12 +52,10 @@
             display: flex;
             flex-direction: column;
         }
-        /* Ensure main content takes available space */
         .osahan-home-page {
             flex: 1 0 auto;
             padding-bottom: env(safe-area-inset-bottom);
         }
-        /* Remove blinking by starting with base styles */
         .trending-section, .welcome-header, .promo-banner, .osahan-menu-fotter {
             opacity: 0;
             transform: translateY(20px);
@@ -105,7 +95,6 @@
         .trending-text {color: #fff; font-weight: 600;}
         .text-danger {color: #00c8ff; transition: color 0.3s ease, transform 0.2s ease;}
         .text-danger:hover {color: #00c8ff; transform: scale(1.05);}
-        /* Adjusted touch and select for better UX */
         html, body {
             -webkit-text-size-adjust: none;
             touch-action: manipulation;
@@ -242,13 +231,11 @@
             background: #1a1a1a;
             box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
             padding: 15px 0;
-            /* Changed: Ensure footer sticks to bottom */
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             z-index: 1000;
-            /* Account for safe area */
             padding-bottom: env(safe-area-inset-bottom);
         }
         .osahan-menu-fotter a {
@@ -306,7 +293,6 @@
             background: #00566d;
             transform: scale(1.05);
         }
-        /* Hide Scrollbar for PWA */
         html, body {
             scrollbar-width: none;
             -ms-overflow-style: none;
@@ -424,62 +410,86 @@
             width: 100%;
             box-sizing: border-box;
         }
-        /* Changed: Allow scrolling but constrain to content */
         html, body {
             touch-action: pan-y;
         }
-        /* Loading Screen Styles */
-#loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #2c2c2c;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    opacity: 1;
-    transition: opacity 0.5s ease-out;
-    overflow: hidden;
-    min-height: 100vh;
-}
-#loading-screen.fade-out {
-    opacity: 0;
-}
-#loading-screen h1 {
-    font-family: 'Poppins', sans-serif;
-    font-size: 3rem;
-    font-weight: 700;
-    color: #00c8ff;
-    margin: 0;
-    text-align: center;
-}
-/* Ensure main content is hidden until loader is done */
-#main-content.loaded {
-    opacity: 1;
-    transition: opacity 0.3s ease-in;
-}
-/* Remove unwanted space during load */
-.trending-section {
-    margin-bottom: 0;
-}
-.spacer {
-    display: none;
-}
-
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #2c2c2c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+        #loading-screen.fade-out {
+            opacity: 0;
+        }
+        #loading-screen h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #00c8ff;
+            margin: 0;
+            text-align: center;
+        }
+        #main-content.loaded {
+            opacity: 1;
+            transition: opacity 0.3s ease-in;
+        }
+        .trending-section {
+            margin-bottom: 0;
+        }
+        .spacer {
+            display: none;
+        }
+        .skeleton-card {
+            background: #565656;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 170px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        .skeleton-card .list-card-image {
+            height: 110px;
+            background: #4a4a4a;
+        }
+        .skeleton-card .list-card-body {
+            padding: 8px;
+        }
+        .skeleton-card .list-card-body h6 {
+            height: 16px;
+            background: #4a4a4a;
+            border-radius: 4px;
+        }
+        .skeleton-card .list-card-body .time {
+            height: 12px;
+            background: #4a4a4a;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        @keyframes pulse {
+            0% {opacity: 0.6;}
+            50% {opacity: 0.8;}
+            100% {opacity: 0.6;}
+        }
     </style>
 </head>
 <body class="fixed-bottom-bar">
-    <!-- Loading Screen -->
     <div id="loading-screen">
         <h1>CHAWP</h1>
     </div>
 
-    <div class="osahan-home-page" id="main-content">        
+    <div class="osahan-home-page" id="main-content">
         <div class="welcome-header">
             <div class="title d-flex align-items-center justify-content-center">
                 <h1 id="welcome-message">Hi!</h1>
@@ -502,27 +512,34 @@
                 <div class="network-slow-notice">
                     Slow Network Detected. Your connection is taking longer than usual. Please check your network.
                 </div>
-                <div id="trending-list">
-                    <div class="list-card loaded">
-                        <div class="list-card-image">
-                            <a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB">
-                                <img alt="Famous Dave's Bar-B-Que" src="img/trending1.png" class="img-fluid item-img" loading="eager">
-                            </a>
-                        </div>
+                <div id="trending-list" class="trending-list">
+                    <!-- Skeleton UI while loading -->
+                    <div class="skeleton-card">
+                        <div class="list-card-image"></div>
                         <div class="list-card-body">
-                            <h6 class="mb-1"><a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB" class="text-white">Famous Dave's Bar-B-Que</a></h6>
-                            <p class="time"><a href="restaurant.html?id=21Q6Z7a8aQVnexevjKhB"><span><i class="feather-clock me-1"></i>15-30 mins</span></a></p>
+                            <h6></h6>
+                            <p class="time"></p>
                         </div>
                     </div>
-                    <div class="list-card loaded">
-                        <div class="list-card-image">
-                            <a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s">
-                                <img alt="bitch" src="img/popular4.png" class="img-fluid item-img" loading="eager">
-                            </a>
-                        </div>
+                    <div class="skeleton-card">
+                        <div class="list-card-image"></div>
                         <div class="list-card-body">
-                            <h6 class="mb-1"><a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s" class="text-white">bitch</a></h6>
-                            <p class="time"><a href="restaurant.html?id=zs4ikXthLqBChMtF0R6s"><span><i class="feather-clock me-1"></i>20-35 mins</span></a></p>
+                            <h6></h6>
+                            <p class="time"></p>
+                        </div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="list-card-image"></div>
+                        <div class="list-card-body">
+                            <h6></h6>
+                            <p class="time"></p>
+                        </div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="list-card-image"></div>
+                        <div class="list-card-body">
+                            <h6></h6>
+                            <p class="time"></p>
                         </div>
                     </div>
                 </div>
@@ -569,8 +586,7 @@
             </div>
         </div>
     </div>
-    
-    <!-- iOS Install Prompt (bottom modal) -->
+
     <div id="ios-install-prompt" style="display: none;">
         <div class="ios-modal">
             <p class="title">Install the app</p>
@@ -583,7 +599,7 @@
             </div>
             <ol>
                 <li>
-                    Press 
+                    Press
                     <span class="share-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 25 27" width="18">
                             <path d="M0 0h24v24H0V0z" fill="none"/>
@@ -602,7 +618,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-    
+        import { getFirestore, collection, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
             authDomain: "von600-7982d.firebaseapp.com",
@@ -612,10 +629,89 @@
             appId: "1:164591218045:web:afe17512e16573e7903014",
             measurementId: "G-E69DMPLXBK"
         };
-    
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-    
+        const db = getFirestore(app);
+
+        async function fetchTrendingRestaurants() {
+            const trendingList = document.getElementById("trending-list");
+            try {
+                const q = query(collection(db, "restaurant"), limit(4));
+                const querySnapshot = await getDocs(q);
+
+                trendingList.innerHTML = ''; // Clear skeleton UI
+
+                if (querySnapshot.empty) {
+                    trendingList.innerHTML = `
+                        <div class="list-card loaded">
+                            <div class="list-card-image">
+                                <a href="restaurant.html?id=fallback1">
+                                    <img alt="Sample Restaurant" src="img/placeholder.png" class="img-fluid item-img" loading="eager">
+                                </a>
+                            </div>
+                            <div class="list-card-body">
+                                <h6 class="mb-1"><a href="restaurant.html?id=fallback1" class="text-white">Sample Restaurant</a></h6>
+                                <p class="time"><a href="restaurant.html?id=fallback1"><span><i class="feather-clock me-1"></i>20-30 mins</span></a></p>
+                            </div>
+                        </div>
+                    `;
+                    console.log("No restaurants found in Firestore.");
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const restaurantId = doc.id;
+                    const deliveryTime = data.delivery_time || "N/A";
+
+                    const card = document.createElement("div");
+                    card.className = "list-card";
+
+                    card.innerHTML = `
+                        <div class="list-card-image">
+                            <a href="restaurant.html?id=${restaurantId}">
+                                <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="eager">
+                            </a>
+                        </div>
+                        <div class="list-card-body">
+                            <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
+                            <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
+                        </div>
+                    `;
+
+                    fragment.appendChild(card);
+                });
+
+                trendingList.appendChild(fragment);
+
+                setTimeout(() => {
+                    document.querySelectorAll(".list-card").forEach((card, index) => {
+                        setTimeout(() => {
+                            card.classList.add("loaded");
+                        }, index * 100);
+                    });
+                }, 100);
+
+            } catch (error) {
+                console.error("Error fetching restaurants:", error);
+                trendingList.innerHTML = `
+                    <div class="list-card loaded">
+                        <div class="list-card-image">
+                            <a href="restaurant.html?id=fallback1">
+                                <img alt="Sample Restaurant" src="img/placeholder.png" class="img-fluid item-img" loading="eager">
+                            </a>
+                        </div>
+                        <div class="list-card-body">
+                            <h6 class="mb-1"><a href="restaurant.html?id=fallback1" class="text-white">Sample Restaurant</a></h6>
+                            <p class="time"><a href="restaurant.html?id=fallback1"><span><i class="feather-clock me-1"></i>20-30 mins</span></a></p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
         function updateWelcomeMessage() {
             const welcomeMessage = document.getElementById("welcome-message");
             const cachedUser = localStorage.getItem("user-account-cache-" + (auth.currentUser?.uid || ""));
@@ -637,10 +733,6 @@
             }
         }
 
-        
-
-        
-
         function monitorNetwork() {
             const offlineNotice = document.querySelector('.offline-notice');
             const slowNotice = document.querySelector('.network-slow-notice');
@@ -649,6 +741,7 @@
                 document.body.classList.remove('offline');
                 offlineNotice.style.display = 'none';
                 slowNotice.style.display = 'none';
+                fetchTrendingRestaurants(); // Retry fetching when back online
             });
 
             window.addEventListener('offline', () => {
@@ -690,37 +783,30 @@
             const mainContent = document.getElementById("main-content");
             const hasSeenLoader = sessionStorage.getItem("hasSeenLoader");
 
-            if (!hasSeenLoader) {
-                loadingScreen.style.display = "flex";
-                sessionStorage.setItem("hasSeenLoader", "true");
-
+            // Ensure loading screen fades out even if scripts fail
+            setTimeout(() => {
+                loadingScreen.classList.add("fade-out");
                 setTimeout(() => {
-                    loadingScreen.classList.add("fade-out");
-                    setTimeout(() => {
-                        loadingScreen.style.display = "none";
-                        mainContent.classList.add("loaded");
-                        document.querySelector(".welcome-header").classList.add("loaded");
-                        document.querySelector(".promo-banner").classList.add("loaded");
-                        document.querySelector(".trending-section").classList.add("loaded");
-                        document.querySelector(".osahan-menu-fotter").classList.add("loaded");
-                        document.querySelectorAll(".list-card").forEach(card => card.classList.add("loaded"));
-                    }, 500);
-                }, 2000);
-            } else {
-                loadingScreen.style.display = "none";
-                mainContent.classList.add("loaded");
-                document.querySelector(".welcome-header").classList.add("loaded");
-                document.querySelector(".promo-banner").classList.add("loaded");
-                document.querySelector(".trending-section").classList.add("loaded");
-                document.querySelector(".osahan-menu-fotter").classList.add("loaded");
-                document.querySelectorAll(".list-card").forEach(card => card.classList.add("loaded"));
+                    loadingScreen.style.display = "none";
+                    mainContent.style.display = "block";
+                    mainContent.classList.add("loaded");
+                    document.querySelector(".welcome-header").classList.add("loaded");
+                    document.querySelector(".promo-banner").classList.add("loaded");
+                    document.querySelector(".trending-section").classList.add("loaded");
+                    document.querySelector(".osahan-menu-fotter").classList.add("loaded");
+                    fetchTrendingRestaurants();
+                }, 500);
+            }, hasSeenLoader ? 0 : 2000);
+
+            if (!hasSeenLoader) {
+                sessionStorage.setItem("hasSeenLoader", "true");
             }
 
             updateWelcomeMessage();
             monitorNetwork();
 
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("service-worker.js", { updateViaCache: "none" })
+                navigator.serviceWorker.register("service-worker.js?ver=1.0.1", { updateViaCache: "none" })
                     .then(registration => {
                         registration.update();
                     })
@@ -745,14 +831,14 @@
             const isIOS = /iPad|iPhone|iPod/.test(ua);
             const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
             const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
-    
+
             return isIOS && isSafari && !isStandalone;
         }
-    
+
         function closePrompt() {
             document.getElementById('ios-install-prompt').style.display = 'none';
         }
-    
+
         window.onload = function () {
             if (isIosSafari()) {
                 setTimeout(() => {
@@ -763,11 +849,5 @@
             }
         };
     </script>
-
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccecb43c58bf77',t:'MTc0NDA2NDU1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92ccfc3e5a5fda3f',t:'MTc0NDA2NTE5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92dab957eb46452f',t:'MTc0NDIwOTI1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92f6deea7cad0c0a',t:'MTc0NDUwNDM5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading' !== document.readyState && (document.onreadystatechange = e, c())}}}})();</script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92f6f84d4df4bf86',t:'MTc0NDUwNTQzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
