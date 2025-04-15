@@ -647,17 +647,7 @@
 
                 if (querySnapshot.empty) {
                     trendingList.innerHTML = `
-                        <div class="list-card loaded">
-                            <div class="list-card-image">
-                                <a href="restaurant.html?id=fallback1">
-                                    <img alt="Sample Restaurant" src="img/placeholder.png" class="img-fluid item-img" loading="eager">
-                                </a>
-                            </div>
-                            <div class="list-card-body">
-                                <h6 class="mb-1"><a href="restaurant.html?id=fallback1" class="text-white">Sample Restaurant</a></h6>
-                                <p class="time"><a href="restaurant.html?id=fallback1"><span><i class="feather-clock me-1"></i>20-30 mins</span></a></p>
-                            </div>
-                        </div>
+                       
                     `;
                     console.log("No restaurants found in Firestore.");
                     return;
