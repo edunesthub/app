@@ -238,6 +238,10 @@
             z-index: 1000;
             padding-bottom: env(safe-area-inset-bottom);
         }
+        .all {
+            padding-bottom: 70px; /* Matches footer height */
+            flex: 1;
+        }
         .osahan-menu-fotter a {
             transition: color 0.3s ease, transform 0.2s ease;
         }
@@ -485,6 +489,12 @@
             50% {opacity: 0.8;}
             100% {opacity: 0.6;}
         }
+        .lock-emoji {
+    font-size: 0.8rem; /* Small to match text */
+    color: #ff3b30; /* Red to match home.html */
+    vertical-align: middle; /* Aligns with text */
+    margin-left: 4px; /* Slight spacing from name */
+}
     </style>
 </head>
 <body class="fixed-bottom-bar">
@@ -505,6 +515,7 @@
         </div>
         <div class="trending-section">
             <div class="container">
+                <div class="all">
                 <div class="d-flex align-items-center">
                     <h5 class="trending-text">Trending Now 🔥</h5>
                     <a class="fw-bold ms-auto text-white" href="home.html">All <i class="feather-chevrons-right"></i></a>
@@ -546,6 +557,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     </div>
@@ -638,73 +650,73 @@
         const db = getFirestore(app);
 
         async function fetchTrendingRestaurants() {
-            const trendingList = document.getElementById("trending-list");
-            try {
-                const q = query(collection(db, "restaurant"), limit(4));
-                const querySnapshot = await getDocs(q);
+    const trendingList = document.getElementById("trending-list");
+    try {
+        const q = query(collection(db, "restaurant"), limit(4));
+        const querySnapshot = await getDocs(q);
 
-                trendingList.innerHTML = ''; // Clear skeleton UI
+        trendingList.innerHTML = ''; // Clear skeleton UI
 
-                if (querySnapshot.empty) {
-                    trendingList.innerHTML = `
-                       
-                    `;
-                    console.log("No restaurants found in Firestore.");
-                    return;
-                }
-
-                const fragment = document.createDocumentFragment();
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const restaurantId = doc.id;
-                    const deliveryTime = data.delivery_time || "N/A";
-
-                    const card = document.createElement("div");
-                    card.className = "list-card";
-
-                    card.innerHTML = `
-                        <div class="list-card-image">
-                            <a href="restaurant.html?id=${restaurantId}">
-                                <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="eager">
-                            </a>
-                        </div>
-                        <div class="list-card-body">
-                            <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
-                            <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
-                        </div>
-                    `;
-
-                    fragment.appendChild(card);
-                });
-
-                trendingList.appendChild(fragment);
-
-                setTimeout(() => {
-                    document.querySelectorAll(".list-card").forEach((card, index) => {
-                        setTimeout(() => {
-                            card.classList.add("loaded");
-                        }, index * 100);
-                    });
-                }, 100);
-
-            } catch (error) {
-                console.error("Error fetching restaurants:", error);
-                trendingList.innerHTML = `
-                    <div class="list-card loaded">
-                        <div class="list-card-image">
-                            <a href="restaurant.html?id=fallback1">
-                                <img alt="Sample Restaurant" src="img/placeholder.png" class="img-fluid item-img" loading="eager">
-                            </a>
-                        </div>
-                        <div class="list-card-body">
-                            <h6 class="mb-1"><a href="restaurant.html?id=fallback1" class="text-white">Sample Restaurant</a></h6>
-                            <p class="time"><a href="restaurant.html?id=fallback1"><span><i class="feather-clock me-1"></i>20-30 mins</span></a></p>
-                        </div>
-                    </div>
-                `;
-            }
+        if (querySnapshot.empty) {
+            trendingList.innerHTML = `
+                <div class="text-center text-white">No trending restaurants found.</div>
+            `;
+            console.log("No restaurants found in Firestore.");
+            return;
         }
 
+        const fragment = document.createDocumentFragment();
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const restaurantId = doc.id;
+            const deliveryTime = data.delivery_time || "N/A";
+            const isOpen = data.isOpen !== false; // Check if restaurant is open
+
+            const card = document.createElement("div");
+            card.className = "list-card";
+
+            card.innerHTML = `
+                <div class="list-card-image">
+                    <a href="restaurant.html?id=${restaurantId}">
+                        <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="eager">
+                    </a>
+                </div>
+                <div class="list-card-body">
+                    <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}${isOpen ? '' : '<span class="lock-emoji">💤</span>'}</a></h6>
+                    <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
+                </div>
+            `;
+
+            fragment.appendChild(card);
+        });
+
+        trendingList.appendChild(fragment);
+
+        setTimeout(() => {
+            document.querySelectorAll(".list-card").forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add("loaded");
+                }, index * 100);
+            });
+        }, 100);
+
+    } catch (error) {
+        console.error("Error fetching restaurants:", error);
+        trendingList.innerHTML = `
+            <div class="list-card loaded">
+                <div class="list-card-image">
+                    <a href="restaurant.html?id=fallback1">
+                        <img alt="Sample Restaurant" src="img/placeholder.png" class="img-fluid item-img" loading="eager">
+                    </a>
+                </div>
+                <div class="list-card-body">
+                    <h6 class="mb-1"><a href="restaurant.html?id=fallback1" class="text-white">Sample Restaurant<span class="lock-emoji">💤</span></a></h6>
+                    <p class="time"><a href="restaurant.html?id=fallback1"><span><i class="feather-clock me-1"></i>20-30 mins</span></a></p>
+                </div>
+            </div>
+        `;
+    }
+}
         function updateWelcomeMessage() {
             const welcomeMessage = document.getElementById("welcome-message");
             const cachedUser = localStorage.getItem("user-account-cache-" + (auth.currentUser?.uid || ""));
