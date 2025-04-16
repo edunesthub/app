@@ -746,7 +746,7 @@
             const deliveryFee = getDeliveryFee(persistentDetails.hostel);
             const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 2 + deliveryFee;
             const handler = PaystackPop.setup({
-                key: "pk_test_93dd3909dd59a3ae47c5a531d8370b49052465ec",
+                key: "pk_live_014478be275a6453efab7529d14bd938c8b9b964",
                 email: "customer@chawp.com",
                 amount: Math.round(totalAmount * 100),
                 currency: "GHS",
