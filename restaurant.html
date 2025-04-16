@@ -36,7 +36,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 200px;
+            height: 250px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -58,6 +58,8 @@
         .restaurant-info {
             position: absolute;
             text-align: center;
+            padding: 20px; /* Optional: Add padding for better text placement */
+            
         }
         .restaurant-info h1 {
             font-size: 1.8rem;
@@ -72,8 +74,9 @@
         }
         .menu-section {
             padding: 15px 10px;
+            padding-top: 20px; /* Added to create space between header and menu title */
             width: 100%;
-            margin-top: 200px;
+            margin-top: 250px;
             flex: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -98,7 +101,7 @@
             justify-content: space-between;
             background: #333;
             border-radius: 8px;
-            margin-bottom: 6px;
+            margin-bottom: 12px;
             padding: 8px 10px;
             transition: transform 0.2s ease, background 0.2s ease;
             width: 100%;
@@ -381,9 +384,12 @@
         @media (max-width: 640px) {
             .menu-section {
                 padding: 10px 8px;
+                padding-top: 20px; /* Added to maintain space on smaller screens */
+                margin-top: 230px; /* Adjusted to match new header height */
             }
             .menu-item {
                 padding: 6px 8px;
+                margin-bottom: 12px; /* Increased from 6px for more space between items */
             }
             .menu-item-name {
                 font-size: 0.9rem;
@@ -397,7 +403,7 @@
                 font-size: 0.85rem;
             }
             .restaurant-header {
-                height: 180px;
+                height: 230px;
             }
             .restaurant-info h1 {
                 font-size: 1.5rem;
