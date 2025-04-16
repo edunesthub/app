@@ -659,7 +659,7 @@
         async function fetchTrendingRestaurants() {
     const trendingList = document.getElementById("trending-list");
     try {
-        const q = query(collection(db, "restaurant"), limit(6), orderBy("delivery_time", "asc"));
+        const q = query(collection(db, "restaurant"), limit(10), orderBy("delivery_time", "asc"));
         const querySnapshot = await getDocs(q);
 
         trendingList.innerHTML = ''; // Clear skeleton UI
