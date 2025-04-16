@@ -11,7 +11,7 @@
             height: 100vh;
             margin: 0;
             padding: 0;
-            overflow-y: auto;
+            overflow: hidden;
             scrollbar-width: none;
             -ms-overflow-style: none;
             touch-action: pan-y;
@@ -32,14 +32,18 @@
             flex-direction: column;
         }
         .restaurant-header {
-            position: relative;
-            height: 300px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
             text-align: center;
             overflow: hidden;
+            z-index: 10;
         }
         .restaurant-header img {
             width: 100%;
@@ -56,80 +60,87 @@
             text-align: center;
         }
         .restaurant-info h1 {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             letter-spacing: -0.02em;
         }
         .restaurant-info p {
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             opacity: 0.8;
             letter-spacing: 0.01em;
         }
         .menu-section {
-            padding: 40px 20px;
+            padding: 15px 10px;
             width: 100%;
-            margin: auto;
-            flex: 1 0 auto;
+            margin-top: 200px;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .menu-section h2 {
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2rem;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #fff;
             letter-spacing: -0.02em;
         }
         .menu-container {
             background: #2c2c2c;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            border-radius: 8px;
+            padding: 8px;
             width: 100%;
-            max-width: none;
         }
         .menu-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: #333;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            padding: 8px 10px;
             transition: transform 0.2s ease, background 0.2s ease;
             width: 100%;
             box-sizing: border-box;
         }
         .menu-item:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
             background: #3a3a3a;
         }
         .menu-item-name {
-            font-size: 1.3rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: #fff;
             margin: 0;
-            flex: 0 1 auto;
+            flex: 1;
             letter-spacing: 0.01em;
+            overflow-wrap: break-word;
+            white-space: normal;
+            max-width: 60%;
+            line-height: 1.2;
+        }
+        .menu-item-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .menu-item-price {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             color: #ccc;
             margin: 0;
-            flex: 0 0 auto;
             text-align: right;
-            min-width: 80px;
+            min-width: 50px;
         }
         .menu-item .add-to-cart {
             background: #007aff;
             color: #fff;
             border: none;
-            padding: 8px 20px;
-            border-radius: 10px;
-            font-size: 1rem;
+            padding: 5px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
             font-weight: 600;
             transition: background 0.2s ease, transform 0.1s ease;
-            flex: 0 0 auto;
             cursor: pointer;
             letter-spacing: 0.02em;
         }
@@ -148,8 +159,8 @@
             left: 0;
             width: 100%;
             background: #2c2c2c;
-            padding: 20px;
-            border-radius: 20px 20px 0 0;
+            padding: 15px;
+            border-radius: 12px 12px 0 0;
             box-shadow: 0 -5px 15px rgba(0,0,0,0.4);
             transition: bottom 0.3s ease;
             z-index: 10;
@@ -160,62 +171,62 @@
             bottom: 0;
         }
         .options-panel h5 {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: #fff;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         .close-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 8px;
+            right: 8px;
             background: #444;
             color: #fff;
             border: none;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 50%;
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
         }
         .close-btn:hover {
             background: #666;
         }
         .option-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .option-group h6 {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #fff;
             margin-bottom: 5px;
         }
         .option-group .instructions {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #ccc;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .option-group label {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px;
+            padding: 8px;
             background: #3a3a3a;
-            border-radius: 8px;
-            margin-bottom: 8px;
+            border-radius: 6px;
+            margin-bottom: 6px;
             cursor: pointer;
         }
         .option-group input[type="radio"], .option-group input[type="checkbox"] {
-            margin-right: 10px;
+            margin-right: 8px;
         }
         .option-group label span {
             flex-grow: 1;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             color: #fff;
             text-transform: capitalize;
         }
         .option-group label .price {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #ccc;
-            width: 70px;
+            width: 60px;
             text-align: right;
         }
         .extra-quantity {
@@ -227,9 +238,9 @@
             background: #007aff;
             color: #fff;
             border: none;
-            padding: 2px 8px;
+            padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
         }
         .extra-quantity-btn:hover {
@@ -240,7 +251,7 @@
             cursor: not-allowed;
         }
         .extra-quantity span {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #fff;
         }
         .note-input {
@@ -248,9 +259,9 @@
             background: #3a3a3a;
             border: none;
             color: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 10px;
             resize: none;
         }
         .note-input:focus {
@@ -258,23 +269,23 @@
             border: 1px solid #007aff;
         }
         .total-price {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 600;
             color: #fff;
             text-align: center;
-            margin-bottom: 15px;
-            padding: 10px;
+            margin-bottom: 10px;
+            padding: 8px;
             background: #3a3a3a;
-            border-radius: 8px;
+            border-radius: 6px;
         }
         .confirm-btn {
             background: #007aff;
             color: #fff;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 10px;
+            border-radius: 10px;
             width: 100%;
             border: none;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
         }
         .confirm-btn:hover {
@@ -291,9 +302,9 @@
             transform: translateX(-50%);
             background: rgba(0,0,0,0.85);
             color: #fff;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 1rem;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
             display: none;
             z-index: 1000;
             opacity: 0;
@@ -319,19 +330,19 @@
         }
         .view-cart-btn {
             position: fixed;
-            bottom: 20px;
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
             background: #007aff;
             color: #fff;
-            padding: 15px 50px;
-            border-radius: 30px;
-            font-size: 1.2rem;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-size: 1rem;
             font-weight: 600;
             text-decoration: none;
             box-shadow: 0 5px 15px rgba(0,0,0,0.4);
             display: none;
-            min-width: 200px;
+            min-width: 180px;
             text-align: center;
         }
         .view-cart-btn.show {
@@ -343,11 +354,11 @@
         }
         .back-arrow {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 15px;
+            left: 15px;
             background: rgba(0,0,0,0.647);
             color: #fff;
-            padding: 10px;
+            padding: 8px;
             border-radius: 50%;
             transition: background 0.2s ease, transform 0.2s ease;
         }
@@ -355,37 +366,49 @@
             background: rgba(0,0,0,0.8);
             transform: scale(1.1);
         }
+        .loading-spinner {
+            text-align: center;
+            padding: 20px;
+            color: #ccc;
+            font-size: 1rem;
+        }
+        .error-message {
+            text-align: center;
+            padding: 20px;
+            color: #ff4d4d;
+            font-size: 1rem;
+        }
         @media (max-width: 640px) {
             .menu-section {
-                padding: 20px 15px;
+                padding: 10px 8px;
             }
             .menu-item {
-                padding: 12px 16px;
+                padding: 6px 8px;
             }
             .menu-item-name {
-                font-size: 1.2rem;
+                font-size: 0.9rem;
             }
             .menu-item-price {
-                font-size: 1rem;
-                min-width: 70px;
+                font-size: 0.85rem;
+                min-width: 45px;
             }
             .menu-item .add-to-cart {
-                padding: 6px 16px;
-                font-size: 0.95rem;
+                padding: 4px 12px;
+                font-size: 0.85rem;
             }
             .restaurant-header {
-                height: 250px;
+                height: 180px;
             }
             .restaurant-info h1 {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
             .restaurant-info p {
-                font-size: 1rem;
+                font-size: 0.8rem;
             }
             .view-cart-btn {
-                padding: 12px 40px;
-                font-size: 1rem;
-                min-width: 180px;
+                padding: 10px 30px;
+                font-size: 0.9rem;
+                min-width: 160px;
             }
         }
     </style>
@@ -404,11 +427,12 @@
             <p id="restaurant-info"></p>
         </div>
     </div>
-    <div class="menu-section" id="menu-section"></div>
+    <div class="menu-section" id="menu-section">
+        <div class="loading-spinner">Loading menu...</div>
+    </div>
     <div id="closed-message" class="toast-container error" style="display: none; opacity: 1; z-index: 1000; position: fixed; bottom: 80px; top: auto; left: 50%; transform: translateX(-50%); width: 300px; text-align: center;">
         <span>This restaurant is currently closed. Please check back later!</span>
     </div>
-    
     <div id="options-panel" class="options-panel">
         <h5 id="options-title"></h5>
         <button class="close-btn" id="close-panel">×</button>
@@ -465,50 +489,95 @@
             closedMessage: document.getElementById("closed-message"),
             totalPrice: document.getElementById("total-price")
         };
+        const showToast = (message, type = "success") => {
+            elements.toastMessage.textContent = message;
+            elements.toast.className = `toast-container ${type}`;
+            elements.toast.classList.add("show");
+            setTimeout(() => {
+                elements.toast.classList.remove("show");
+                elements.toast.classList.add("hide");
+            }, 5000);
+            setTimeout(() => {
+                elements.toast.classList.remove("hide");
+            }, 5300);
+        };
         const loadRestaurant = async () => {
-            const cachedData = localStorage.getItem(`restaurant-${restaurantId}`);
-            if (cachedData) {
-                const data = JSON.parse(cachedData);
-                elements.restaurantName.textContent = data.name;
-                elements.restaurantInfo.textContent = `🕓 ${data.delivery_time} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
+            try {
+                const cachedData = localStorage.getItem(`restaurant-${restaurantId}`);
+                if (cachedData) {
+                    try {
+                        const data = JSON.parse(cachedData);
+                        elements.restaurantName.textContent = data.name || "Restaurant";
+                        elements.restaurantInfo.textContent = `🕓 ${data.delivery_time || 'N/A'} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
+                        elements.restaurantImage.src = data.image || "img/placeholder.png";
+                        isRestaurantOpen = data.isOpen !== false;
+                        elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
+                    } catch (e) {
+                        console.error("Failed to parse cached restaurant data:", e);
+                    }
+                }
+                const docRef = doc(db, "restaurant", restaurantId);
+                const docSnap = await getDoc(docRef);
+                if (!docSnap.exists()) {
+                    showToast("Restaurant not found.", "error");
+                    return;
+                }
+                const data = docSnap.data();
+                localStorage.setItem(`restaurant-${restaurantId}`, JSON.stringify(data));
+                elements.restaurantName.textContent = data.name || "Restaurant";
+                elements.restaurantInfo.textContent = `🕓 ${data.delivery_time || 'N/A'} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
                 elements.restaurantImage.src = data.image || "img/placeholder.png";
                 isRestaurantOpen = data.isOpen !== false;
                 elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
+            } catch (e) {
+                console.error("Error loading restaurant:", e);
+                showToast("Failed to load restaurant data.", "error");
             }
-            const docRef = doc(db, "restaurant", restaurantId);
-            const docSnap = await getDoc(docRef);
-            if (!docSnap.exists()) return;
-            const data = docSnap.data();
-            localStorage.setItem(`restaurant-${restaurantId}`, JSON.stringify(data));
-            elements.restaurantName.textContent = data.name;
-            elements.restaurantInfo.textContent = `🕓 ${data.delivery_time} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
-            elements.restaurantImage.src = data.image || "img/placeholder.png";
-            isRestaurantOpen = data.isOpen !== false;
-            elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
         };
         const loadMenu = async () => {
-            const cachedMenu = localStorage.getItem(`menu-${restaurantId}`);
-            if (cachedMenu) renderMenu(JSON.parse(cachedMenu));
-            const menuRef = collection(db, "restaurant", restaurantId, "menu");
-            const querySnapshot = await getDocs(menuRef);
-            const menuItems = querySnapshot.docs.map(doc => ({ 
-                id: doc.id, 
-                ...doc.data(), 
-                price: parseFloat(doc.data().price) || 0, 
-                sizes: doc.data().sizes || [], 
-                extras: doc.data().extras || []
-            }));
-            localStorage.setItem(`menu-${restaurantId}`, JSON.stringify(menuItems));
-            renderMenu(menuItems);
+            try {
+                console.log("Loading menu for restaurant:", restaurantId);
+                const cachedMenu = localStorage.getItem(`menu-${restaurantId}`);
+                if (cachedMenu) {
+                    try {
+                        const items = JSON.parse(cachedMenu);
+                        renderMenu(items);
+                    } catch (e) {
+                        console.error("Failed to parse cached menu:", e);
+                        localStorage.removeItem(`menu-${restaurantId}`);
+                    }
+                }
+                const menuRef = collection(db, "restaurant", restaurantId, "menu");
+                const querySnapshot = await getDocs(menuRef);
+                const menuItems = querySnapshot.docs.map(doc => ({ 
+                    id: doc.id, 
+                    ...doc.data(), 
+                    price: parseFloat(doc.data().price) || 0, 
+                    sizes: doc.data().sizes || [], 
+                    extras: doc.data().extras || []
+                }));
+                localStorage.setItem(`menu-${restaurantId}`, JSON.stringify(menuItems));
+                console.log("Menu items fetched:", menuItems);
+                renderMenu(menuItems);
+            } catch (e) {
+                console.error("Error loading menu:", e);
+                elements.menuSection.innerHTML = `<div class="error-message">Failed to load menu. Please try again later.</div>`;
+                showToast("Failed to load menu.", "error");
+            }
         };
         const renderMenu = items => {
+            console.log("Rendering menu with items:", items);
+            if (!items || items.length === 0) {
+                elements.menuSection.innerHTML = `<div class="error-message">No menu items available.</div>`;
+                return;
+            }
             const menuList = `<div class="menu-container">${items.map(item => `
-                <div class="menu-item" data-item='${JSON.stringify(item)}'>
+                <div class="menu-item" data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
                     <p class="menu-item-name">${item.name}</p>
-                    ${(item.sizes.length === 0 && item.extras.length === 0) ? 
-                        `<p class="menu-item-price">GH₵${item.price.toFixed(2)}</p>` : 
-                        `<p class="menu-item-price"></p>`}
-                    <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
+                    <div class="menu-item-right">
+                        <p class="menu-item-price">${item.sizes.length === 0 && item.extras.length === 0 ? `GH₵${item.price.toFixed(2)}` : ''}</p>
+                        <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
+                    </div>
                 </div>`).join("")}</div>`;
             elements.menuSection.innerHTML = `<h2 class="fw-bold">Menu</h2>${menuList}`;
         };
@@ -589,18 +658,6 @@
             elements.optionsPanel.classList.remove("show");
             currentItem = null;
         };
-        const showToast = (message, type = "success") => {
-            elements.toastMessage.textContent = message;
-            elements.toast.className = `toast-container ${type}`;
-            elements.toast.classList.add("show");
-            setTimeout(() => {
-                elements.toast.classList.remove("show");
-                elements.toast.classList.add("hide");
-            }, 5000);
-            setTimeout(() => {
-                elements.toast.classList.remove("hide");
-            }, 5300);
-        };
         const updateCartButton = () => {
             const cart = JSON.parse(localStorage.getItem("cart") || "[]");
             const totalCartPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -674,6 +731,10 @@
         Promise.all([loadRestaurant(), loadMenu()]).then(() => {
             loadCartCount();
             feather.replace();
+        }).catch(e => {
+            console.error("Initialization failed:", e);
+            elements.menuSection.innerHTML = `<div class="error-message">Failed to initialize page. Please try again.</div>`;
+            showToast("Failed to load page.", "error");
         });
     </script>
 </body>
