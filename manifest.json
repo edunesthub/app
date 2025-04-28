@@ -4,8 +4,8 @@
   "description": "Eat Fast, Live Soft.",
   "start_url": "https://app.chawp.me/index.html",
   "display": "standalone",
-  "background_color": "#565656",
-  "theme_color": "#565656",
+  "background_color": "#2c2c2c",
+  "theme_color": "#2c2c2c",
   "scope": "/",
   "icons": [
       {
