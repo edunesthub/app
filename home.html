@@ -78,9 +78,12 @@
             overflow: hidden;
             position: relative;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.4s ease-in-out;
+            opacity: 1;
+        }
+        .most_popular .list-card.rendering {
             opacity: 0;
-            animation: fadeIn 0.5s ease forwards;
+            transform: translateY(5px);
         }
         .most_popular .list-card:hover {
             transform: translateY(-8px);
@@ -203,9 +206,12 @@
             background: #565656;
             border-radius: 12px;
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.4s ease-in-out;
+            opacity: 1;
+        }
+        .list-card.rendering {
             opacity: 0;
-            animation: fadeIn 0.5s ease forwards;
+            transform: translateY(5px);
         }
         .list-card:hover {
             transform: translateY(-8px);
@@ -237,10 +243,6 @@
         }
         .bg-darks {
             background: #1a1a1a !important;
-        }
-        @keyframes fadeIn {
-            from {opacity: 0; transform: translateY(10px);}
-            to {opacity: 1; transform: translateY(0);}
         }
         .list-card a, .list-card h6 {
             color: inherit;
@@ -381,13 +383,17 @@
                 font-size: 0.8rem;
             }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="fixed-bottom-bar">
     <div class="osahan-home-page">
         <div class="bg-transparent p-3">
             <div class="text-white title d-flex align-items-center">
-                <a href="home.html" class="text-white small fw-bold text-decoration-none"><p class="h4"><i class="feather-map-pin"></i></p></a>&nbsp;
+                <a href="home.html" class="text-white small fw-bold text-decoration-none"><p class="h4"><i class="feather-map-pin"></i></p></a> 
                 <h4 class="fw-bold">UPSA</h4>
             </div>
             <div class="input-group bg-white rounded shadow-sm mt-3 position-relative">
@@ -402,7 +408,7 @@
             <div class="message"><h4>Eat, Get Energy and Study.</h4></div>
             <div class="message"><h4>Don't overstress yourself though...</h4></div>
             <!-- Duplicate for seamless cycle -->
-            <div class="message"><h4>Order and relax, we go deliver am to your door soft!</h4></div>
+            <div class="message"><h4>Order and relax, we go deliver am to your doorنمایس soft!</h4></div>
             <div class="message"><h4>Payment After Delivery Service Coming Soon...</h4></div>
             <div class="message"><h4>Eat, Get Energy and Study.</h4></div>
             <div class="message"><h4>Don't overstress yourself though...</h4></div>
@@ -478,7 +484,7 @@
             <div class="col">
                 <div class="footer-item selected">
                     <a href="home.html" class="text-white small fw-bold text-decoration-none">
-                        <p class="h4 m-0"><i class="feather-home text-white"></i></p>&nbsp;&nbsp;Home&nbsp;
+                        <p class="h4 m-0"><i class="feather-home text-white"></i></p>  Home 
                     </a>
                 </div>
             </div>
@@ -526,13 +532,80 @@
         const db = getFirestore(app);
         let allRestaurants = [];
         const restaurantList = document.getElementById("all-restaurants");
+        const renderRestaurantCard = (data, restaurantId) => {
+            const deliveryTime = data.delivery_time || "N/A";
+            const deliveryFee = data.delivery_fee || "5.00";
+            const isOpen = data.isOpen !== false;
+            const div = document.createElement("div");
+            div.className = "col-md-2 pb-3 rendering";
+            div.style.cssText = "margin-bottom: 15px; padding-right: 8px;";
+            div.dataset.id = restaurantId;
+            div.innerHTML = `
+                <a href="restaurant.html?id=${restaurantId}" class="d-block text-decoration-none">
+                    <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
+                        <div class="list-card-image">
+                            <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
+                        </div>
+                        <div class="list-card-body">
+                            <h6 class="mb-1 text-white">${data.name}</h6>
+                            <p class="mb-0">
+                                <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>    <span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
+                            </p>
+                        </div>
+                        <div class="list-card-badge">
+                            <span class="${isOpen ? 'open' : 'closed'}">${isOpen ? 'Open' : 'Closed'}</span>
+                        </div>
+                    </div>
+                </a>`;
+            return div;
+        };
+        const updateRestaurantList = (restaurants, isFiltered = false) => {
+            const existingCards = new Map();
+            restaurantList.querySelectorAll(".col-md-2").forEach(card => {
+                existingCards.set(card.dataset.id, card);
+            });
+            const fragment = document.createDocumentFragment();
+            restaurants.forEach(({ id, ...data }) => {
+                const existingCard = existingCards.get(id);
+                if (existingCard) {
+                    existingCards.delete(id);
+                    fragment.appendChild(existingCard);
+                } else {
+                    const newCard = renderRestaurantCard(data, id);
+                    fragment.appendChild(newCard);
+                }
+            });
+            existingCards.forEach(card => {
+                card.classList.add("rendering");
+                setTimeout(() => card.remove(), 400);
+            });
+            restaurantList.innerHTML = "";
+            restaurantList.appendChild(fragment);
+            requestAnimationFrame(() => {
+                restaurantList.querySelectorAll(".rendering").forEach((card, index) => {
+                    setTimeout(() => card.classList.remove("rendering"), index * 50);
+                });
+                restaurantList.querySelectorAll(".list-card-image img").forEach(img => {
+                    if (img.complete) img.classList.add("loaded");
+                    else img.onload = () => img.classList.add("loaded");
+                });
+            });
+            if (!isFiltered) {
+                localStorage.setItem("allRestaurantsIndex", restaurantList.innerHTML);
+                localStorage.setItem("allRestaurantsData", JSON.stringify(restaurants));
+            }
+        };
         const loadAllRestaurants = async () => {
             const cachedData = localStorage.getItem("allRestaurantsIndex");
             if (cachedData) {
+                restaurantList.innerHTML = cachedData;
+                allRestaurants = JSON.parse(localStorage.getItem("allRestaurantsData") || "[]");
+                restaurantList.querySelectorAll(".list-card").forEach(card => card.classList.add("rendering"));
                 requestAnimationFrame(() => {
-                    restaurantList.innerHTML = cachedData;
-                    allRestaurants = JSON.parse(localStorage.getItem("allRestaurantsData") || "[]");
-                    document.querySelectorAll(".list-card-image img").forEach(img => img.classList.add("loaded"));
+                    restaurantList.querySelectorAll(".list-card").forEach((card, index) => {
+                        setTimeout(() => card.classList.remove("rendering"), index * 50);
+                    });
+                    restaurantList.querySelectorAll(".list-card-image img").forEach(img => img.classList.add("loaded"));
                 });
             } else {
                 restaurantList.innerHTML = "<div class='col-12 text-center'><p>Loading...</p></div>";
@@ -545,42 +618,10 @@
                     return;
                 }
                 allRestaurants = [];
-                let output = "";
                 querySnapshot.forEach(doc => {
-                    const data = doc.data();
-                    const restaurantId = doc.id;
-                    const deliveryTime = data.delivery_time || "N/A";
-                    const deliveryFee = data.delivery_fee || "5.00";
-                    const isOpen = data.isOpen !== false;
-                    allRestaurants.push({ id: restaurantId, ...data });
-                    output += `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
-                        <a href="restaurant.html?id=${restaurantId}" class="d-block text-decoration-none">
-                            <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
-                                <div class="list-card-image">
-                                    <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
-                                </div>
-                                <div class="list-card-body">
-                                    <h6 class="mb-1 text-white">${data.name}</h6>
-                                    <p class="mb-0">
-                                        <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
-                                    </p>
-                                </div>
-                                <div class="list-card-badge">
-                                    <span class="${isOpen ? 'open' : 'closed'}">${isOpen ? 'Open' : 'Closed'}</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>`;
+                    allRestaurants.push({ id: doc.id, ...doc.data() });
                 });
-                requestAnimationFrame(() => {
-                    restaurantList.innerHTML = output;
-                    document.querySelectorAll(".list-card-image img").forEach(img => {
-                        if (img.complete) img.classList.add("loaded");
-                        else img.onload = () => img.classList.add("loaded");
-                    });
-                });
-                localStorage.setItem("allRestaurantsIndex", output);
-                localStorage.setItem("allRestaurantsData", JSON.stringify(allRestaurants));
+                updateRestaurantList(allRestaurants);
                 document.body.classList.remove("offline");
             } catch (error) {
                 console.error("Error:", error);
@@ -590,34 +631,11 @@
         };
         const filterRestaurants = searchTerm => {
             const filtered = allRestaurants.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()));
-            let output = filtered.length ? filtered.map(data => {
-                const deliveryTime = data.delivery_time || "N/A";
-                const deliveryFee = data.delivery_fee || "3.00";
-                const isOpen = data.isOpen !== false;
-                return `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
-                    <a href="restaurant.html?id=${data.id}" class="d-block text-decoration-none">
-                        <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
-                            <div class="list-card-image">
-                                <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
-                            </div>
-                            <div class="list-card-body">
-                                <h6 class="mb-1 text-white">${data.name}</h6>
-                                <p class="mb-0">
-                                    <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
-                                </p>
-                            </div>
-                            <div class="list-card-badge"><span>${isOpen ? 'Open' : 'Closed'}</span></div>
-                        </div>
-                    </a>
-                </div>`;
-            }).join("") : "<div class='col-12 text-center'><p>No matching restaurants found.</p></div>";
-            requestAnimationFrame(() => {
-                restaurantList.innerHTML = output;
-                document.querySelectorAll(".list-card-image img").forEach(img => {
-                    if (img.complete) img.classList.add("loaded");
-                    else img.onload = () => img.classList.add("loaded");
-                });
-            });
+            if (!filtered.length) {
+                restaurantList.innerHTML = "<div class='col-12 text-center'><p>No matching restaurants found.</p></div>";
+                return;
+            }
+            updateRestaurantList(filtered, true);
         };
         const updateDropdown = searchTerm => {
             const dropdown = document.getElementById("search-dropdown");
@@ -730,6 +748,12 @@
             if (cachedData) {
                 restaurantList.innerHTML = cachedData;
                 allRestaurants = JSON.parse(localStorage.getItem("allRestaurantsData") || "[]");
+                restaurantList.querySelectorAll(".list-card").forEach(card => card.classList.add("rendering"));
+                requestAnimationFrame(() => {
+                    restaurantList.querySelectorAll(".list-card").forEach((card, index) => {
+                        setTimeout(() => card.classList.remove("rendering"), index * 50);
+                    });
+                });
             }
             document.body.classList.add("offline");
         };
@@ -738,5 +762,6 @@
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92785e7add8532fe',t:'MTc0MzE3NzkyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9278d6b33beb44d8',t:'MTc0MzE4Mjg1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92facaa63b90bd2b',t:'MTc0NDU0NTUwNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9378d00dda8832f8',t:'MTc0NTg2NjkzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
