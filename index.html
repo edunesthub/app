@@ -175,15 +175,15 @@
             overflow: hidden;
         }
         .welcome-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05), transparent);
-            animation: glow 6s infinite;
-        }
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.4) 70%);
+    animation: glow 6s infinite;
+}
         .welcome-header h1 {
             font-size: 2.5rem;
             font-weight: 800;
