@@ -762,16 +762,16 @@
             const cachedUser = localStorage.getItem("user-account-cache-" + (auth.currentUser?.uid || ""));
             if (cachedUser) {
                 const { name } = JSON.parse(cachedUser);
-                welcomeMessage.textContent = `Hi, ${name || "User"}!`;
+                welcomeMessage.textContent = `Hi, ${name || "fam"}!`;
             } else {
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         const cachedData = localStorage.getItem("user-account-cache-" + user.uid);
                         if (cachedData) {
                             const { name } = JSON.parse(cachedData);
-                            welcomeMessage.textContent = `Hi, ${name || "User"}!`;
+                            welcomeMessage.textContent = `Hi, ${name || "fam"}!`;
                         } else {
-                            welcomeMessage.textContent = `Hi, ${user.email.split("@")[0]}!`;
+                            welcomeMessage.textContent = `Hi, fam!`;
                         }
                     }
                 });
