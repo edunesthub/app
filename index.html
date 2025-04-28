@@ -15,6 +15,8 @@
     <link rel="icon" type="image/png" href="img/icon-192x192.png">
     <link rel="apple-touch-icon" href="img/icon-192x192.png">
     <title>Chawp</title>
+    <link rel="preload" href="css/style.css?ver=1.0.1" as="style">
+    <link rel="preload" href="img/icon-192x192.png" as="image">
     <link href="vendor/icons/feather.css?ver=1.0.1" rel="stylesheet" type="text/css">
     <link href="vendor/bootstrap/css/bootstrap.min.css?ver=1.0.1" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
@@ -418,37 +420,37 @@
             touch-action: pan-y;
         }
         #loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100vw;
-    min-height: 100dvh;
-    background: #2c2c2c;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    opacity: 1;
-    transition: opacity 0.5s ease-out;
-    overflow: hidden;
-}
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            min-height: 100dvh;
+            background: #2c2c2c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.3s ease-out;
+            overflow: hidden;
+        }
         #loading-screen.fade-out {
             opacity: 0;
         }
         #loading-screen h1 {
-    font-family: 'Poppins', sans-serif;
-    font-size: 3rem;
-    font-weight: 700;
-    color: #00c8ff;
-    margin: 0;
-    text-align: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #00c8ff;
+            margin: 0;
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
         #main-content.loaded {
             opacity: 1;
             transition: opacity 0.3s ease-in;
@@ -490,21 +492,21 @@
             100% {opacity: 0.6;}
         }
         .closed-badge {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    background: #ff3b30; /* Red color matching home.html */
-    padding: 2px 6px;
-    border-radius: 4px;
-    pointer-events: none;
-}
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            background: #ff3b30;
+            padding: 2px 6px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
     </style>
 </head>
-<body class="fixed-bottom-bar">
+<body class="fixed-bottom-bar" style="background: #2c2c2c;">
     <div id="loading-screen">
         <h1>CHAWP</h1>
     </div>
@@ -657,64 +659,104 @@
         const db = getFirestore(app);
 
         async function fetchTrendingRestaurants() {
-    const trendingList = document.getElementById("trending-list");
-    try {
-        const q = query(collection(db, "restaurant"), limit(10), orderBy("delivery_time", "asc"));
-        const querySnapshot = await getDocs(q);
+            const trendingList = document.getElementById("trending-list");
+            
+            // Check for cached restaurants in localStorage
+            const cachedRestaurants = localStorage.getItem("trending-restaurants-cache");
+            if (cachedRestaurants) {
+                const restaurants = JSON.parse(cachedRestaurants);
+                renderRestaurants(restaurants, trendingList);
+            } else {
+                trendingList.innerHTML = `
+                    <div class="skeleton-card">
+                        <div class="list-card-image"></div>
+                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="list-card-image"></div>
+                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="list-card-image"></div>
+                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="list-card-image"></div>
+                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
+                    </div>
+                `;
+            }
 
-        trendingList.innerHTML = ''; // Clear skeleton UI
+            try {
+                const q = query(collection(db, "restaurant"), limit(10), orderBy("delivery_time", "asc"));
+                const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.empty) {
-            trendingList.innerHTML = `
-                <div class="text-wrap text-white">No trending restaurants found...</div>
-            `;
-            console.log("No restaurants found in Firestore.");
-            return;
+                trendingList.innerHTML = ''; // Clear skeleton UI
+                const restaurants = [];
+
+                if (querySnapshot.empty) {
+                    trendingList.innerHTML = `
+                        <div class="text-wrap text-white">No trending restaurants found...</div>
+                    `;
+                    console.log("No restaurants found in Firestore.");
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const restaurantId = doc.id;
+                    restaurants.push({ id: restaurantId, ...data });
+                });
+
+                // Cache the restaurants
+                localStorage.setItem("trending-restaurants-cache", JSON.stringify(restaurants));
+                renderRestaurants(restaurants, trendingList);
+
+            } catch (error) {
+                console.error("Error fetching restaurants:", error);
+                trendingList.innerHTML = `
+                    <div class="text-wrap text-white">Failed to load restaurants. Please try again.</div>
+                `;
+            }
         }
 
-        const fragment = document.createDocumentFragment();
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const restaurantId = doc.id;
-            const deliveryTime = data.delivery_time || "N/A";
-            const isOpen = data.isOpen !== false; // Check if restaurant is open
+        function renderRestaurants(restaurants, trendingList) {
+            const fragment = document.createDocumentFragment();
+            restaurants.forEach((data) => {
+                const restaurantId = data.id;
+                const deliveryTime = data.delivery_time || "N/A";
+                const isOpen = data.isOpen !== false;
 
-            const card = document.createElement("div");
-            card.className = "list-card";
+                const card = document.createElement("div");
+                card.className = "list-card";
 
-            card.innerHTML = `
-                <div class="list-card-image">
-                    <a href="restaurant.html?id=${restaurantId}">
-                        <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="eager">
-                        ${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
-                    </a>
-                </div>
-                <div class="list-card-body">
-                    <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
-                    <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
-                </div>
-            `;
+                card.innerHTML = `
+                    <div class="list-card-image">
+                        <a href="restaurant.html?id=${restaurantId}">
+                            <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="eager">
+                            ${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
+                        </a>
+                    </div>
+                    <div class="list-card-body">
+                        <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
+                        <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
+                    </div>
+                `;
 
-            fragment.appendChild(card);
-        });
-
-        trendingList.appendChild(fragment);
-
-        setTimeout(() => {
-            document.querySelectorAll(".list-card").forEach((card, index) => {
-                setTimeout(() => {
-                    card.classList.add("loaded");
-                }, index * 100);
+                fragment.appendChild(card);
             });
-        }, 100);
 
-    } catch (error) {
-        console.error("Error fetching restaurants:", error);
-        trendingList.innerHTML = `
-            
-        `;
-    }
-}
+            trendingList.appendChild(fragment);
+
+            setTimeout(() => {
+                document.querySelectorAll(".list-card").forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add("loaded");
+                    }, index * 100);
+                });
+            }, 100);
+        }
+
         function updateWelcomeMessage() {
             const welcomeMessage = document.getElementById("welcome-message");
             const cachedUser = localStorage.getItem("user-account-cache-" + (auth.currentUser?.uid || ""));
@@ -744,7 +786,7 @@
                 document.body.classList.remove('offline');
                 offlineNotice.style.display = 'none';
                 slowNotice.style.display = 'none';
-                fetchTrendingRestaurants(); // Retry fetching when back online
+                fetchTrendingRestaurants();
             });
 
             window.addEventListener('offline', () => {
@@ -782,19 +824,13 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-    const loadingScreen = document.getElementById("loading-screen");
-    const mainContent = document.getElementById("main-content");
-    const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
-    const hasSeenLoader = sessionStorage.getItem("hasSeenLoader");
+            const loadingScreen = document.getElementById("loading-screen");
+            const mainContent = document.getElementById("main-content");
+            const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+            const hasSeenLoader = sessionStorage.getItem("hasSeenLoader");
 
-    // Show loading screen only when opening the PWA for the first time in the session
-    if ((isStandalone || window.matchMedia('(display-mode: standalone)').matches) && !hasSeenLoader) {
-        loadingScreen.style.display = "block";
-        sessionStorage.setItem("hasSeenLoader", "true");
-
-        setTimeout(() => {
-            loadingScreen.classList.add("fade-out");
-            setTimeout(() => {
+            // Show main content immediately if not first load or not in standalone mode
+            if (!isStandalone || hasSeenLoader) {
                 loadingScreen.style.display = "none";
                 mainContent.style.display = "block";
                 mainContent.classList.add("loaded");
@@ -803,31 +839,70 @@
                 document.querySelector(".trending-section").classList.add("loaded");
                 document.querySelector(".osahan-menu-fotter").classList.add("loaded");
                 fetchTrendingRestaurants();
-            }, 500);
-        }, 2000);
-    } else {
-        // Skip loading screen for in-app navigation
-        loadingScreen.style.display = "none";
-        mainContent.style.display = "block";
-        mainContent.classList.add("loaded");
-        document.querySelector(".welcome-header").classList.add("loaded");
-        document.querySelector(".promo-banner").classList.add("loaded");
-        document.querySelector(".trending-section").classList.add("loaded");
-        document.querySelector(".osahan-menu-fotter").classList.add("loaded");
-        fetchTrendingRestaurants();
-    }
+                sessionStorage.setItem("hasSeenLoader", "true");
+                updateWelcomeMessage();
+                monitorNetwork();
+                return;
+            }
 
-    updateWelcomeMessage();
-    monitorNetwork();
+            // Show loading screen briefly for first load
+            loadingScreen.style.display = "block";
+            sessionStorage.setItem("hasSeenLoader", "true");
 
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("service-worker.js?ver=1.0.1", { updateViaCache: "none" })
-            .then(registration => {
-                registration.update();
-            })
-            .catch(error => console.error("PWA Error:", error));
-    }
-});
+            // Check for cached restaurants to render immediately
+            const cachedRestaurants = localStorage.getItem("trending-restaurants-cache");
+            if (cachedRestaurants) {
+                const trendingList = document.getElementById("trending-list");
+                trendingList.innerHTML = '';
+                renderRestaurants(JSON.parse(cachedRestaurants), trendingList);
+                loadingScreen.classList.add("fade-out");
+                setTimeout(() => {
+                    loadingScreen.style.display = "none";
+                    mainContent.style.display = "block";
+                    mainContent.classList.add("loaded");
+                    document.querySelector(".welcome-header").classList.add("loaded");
+                    document.querySelector(".promo-banner").classList.add("loaded");
+                    document.querySelector(".trending-section").classList.add("loaded");
+                    document.querySelector(".osahan-menu-fotter").classList.add("loaded");
+                    updateWelcomeMessage();
+                    monitorNetwork();
+                    fetchTrendingRestaurants(); // Refresh data in background
+                }, 300);
+            } else {
+                // Wait for DOM or Firestore data
+                const loadContent = () => {
+                    loadingScreen.classList.add("fade-out");
+                    setTimeout(() => {
+                        loadingScreen.style.display = "none";
+                        mainContent.style.display = "block";
+                        mainContent.classList.add("loaded");
+                        document.querySelector(".welcome-header").classList.add("loaded");
+                        document.querySelector(".promo-banner").classList.add("loaded");
+                        document.querySelector(".trending-section").classList.add("loaded");
+                        document.querySelector(".osahan-menu-fotter").classList.add("loaded");
+                        updateWelcomeMessage();
+                        monitorNetwork();
+                        fetchTrendingRestaurants();
+                    }, 300);
+                };
+
+                // Load as soon as DOM is ready or after a short timeout
+                if (document.readyState === "complete") {
+                    loadContent();
+                } else {
+                    window.addEventListener("load", loadContent);
+                    setTimeout(loadContent, 1000); // Fallback to prevent long delays
+                }
+            }
+
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("service-worker.js?ver=1.0.1", { updateViaCache: "none" })
+                    .then(registration => {
+                        registration.update();
+                    })
+                    .catch(error => console.error("PWA Error:", error));
+            }
+        });
     </script>
 
     <script>
@@ -864,5 +939,6 @@
             }
         };
     </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93784c4a5c7e678a',t:'MTc0NTg2MTUzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

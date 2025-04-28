@@ -1,26 +1,33 @@
-// Updated on 2025-04-12 — added critical assets for faster load, exclude HTML
-const CACHE_NAME = "Chawp-cache-v20"; // Bump version for new assets
+const CACHE_NAME = "Chawp-cache-v21";
 const urlsToCache = [
-    // Critical assets for initial load
-    "/vendor/bootstrap/css/bootstrap.min.css",
-    "/vendor/icons/feather.css",
-    "/css/style.css",
+    "/",
+    "/index.html",
+    "/vendor/bootstrap/css/bootstrap.min.css?ver=1.0.1",
+    "/vendor/icons/feather.css?ver=1.0.1",
+    "/css/style.css?ver=1.0.1",
     "/img/icon-192x192.png",
     "/img/icon-512x512.png",
     "/img/trending1.png",
     "/img/popular4.png",
+    "/img/placeholder.png",
     "/manifest.json",
-    // Fonts (assuming Poppins is loaded via CSS)
-    "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+    "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js?ver=1.0.1",
+    "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js",
+    "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js",
+    "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js",
+    "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap",
+    "/img/restaurant1.jpg",
+    "/img/restaurant2.jpg"
 ];
 
 self.addEventListener("install", event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                return cache.addAll(urlsToCache);
+                return cache.addAll(urlsToCache.filter(url => url !== ""));
             })
-            .then(() => self.skipWaiting()) // Force activation
+            .then(() => self.skipWaiting())
+            .catch(error => console.error("Service Worker: Cache installation failed", error))
     );
 });
 
@@ -34,43 +41,67 @@ self.addEventListener("activate", event => {
             );
         })
     );
-    event.waitUntil(self.clients.claim()); // Take control immediately
+    event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener("fetch", event => {
+    const requestUrl = new URL(event.request.url);
+
+    if (requestUrl.host.includes("firebase") || requestUrl.host.includes("firestore.googleapis.com")) {
+        return event.respondWith(fetch(event.request));
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then(cachedResponse => {
-                // Always fetch HTML fresh to avoid stale content
-                if (event.request.url.endsWith('.html')) {
+                if (event.request.mode === "navigate" || requestUrl.pathname.endsWith(".html")) {
                     return fetch(event.request)
+                        .then(networkResponse => {
+                            if (networkResponse && networkResponse.status === 200) {
+                                caches.open(CACHE_NAME)
+                                    .then(cache => cache.put(event.request, networkResponse.clone()));
+                            }
+                            return networkResponse;
+                        })
                         .catch(() => cachedResponse || caches.match("/index.html"));
                 }
-                // Cache-first for other assets
+
                 if (cachedResponse) {
-                    // Background fetch to update cache
                     fetch(event.request)
-                        .then(response => {
-                            if (response && response.status === 200 && response.type === "basic") {
+                        .then(networkResponse => {
+                            if (networkResponse && networkResponse.status === 200 && networkResponse.type === "basic") {
                                 caches.open(CACHE_NAME)
-                                    .then(cache => cache.put(event.request, response.clone()));
+                                    .then(cache => cache.put(event.request, networkResponse.clone()));
                             }
                         })
-                        .catch(() => {}); // Silent fail
+                        .catch(() => {});
                     return cachedResponse;
                 }
-                // Fetch and cache new assets
+
                 return fetch(event.request)
-                    .then(response => {
-                        if (!response || response.status !== 200 || response.type !== "basic") {
-                            return response;
+                    .then(networkResponse => {
+                        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== "basic") {
+                            return networkResponse;
                         }
-                        const responseToCache = response.clone();
+                        const responseToCache = networkResponse.clone();
                         caches.open(CACHE_NAME)
                             .then(cache => cache.put(event.request, responseToCache));
-                        return response;
+                        return networkResponse;
                     })
-                    .catch(() => caches.match("/index.html")); // Offline fallback
+                    .catch(() => {
+                        if (event.request.destination === "image") {
+                            return caches.match("/img/placeholder.png");
+                        }
+                        return caches.match("/index.html");
+                    });
             })
     );
+});
+
+self.addEventListener("push", event => {
+    const data = event.data.json();
+    self.registration.showNotification(data.title, {
+        body: data.body,
+        icon: "/img/icon-192x192.png"
+    });
 });
