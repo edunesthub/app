@@ -2,7 +2,7 @@
   "name": "Chawp",
   "short_name": "Chawp",
   "description": "Eat Fast, Live Soft.",
-  "start_url": "https://app.chawp.me/index.html",
+  "start_url": "/loading.html",
   "display": "standalone",
   "background_color": "#2c2c2c",
   "theme_color": "#2c2c2c",

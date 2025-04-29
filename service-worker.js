@@ -2,11 +2,12 @@ const CACHE_NAME = "Chawp-cache-v21";
 const urlsToCache = [
     "/",
     "/index.html",
+    "/loading.html",
     "/vendor/bootstrap/css/bootstrap.min.css?ver=1.0.1",
     "/vendor/icons/feather.css?ver=1.0.1",
     "/css/style.css?ver=1.0.1",
     "/img/icon-192x192.png",
-    "/img/icon-512x512.png",
+    "/img/icon-512x192.png",
     "/img/trending1.png",
     "/img/popular4.png",
     "/img/placeholder.png",
@@ -63,7 +64,7 @@ self.addEventListener("fetch", event => {
                             }
                             return networkResponse;
                         })
-                        .catch(() => cachedResponse || caches.match("/index.html"));
+                        .catch(() => cachedResponse || caches.match("/loading.html"));
                 }
 
                 if (cachedResponse) {
@@ -92,7 +93,7 @@ self.addEventListener("fetch", event => {
                         if (event.request.destination === "image") {
                             return caches.match("/img/placeholder.png");
                         }
-                        return caches.match("/index.html");
+                        return caches.match("/loading.html");
                     });
             })
     );

@@ -478,65 +478,9 @@
             border-radius: 4px;
             pointer-events: none;
         }
-        #slow-network-spinner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #2c2c2c;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9998;
-            opacity: 1;
-            transition: opacity 0.3s ease-out;
-        }
-        #slow-network-spinner.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .spinner-logo {
-    color: #2596be;
-    font-size: 4rem;
-    font-weight: 590;
-    font-style: normal;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    font-family: Impact, sans-serif;
-    letter-spacing: -0.02em;
-    transform: scaleY(1.5);
-}
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #00c8ff;
-            border-top: 4px solid transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .spinner-message {
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 500;
-            margin-top: 15px;
-            text-align: center;
-            max-width: 80%;
-        }
     </style>
 </head>
 <body class="fixed-bottom-bar" style="background: #2c2c2c;">
-    <div id="slow-network-spinner">
-        <div class="spinner-logo">CHAWP</div>
-        <div class="spinner"></div>
-        <p class="spinner-message">Loading, please wait... Slow network detected.</p>
-    </div>
-
     <div class="osahan-home-page" id="main-content">
         <div class="welcome-header">
             <div class="title d-flex align-items-center justify-content-center">
@@ -820,7 +764,6 @@
         function monitorNetwork() {
             const offlineNotice = document.querySelector('.offline-notice');
             const slowNotice = document.querySelector('.network-slow-notice');
-            const spinner = document.getElementById('slow-network-spinner');
     
             function checkNetworkType() {
                 if ('connection' in navigator && navigator.connection.effectiveType) {
@@ -828,14 +771,10 @@
                     if (slowTypes.includes(navigator.connection.effectiveType)) {
                         slowNotice.style.display = 'block';
                         slowNotice.classList.add('visible');
-                        spinner.style.display = 'flex';
                     } else {
                         slowNotice.classList.remove('visible');
                         slowNotice.style.display = 'none';
-                        spinner.classList.add('hidden');
                     }
-                } else {
-                    spinner.classList.add('hidden');
                 }
             }
     
@@ -851,7 +790,6 @@
                 offlineNotice.style.display = 'block';
                 setTimeout(() => offlineNotice.style.opacity = '1', 10);
                 slowNotice.style.display = 'none';
-                spinner.classList.add('hidden');
             });
     
             if ('connection' in navigator) {
@@ -869,18 +807,15 @@
                     if (duration > 2000 && navigator.onLine) {
                         slowNotice.style.display = 'block';
                         slowNotice.classList.add('visible');
-                        spinner.style.display = 'flex';
                     } else if (duration <= 2000 && navigator.onLine) {
                         slowNotice.classList.remove('visible');
                         slowNotice.style.display = 'none';
-                        spinner.classList.add('hidden');
                     }
                 }).catch(() => {
                     if (!navigator.onLine) {
                         document.body.classList.add('offline');
                         offlineNotice.style.display = 'block';
                         setTimeout(() => offlineNotice.style.opacity = '1', 10);
-                        spinner.classList.add('hidden');
                     }
                 });
     
@@ -890,7 +825,6 @@
     
         document.addEventListener("DOMContentLoaded", () => {
             const mainContent = document.getElementById("main-content");
-            const spinner = document.getElementById("slow-network-spinner");
             mainContent.style.display = "block";
             mainContent.classList.add("loaded");
             document.querySelector(".welcome-header").classList.add("loaded");
@@ -906,12 +840,10 @@
             if (cachedRestaurants) {
                 trendingList.innerHTML = '';
                 renderRestaurants(JSON.parse(cachedRestaurants), trendingList);
-                spinner.classList.add("hidden");
             } else if (!navigator.onLine) {
                 trendingList.innerHTML = `
                     <div class="text-wrap text-white">You're offline. Please check your connection.</div>
                 `;
-                spinner.classList.add("hidden");
             } else {
                 trendingList.innerHTML = `
                     <div class="skeleton-card">
@@ -986,5 +918,5 @@
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9378aae7d831bfb0',t:'MTc0NTg2NTQxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9378f4460ae77221',t:'MTc0NTg2ODQxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93794d42db4badcc',t:'MTc0NTg3MjA2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9380160edd4431b6',t:'MTc0NTk0MzIwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
