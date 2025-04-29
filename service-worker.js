@@ -1,7 +1,8 @@
-const CACHE_NAME = "Chawp-cache-v22";
+const CACHE_NAME = "Chawp-cache-v23";
 const urlsToCache = [
     "/",
     "/index.html",
+    "/home.html",
     "/loading.html",
     "/vendor/bootstrap/css/bootstrap.min.css?ver=1.0.1",
     "/vendor/icons/feather.css?ver=1.0.1",
