@@ -58,6 +58,22 @@
       font-family: Impact, sans-serif;
       letter-spacing: -0.02em;
       transform: scaleY(1.5);
+      display: flex;
+    }
+    .spinner-logo span {
+      display: inline-block;
+      opacity: 0;
+      transform: scale(0.5);
+      animation: letterAppear 0.5s ease-out forwards;
+    }
+    .spinner-logo span:nth-child(1) { animation-delay: 0s; }
+    .spinner-logo span:nth-child(2) { animation-delay: 0.1s; }
+    .spinner-logo span:nth-child(3) { animation-delay: 0.2s; }
+    .spinner-logo span:nth-child(4) { animation-delay: 0.3s; }
+    .spinner-logo span:nth-child(5) { animation-delay: 0.4s; }
+    @keyframes letterAppear {
+      0% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
     }
     .spinner {
       width: 40px;
@@ -83,7 +99,9 @@
 </head>
 <body>
   <div id="slow-network-spinner">
-    <div class="spinner-logo">CHAWP</div>
+    <div class="spinner-logo">
+      <span>C</span><span>H</span><span>A</span><span>W</span><span>P</span>
+    </div>
     <div class="spinner" style="display: none;"></div>
     <p class="spinner-message" style="display: none;">Offline. Please connect to the internet.</p>
   </div>
