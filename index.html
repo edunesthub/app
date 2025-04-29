@@ -435,31 +435,7 @@
         .spacer {
             display: none;
         }
-        .skeleton-card {
-            background: #565656;
-            border-radius: 10px;
-            overflow: hidden;
-            height: 170px;
-            animation: pulse 1.5s infinite ease-in-out;
-        }
-        .skeleton-card .list-card-image {
-            height: 110px;
-            background: #4a4a4a;
-        }
-        .skeleton-card .list-card-body {
-            padding: 8px;
-        }
-        .skeleton-card .list-card-body h6 {
-            height: 16px;
-            background: #4a4a4a;
-            border-radius: 4px;
-        }
-        .skeleton-card .list-card-body .time {
-            height: 12px;
-            background: #4a4a4a;
-            border-radius: 4px;
-            margin-top: 8px;
-        }
+       
         @keyframes pulse {
             0% {opacity: 0.6;}
             50% {opacity: 0.8;}
@@ -608,26 +584,7 @@
             if (cachedRestaurants) {
                 const restaurants = JSON.parse(cachedRestaurants);
                 renderRestaurants(restaurants, trendingList);
-            } else {
-                trendingList.innerHTML = `
-                    <div class="skeleton-card">
-                        <div class="list-card-image"></div>
-                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
-                    </div>
-                    <div class="skeleton-card">
-                        <div class="list-card-image"></div>
-                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
-                    </div>
-                    <div class="skeleton-card">
-                        <div class="list-card-image"></div>
-                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
-                    </div>
-                    <div class="skeleton-card">
-                        <div class="list-card-image"></div>
-                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
-                    </div>
-                `;
-            }
+            } 
     
             try {
                 const q = query(collection(db, "restaurant"), limit(10), orderBy("delivery_time", "asc"));
@@ -844,26 +801,7 @@
                 trendingList.innerHTML = `
                     <div class="text-wrap text-white">You're offline. Please check your connection.</div>
                 `;
-            } else {
-                trendingList.innerHTML = `
-                    <div class="skeleton-card">
-                        <div class="list-card-image"></div>
-                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
-                    </div>
-                    <div class="skeleton-card">
-                        <div class="list-card-image"></div>
-                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
-                    </div>
-                    <div class="skeleton-card">
-                        <div class="list-card-image"></div>
-                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
-                    </div>
-                    <div class="skeleton-card">
-                        <div class="list-card-image"></div>
-                        <div class="list-card-body"><h6></h6><p class="time"></p></div>
-                    </div>
-                `;
-            }
+            } 
     
             // Fetch fresh data in the background if online
             if (navigator.onLine) {
