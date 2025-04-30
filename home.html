@@ -193,7 +193,7 @@
             display: block;
             opacity: 1;
         }
-        .time span, .fee span {
+        .time span {
             background: #4a4a4a;
             color: #fff;
             padding: 4px 10px;
@@ -529,36 +529,35 @@
             measurementId: "G-E69DMPLXBK"
         };
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        let allRestaurants = [];
-        const restaurantList = document.getElementById("all-restaurants");
-        const renderRestaurantCard = (data, restaurantId) => {
-            const deliveryTime = data.delivery_time || "N/A";
-            const deliveryFee = data.delivery_fee || "5.00";
-            const isOpen = data.isOpen !== false;
-            const div = document.createElement("div");
-            div.className = "col-md-2 pb-3 rendering";
-            div.style.cssText = "margin-bottom: 15px; padding-right: 8px;";
-            div.dataset.id = restaurantId;
-            div.innerHTML = `
-                <a href="restaurant.html?id=${restaurantId}" class="d-block text-decoration-none">
-                    <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
-                        <div class="list-card-image">
-                            <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.webp'}" class="img-fluid item-img w-100" loading="lazy">
-                        </div>
-                        <div class="list-card-body">
-                            <h6 class="mb-1 text-white">${data.name}</h6>
-                            <p class="mb-0">
-                                <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>    <span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
-                            </p>
-                        </div>
-                        <div class="list-card-badge">
-                            <span class="${isOpen ? 'open' : 'closed'}">${isOpen ? 'Open' : 'Closed'}</span>
-                        </div>
+    const db = getFirestore(app);
+    let allRestaurants = [];
+    const restaurantList = document.getElementById("all-restaurants");
+    const renderRestaurantCard = (data, restaurantId) => {
+        const deliveryTime = data.delivery_time || "N/A";
+        const isOpen = data.isOpen !== false;
+        const div = document.createElement("div");
+        div.className = "col-md-2 pb-3 rendering";
+        div.style.cssText = "margin-bottom: 15px; padding-right: 8px;";
+        div.dataset.id = restaurantId;
+        div.innerHTML = `
+            <a href="restaurant.html?id=${restaurantId}" class="d-block text-decoration-none">
+                <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
+                    <div class="list-card-image">
+                        <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.webp'}" class="img-fluid item-img w-100" loading="lazy">
                     </div>
-                </a>`;
-            return div;
-        };
+                    <div class="list-card-body">
+                        <h6 class="mb-1 text-white">${data.name}</h6>
+                        <p class="mb-0">
+                            <span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
+                        </p>
+                    </div>
+                    <div class="list-card-badge">
+                        <span class="${isOpen ? 'open' : 'closed'}">${isOpen ? 'Open' : 'Closed'}</span>
+                    </div>
+                </div>
+            </a>`;
+        return div;
+    };
         const updateRestaurantList = (restaurants, isFiltered = false) => {
             const existingCards = new Map();
             restaurantList.querySelectorAll(".col-md-2").forEach(card => {
