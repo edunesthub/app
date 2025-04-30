@@ -499,7 +499,7 @@
             <div class="container">
                 <div class="all">
                 <div class="d-flex align-items-center">
-                    <h5 class="trending-text">Trending Now 🔥</h5>
+                    <h5 class="trending-text">Treing Now 🔥</h5>
                     <a class="fw-bold ms-auto text-white" href="home.html">All <i class="feather-chevrons-right"></i></a>
                 </div>
                 <div class="offline-notice">
@@ -846,8 +846,25 @@
     </script>
 
     <script>
-        window.forceUpdatePage = function() {
-            window.location.reload(true);
+        window.forceUpdatePage = async function() {
+            try {
+                // Clear all cache storage
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+                }
+                // Unregister all service workers
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(registrations.map(reg => reg.unregister()));
+                }
+                // Reload with cache-busting query parameter
+                window.location.href = window.location.pathname + '?t=' + Date.now();
+            } catch (error) {
+                console.error('Force update failed:', error);
+                // Fallback to basic reload if something goes wrong
+                window.location.reload(true);
+            }
         };
     </script>
 
