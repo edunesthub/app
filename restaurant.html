@@ -567,14 +567,14 @@
                 renderMenu(menuItems);
             } catch (e) {
                 console.error("Error loading menu:", e);
-                elements.menuSection.innerHTML = `<div class="error-message">Failed to load menu. Please check your internet connection try again later.</div>`;
+                elements.menuSection.innerHTML = `<div class="error-message">Failed to load menu. Please check your internet connection try again later...</div>`;
                 showToast("Failed to load menu.", "error");
             }
         };
         const renderMenu = items => {
             console.log("Rendering menu with items:", items);
             if (!items || items.length === 0) {
-                elements.menuSection.innerHTML = `<div class="error-message">No menu items available.Please check your internet connection and try again</div>`;
+                elements.menuSection.innerHTML = `<div class="error-message">No menu items available. Please check your internet connection and try again...</div>`;
                 return;
             }
             const menuList = `<div class="menu-container">${items.map(item => `
