@@ -1,30 +1,31 @@
-const CACHE_NAME = 'Chawp-cache-v26';
-const DYNAMIC_CACHE_NAME = 'Chawp-dynamic-v26';
+const CACHE_NAME = 'Chawp-cache-v27';
+const DYNAMIC_CACHE_NAME = 'Chawp-dynamic-v27';
 const urlsToCache = [
     '/',
     '/index.html',
     '/home.html',
+    '/offline.html', // Added offline.html
     '/loading.html',
     '/restaurant.html',
     '/cart.html',
     '/orders.html',
     '/profile.html',
-    '/vendor/bootstrap/css/bootstrap.min.css?ver=1.0.1',
-    '/vendor/icons/feather.css?ver=1.0.1',
-    '/css/style.css?ver=1.0.1',
-    '/img/icon-192x192.png', // Updated to WebP
-    '/img/icon-512x192.png', // Updated to WebP
-    '/img/vendors/trending1.webp', // Updated to WebP
-    '/img/vendors/popular4.webp', // Updated to WebP
-    '/img/placeholder.webp', // Updated to WebP
-    '/img/vendors/albies1.webp', // Updated to WebP
-    '/img/vendors/cravee.webp', 
-    '/img/vendors/street.webp', // Updated to WebP
-    '/img/vendors/trending2.webp', // Updated to WebP
-    '/img/vendors/popular4.webp', // Updated to WebP
-    '/img/vendors/jakpa.JPG', // Updated to WebP
+    '/vendor/bootstrap/css/bootstrap.min.css?ver=1.0.2',
+    '/vendor/icons/feather.css?ver=1.0.2',
+    '/css/style.css?ver=1.0.2',
+    '/img/icon-192x192.png',
+    '/img/icon-512x192.png',
+    '/img/vendors/trending1.webp',
+    '/img/vendors/popular4.webp',
+    '/img/placeholder.webp',
+    '/img/vendors/albies1.webp',
+    '/img/vendors/cravee.webp',
+    '/img/vendors/street.webp',
+    '/img/vendors/trending2.webp',
+    '/img/vendors/popular4.webp',
+    '/img/vendors/jakpa.JPG', // Changed to .webp
     '/manifest.json',
-    'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js?ver=1.0.1',
+    'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js?ver=1.0.2',
     'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js',
     'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js',
     'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js',
@@ -87,10 +88,10 @@ self.addEventListener('fetch', event => {
                     .catch(() => {
                         // Offline fallbacks
                         if (event.request.destination === 'document' || requestUrl.pathname.endsWith('.html')) {
-                            return caches.match('/index.html') || caches.match('/loading.html');
+                            return caches.match('/offline.html') || caches.match('/index.html');
                         }
                         if (event.request.destination === 'image') {
-                            return caches.match('/img/placeholder.webp');
+                            return caches.match('/img/icon-192x192.png');
                         }
                     });
             })
