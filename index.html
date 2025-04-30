@@ -646,7 +646,7 @@
                     const timeSpan = card.querySelector(".list-card-body .time span");
                     const closedBadge = card.querySelector(".closed-badge");
     
-                    const newImgSrc = data.image || 'img/placeholder.png';
+                    const newImgSrc = data.image || 'img/placeholder.webp';
                     const newName = data.name || 'Unknown Restaurant';
                     const newTimeText = `<i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins`;
                     const needsClosedBadge = !isOpen;
@@ -671,7 +671,7 @@
                     card.innerHTML = `
                         <div class="list-card-image">
                             <a href="restaurant.html?id=${restaurantId}">
-                                <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="eager">
+                                <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.webp'}" class="img-fluid item-img" loading="eager">
                                 ${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
                             </a>
                         </div>

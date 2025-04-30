@@ -515,7 +515,7 @@
                         const data = JSON.parse(cachedData);
                         elements.restaurantName.textContent = data.name || "Restaurant";
                         elements.restaurantInfo.textContent = `🕓 ${data.delivery_time || 'N/A'} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
-                        elements.restaurantImage.src = data.image || "img/placeholder.png";
+                        elements.restaurantImage.src = data.image || "img/placeholder.webp";
                         isRestaurantOpen = data.isOpen !== false;
                         elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
                     } catch (e) {
@@ -532,7 +532,7 @@
                 localStorage.setItem(`restaurant-${restaurantId}`, JSON.stringify(data));
                 elements.restaurantName.textContent = data.name || "Restaurant";
                 elements.restaurantInfo.textContent = `🕓 ${data.delivery_time || 'N/A'} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
-                elements.restaurantImage.src = data.image || "img/placeholder.png";
+                elements.restaurantImage.src = data.image || "img/placeholder.webp";
                 isRestaurantOpen = data.isOpen !== false;
                 elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
             } catch (e) {
