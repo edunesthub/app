@@ -567,14 +567,14 @@
                 renderMenu(menuItems);
             } catch (e) {
                 console.error("Error loading menu:", e);
-                elements.menuSection.innerHTML = `<div class="error-message">Failed to load menu. Please try again later.</div>`;
+                elements.menuSection.innerHTML = `<div class="error-message">Failed to load menu. Please check your internet connection try again later.</div>`;
                 showToast("Failed to load menu.", "error");
             }
         };
         const renderMenu = items => {
             console.log("Rendering menu with items:", items);
             if (!items || items.length === 0) {
-                elements.menuSection.innerHTML = `<div class="error-message">No menu items available.</div>`;
+                elements.menuSection.innerHTML = `<div class="error-message">No menu items available.Please check your internet connection and try again</div>`;
                 return;
             }
             const menuList = `<div class="menu-container">${items.map(item => `
@@ -739,7 +739,7 @@
             feather.replace();
         }).catch(e => {
             console.error("Initialization failed:", e);
-            elements.menuSection.innerHTML = `<div class="error-message">Failed to initialize page. Please check your internet connection and try again.</div>`;
+            elements.menuSection.innerHTML = `<div class="error-message">Failed to initialize page. Please check your internet connection and try again...</div>`;
             showToast("Failed to load page.", "error");
         });
     </script>
@@ -747,6 +747,9 @@
 <script>
     // Slow network detection
     function showSlowNetworkToast() {
+      // Only show if online
+      if (!navigator.onLine) return;
+  
       const toastContainer = document.createElement('div');
       toastContainer.id = 'slow-network-toast';
       toastContainer.className = 'toast-container';
@@ -771,20 +774,21 @@
     // Check network speed
     if ('connection' in navigator) {
       const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      const slowNetworks = ['2g', '3g', 'slow-2g'];
-      
-      if (connection.effectiveType === '4g' || slowNetworks.includes(connection.effectiveType)) {
+      const slowNetworks = ['2g', '3g', 'slow-2g', '4g'];
+  
+      // Initial check
+      if (navigator.onLine && slowNetworks.includes(connection.effectiveType)) {
         showSlowNetworkToast();
       }
   
       // Listen for network changes
       connection.addEventListener('change', () => {
-        if (connection.effectiveType === '4g' || slowNetworks.includes(connection.effectiveType)) {
+        if (navigator.onLine && slowNetworks.includes(connection.effectiveType)) {
           showSlowNetworkToast();
         }
       });
     }
   </script>
-  
+
 </body>
 </html>
