@@ -558,6 +558,7 @@
 
     <div id="ios-install-prompt" style="display: none;">
         <div class="ios-modal">
+            <p class="title"> v-bind="{ class: ios-modal }" class="ios-modal">
             <p class="title">Install the app</p>
             <div class="app-info">
                 <img src="https://app.chawp.me/img/icon-192x192.png" alt="App Icon" />
@@ -846,7 +847,11 @@
     </script>
 
     <script>
-        window.forceUpdatePage = async function() {
+        // Create a BroadcastChannel for cross-tab communication
+        const refreshChannel = new BroadcastChannel('pwa-refresh-channel');
+
+        // Function to perform a hard refresh
+        async function performHardRefresh() {
             try {
                 // Clear all cache storage
                 if ('caches' in window) {
@@ -864,6 +869,21 @@
                 console.error('Force update failed:', error);
                 // Fallback to basic reload if something goes wrong
                 window.location.reload(true);
+            }
+        }
+
+        // Handle button click to initiate refresh across all tabs
+        window.forceUpdatePage = async function() {
+            // Broadcast refresh message to all tabs
+            refreshChannel.postMessage({ action: 'refresh' });
+            // Perform refresh on current tab
+            await performHardRefresh();
+        };
+
+        // Listen for refresh messages from other tabs
+        refreshChannel.onmessage = async function(event) {
+            if (event.data.action === 'refresh') {
+                await performHardRefresh();
             }
         };
     </script>
