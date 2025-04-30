@@ -743,5 +743,48 @@
             showToast("Failed to load page.", "error");
         });
     </script>
+
+<script>
+    // Slow network detection
+    function showSlowNetworkToast() {
+      const toastContainer = document.createElement('div');
+      toastContainer.id = 'slow-network-toast';
+      toastContainer.className = 'toast-container';
+      toastContainer.style.background = 'rgba(255, 152, 0, 0.9)'; // Orange for warning
+      toastContainer.style.zIndex = '1001'; // Above other toasts
+      toastContainer.innerHTML = '<span>Slow Network Detected. Please check your connection.</span>';
+      document.body.appendChild(toastContainer);
+  
+      // Show toast
+      toastContainer.classList.add('show');
+      
+      // Auto-hide after 7 seconds
+      setTimeout(() => {
+        toastContainer.classList.remove('show');
+        toastContainer.classList.add('hide');
+        setTimeout(() => {
+          toastContainer.remove();
+        }, 300);
+      }, 7000);
+    }
+  
+    // Check network speed
+    if ('connection' in navigator) {
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const slowNetworks = ['2g', '3g', 'slow-2g'];
+      
+      if (connection.effectiveType === '4g' || slowNetworks.includes(connection.effectiveType)) {
+        showSlowNetworkToast();
+      }
+  
+      // Listen for network changes
+      connection.addEventListener('change', () => {
+        if (connection.effectiveType === '4g' || slowNetworks.includes(connection.effectiveType)) {
+          showSlowNetworkToast();
+        }
+      });
+    }
+  </script>
+  
 </body>
 </html>
