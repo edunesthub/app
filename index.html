@@ -435,6 +435,7 @@
         .spacer {
             display: none;
         }
+       
         @keyframes pulse {
             0% {opacity: 0.6;}
             50% {opacity: 0.8;}
@@ -453,37 +454,9 @@
             border-radius: 4px;
             pointer-events: none;
         }
-        .update-app-btn {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            width: 40px;
-            height: 40px;
-            background: #00c8ff;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            transition: transform 0.2s ease, background 0.2s ease;
-            z-index: 1000;
-        }
-        .update-app-btn:hover {
-            background: #0098c2;
-            transform: scale(1.1);
-        }
-        .update-app-btn i {
-            font-size: 1.2rem;
-        }
     </style>
 </head>
 <body class="fixed-bottom-bar" style="background: #2c2c2c;">
-    <button class="update-app-btn" onclick="forceUpdatePage()" title="Update App">
-        <i class="feather-refresh-cw"></i>
-    </button>
     <div class="osahan-home-page" id="main-content">
         <div class="welcome-header">
             <div class="title d-flex align-items-center justify-content-center">
@@ -558,7 +531,6 @@
 
     <div id="ios-install-prompt" style="display: none;">
         <div class="ios-modal">
-            <p class="title"> v-bind="{ class: ios-modal }" class="ios-modal">
             <p class="title">Install the app</p>
             <div class="app-info">
                 <img src="https://app.chawp.me/img/icon-192x192.png" alt="App Icon" />
@@ -674,7 +646,7 @@
                     const timeSpan = card.querySelector(".list-card-body .time span");
                     const closedBadge = card.querySelector(".closed-badge");
     
-                    const newImgSrc = data.image || 'img/placeholder.webp';
+                    const newImgSrc = data.image || 'img/placeholder.png';
                     const newName = data.name || 'Unknown Restaurant';
                     const newTimeText = `<i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins`;
                     const needsClosedBadge = !isOpen;
@@ -699,7 +671,7 @@
                     card.innerHTML = `
                         <div class="list-card-image">
                             <a href="restaurant.html?id=${restaurantId}">
-                                <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.webp'}" class="img-fluid item-img" loading="eager">
+                                <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="eager">
                                 ${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
                             </a>
                         </div>
@@ -751,17 +723,17 @@
             const slowNotice = document.querySelector('.network-slow-notice');
     
             function checkNetworkType() {
-                if ('connection' in navigator && navigator.connection.effectiveType) {
-                    const slowTypes = ['slow-2g', '2g', '3g', '4g'];
-                    if (slowTypes.includes(navigator.connection.effectiveType)) {
-                        slowNotice.style.display = 'block';
-                        slowNotice.classList.add('visible');
-                    } else {
-                        slowNotice.classList.remove('visible');
-                        slowNotice.style.display = 'none';
-                    }
-                }
-            }
+    if ('connection' in navigator && navigator.connection.effectiveType) {
+        const slowTypes = ['slow-2g', '2g', '3g', '4g'];
+        if (slowTypes.includes(navigator.connection.effectiveType)) {
+            slowNotice.style.display = 'block';
+            slowNotice.classList.add('visible');
+        } else {
+            slowNotice.classList.remove('visible');
+            slowNotice.style.display = 'none';
+        }
+    }
+}
     
             window.addEventListener('online', () => {
                 document.body.classList.remove('offline');
@@ -847,48 +819,6 @@
     </script>
 
     <script>
-        // Create a BroadcastChannel for cross-tab communication
-        const refreshChannel = new BroadcastChannel('pwa-refresh-channel');
-
-        // Function to perform a hard refresh
-        async function performHardRefresh() {
-            try {
-                // Clear all cache storage
-                if ('caches' in window) {
-                    const cacheNames = await caches.keys();
-                    await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
-                }
-                // Unregister all service workers
-                if ('serviceWorker' in navigator) {
-                    const registrations = await navigator.serviceWorker.getRegistrations();
-                    await Promise.all(registrations.map(reg => reg.unregister()));
-                }
-                // Reload with cache-busting query parameter
-                window.location.href = window.location.pathname + '?t=' + Date.now();
-            } catch (error) {
-                console.error('Force update failed:', error);
-                // Fallback to basic reload if something goes wrong
-                window.location.reload(true);
-            }
-        }
-
-        // Handle button click to initiate refresh across all tabs
-        window.forceUpdatePage = async function() {
-            // Broadcast refresh message to all tabs
-            refreshChannel.postMessage({ action: 'refresh' });
-            // Perform refresh on current tab
-            await performHardRefresh();
-        };
-
-        // Listen for refresh messages from other tabs
-        refreshChannel.onmessage = async function(event) {
-            if (event.data.action === 'refresh') {
-                await performHardRefresh();
-            }
-        };
-    </script>
-
-    <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(regs => {
                 for (let reg of regs) {
@@ -926,5 +856,5 @@
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9378aae7d831bfb0',t:'MTc0NTg2NTQxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9378f4460ae77221',t:'MTc0NTg2ODQxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93794d42db4badcc',t:'MTc0NTg3MjA2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9380160edd4431b6',t:'MTc0NTk0MzIwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'938ad7288e41d6dc',t:'MTc0NjA1NTk2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9380160edd4431b6',t:'MTc0NTk0MzIwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
