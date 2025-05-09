@@ -597,14 +597,18 @@
             elements.cartContainer.innerHTML = `
                 <div class="cart-items">${itemsHTML}</div>
                 <div class="delivery-details">
-                    <h6>Delivery Details</h6><br>
-                    <label for="delivery-hostel">Hostel</label>
-                    <select id="delivery-hostel">${hostelOptions}</select><br><br>
-                    <label for="delivery-location">Room</label>
-                    <input type="text" id="delivery-location" value="${persistentDetails.location}" placeholder="Enter only room number (e.g, 555)"><br><br>
-                    <label for="delivery-contact">Active Contact Number</label>
-                    <input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number">
-                </div>
+    <h6>Delivery Details</h6><br>
+
+    <label for="delivery-hostel">Hostel</label>
+    <select id="delivery-hostel">${hostelOptions}</select><br><br>
+
+    <label for="delivery-location">Room</label>
+    <input type="tel" id="delivery-location" value="${persistentDetails.location}" placeholder="Enter only room number (e.g, 555)" maxlength="3" pattern="\d{3}" inputmode="numeric"><br><br>
+
+    <label for="delivery-contact">Active Contact Number</label>
+    <input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number" maxlength="10" pattern="\d{10}" inputmode="numeric">
+</div>
+
                 <div class="order-summary">
                     <p>Subtotal <span class="float-end">GH₵${subtotal.toFixed(2)}</span></p>
                     <p>Processing Fee <span class="float-end">GH₵2.00</span></p>
