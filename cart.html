@@ -511,16 +511,18 @@
         const getCart = () => JSON.parse(localStorage.getItem("cart") || "[]");
         const saveCart = cart => localStorage.setItem("cart", JSON.stringify(cart));
         const getPersistentDeliveryDetails = () => {
-            const details = JSON.parse(localStorage.getItem("deliveryDetails") || "{}");
-            return { 
-                hostel: details.hostel || "Hostel A",
-                location: details.location || "",
-                contactNumber: details.contactNumber || ""
-            };
-        };
-        const savePersistentDeliveryDetails = (hostel, location, contactNumber) => {
-            localStorage.setItem("deliveryDetails", JSON.stringify({ hostel, location, contactNumber }));
-        };
+    const details = JSON.parse(localStorage.getItem("deliveryDetails") || "{}");
+    return { 
+        hostel: details.hostel || "Hostel A",
+        location: details.location || "",
+        contactNumber: details.contactNumber || "",
+        note: details.note || ""
+    };
+};
+
+const savePersistentDeliveryDetails = (hostel, location, contactNumber, note) => {
+    localStorage.setItem("deliveryDetails", JSON.stringify({ hostel, location, contactNumber, note }));
+};
         const getDeviceId = () => {
             let deviceId = localStorage.getItem("deviceId");
             if (!deviceId) {
@@ -598,15 +600,14 @@
                 <div class="cart-items">${itemsHTML}</div>
                 <div class="delivery-details">
     <h6>Delivery Details</h6><br>
-
     <label for="delivery-hostel">Hostel</label>
     <select id="delivery-hostel">${hostelOptions}</select><br><br>
-
     <label for="delivery-location">Room</label>
     <input type="tel" id="delivery-location" value="${persistentDetails.location}" placeholder="Enter only room number (e.g, 555)" maxlength="3" pattern="\d{3}" inputmode="numeric"><br><br>
-
     <label for="delivery-contact">Active Contact Number</label>
-    <input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number" maxlength="10" pattern="\d{10}" inputmode="numeric">
+    <input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number" maxlength="10" pattern="\d{10}" inputmode="numeric"><br><br>
+    <label for="delivery-note">Note to Restaurant (Optional)</label>
+    <textarea id="delivery-note" placeholder="Add any special instructions for the restaurant" rows="3">${persistentDetails.note || ""}</textarea>
 </div>
 
                 <div class="order-summary">
@@ -649,71 +650,73 @@
             showNotification("All items removed from cart");
         };
         const saveDeliveryInputs = () => {
-            const hostel = document.getElementById("delivery-hostel").value;
-            const location = document.getElementById("delivery-location").value.trim();
-            const contactNumber = document.getElementById("delivery-contact").value.trim();
-            savePersistentDeliveryDetails(hostel, location, contactNumber);
-            renderCart();
-        };
+    const hostel = document.getElementById("delivery-hostel").value;
+    const location = document.getElementById("delivery-location").value.trim();
+    const contactNumber = document.getElementById("delivery-contact").value.trim();
+    const note = document.getElementById("delivery-note").value.trim();
+    savePersistentDeliveryDetails(hostel, location, contactNumber, note);
+    renderCart();
+};
         let isProcessing = false;
         window.handlePaymentCallback = function(response) {
-            const checkoutBtn = document.getElementById("checkout-btn");
-            const cart = getCart();
-            const persistentDetails = getPersistentDeliveryDetails();
-            if (response.status === "success") {
-                const sanitizedCart = cart.filter(item => 
-                    item.name && 
-                    typeof item.price === "number" && 
-                    !isNaN(item.price) && 
-                    typeof item.quantity === "number" && 
-                    !isNaN(item.quantity)
-                );
-                const deliveryFee = getDeliveryFee(persistentDetails.hostel);
-                const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 2 + deliveryFee;
-                const orderData = {
-                    restaurantId: sanitizedCart[0].restaurantId,
-                    items: sanitizedCart.map(item => ({
-                        name: item.name,
-                        price: item.price,
-                        quantity: item.quantity,
-                        total: item.price * item.quantity,
-                        note: item.note || ""
-                    })),
-                    totalAmount: totalAmount,
-                    deliveryDetails: {
-                        hostel: persistentDetails.hostel,
-                        location: persistentDetails.location,
-                        contactNumber: persistentDetails.contactNumber
-                    },
-                    deliveryFee: deliveryFee,
-                    processingFee: 2.00,
-                    timestamp: new Date().toISOString(),
-                    status: "pending",
-                    deviceId: getDeviceId(),
-                    paymentReference: response.reference,
-                    paymentStatus: "success",
-                    paymentDate: new Date().toISOString()
-                };
-                addDoc(collection(db, "orders"), orderData)
-                    .then(() => {
-                        saveCart([]);
-                        showNotification("Payment successful! Order placed.");
-                        setTimeout(() => {
-                            window.location.href = "successful.html";
-                        }, 1500);
-                    })
-                    .catch(error => {
-                        console.error("Firestore error:", error);
-                        showNotification("Error saving order. Contact support.", "error");
-                    })
-                    .finally(() => {
-                        resetCheckoutButton();
-                    });
-            } else {
-                showNotification("Payment failed. Please try again.", "error");
-                resetCheckoutButton();
-            }
+    const checkoutBtn = document.getElementById("checkout-btn");
+    const cart = getCart();
+    const persistentDetails = getPersistentDeliveryDetails();
+    if (response.status === "success") {
+        const sanitizedCart = cart.filter(item => 
+            item.name && 
+            typeof item.price === "number" && 
+            !isNaN(item.price) && 
+            typeof item.quantity === "number" && 
+            !isNaN(item.quantity)
+        );
+        const deliveryFee = getDeliveryFee(persistentDetails.hostel);
+        const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 2 + deliveryFee;
+        const orderData = {
+            restaurantId: sanitizedCart[0].restaurantId,
+            items: sanitizedCart.map(item => ({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                total: item.price * item.quantity,
+                note: item.note || ""
+            })),
+            totalAmount: totalAmount,
+            deliveryDetails: {
+                hostel: persistentDetails.hostel,
+                location: persistentDetails.location,
+                contactNumber: persistentDetails.contactNumber,
+                note: persistentDetails.note || ""
+            },
+            deliveryFee: deliveryFee,
+            processingFee: 2.00,
+            timestamp: new Date().toISOString(),
+            status: "pending",
+            deviceId: getDeviceId(),
+            paymentReference: response.reference,
+            paymentStatus: "success",
+            paymentDate: new Date().toISOString()
         };
+        addDoc(collection(db, "orders"), orderData)
+            .then(() => {
+                saveCart([]);
+                showNotification("Payment successful! Order placed.");
+                setTimeout(() => {
+                    window.location.href = "successful.html";
+                }, 1500);
+            })
+            .catch(error => {
+                console.error("Firestore error:", error);
+                showNotification("Error saving order. Contact support.", "error");
+            })
+            .finally(() => {
+                resetCheckoutButton();
+            });
+    } else {
+        showNotification("Payment failed. Please try again.", "error");
+        resetCheckoutButton();
+    }
+};
         const proceedToCheckout = async () => {
             if (isProcessing) return;
             isProcessing = true;
@@ -727,7 +730,7 @@
                 resetCheckoutButton();
                 return;
             }
-            if (!persistentDetails.hostel || !persistentDetails.location || !persistentDetails.contactNumber) {
+            if (!persistentDetails.hostel || !persistentDetails.location || !persistentDetails.contactNumber || !persistentDetails.note) {
                 showNotification("Please select a hostel, enter your room number, and contact number!", "error");
                 resetCheckoutButton();
                 return;
