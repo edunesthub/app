@@ -9,34 +9,35 @@
     <title>Chawp - Your Cart</title>
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js" async></script>
     <style>
-        html, body {
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-            overflow-y: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            touch-action: pan-y;
-            -webkit-user-scalable: no;
-            -ms-user-scalable: no;
-            user-scalable: no;
-            overscroll-behavior-y: none;
-            -webkit-text-size-adjust: none;
-            -webkit-overflow-scrolling: touch;
-        }
-        body::-webkit-scrollbar {
-            display: none;
-        }
-        body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #2c2c2c;
-            color: #ffffff;
-            transition: background 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
+         html, body {
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        touch-action: pan-y;
+        -webkit-user-scalable: no;
+        -ms-user-scalable: no;
+        user-scalable: no;
+        overscroll-behavior-y: none;
+        -webkit-text-size-adjust: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    body::-webkit-scrollbar {
+        display: none;
+    }
+    body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #2c2c2c;
+        color: #ffffff;
+        transition: background 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 70px; /* Matches footer height to prevent overlap */
+    }
         .cart-header {
             background: #2c2c2c;
             padding: 15px 25px;
@@ -89,14 +90,14 @@
             color: #ffffff;
         }
         .cart-container {
-            padding: 30px 15px;
-            max-width: 700px;
-            margin: 0 auto;
-            opacity: 0;
-            animation: fadeIn 0.5s ease forwards;
-            flex: 1 0 auto;
-            padding-bottom: 100px;
-        }
+        padding: 30px 15px;
+        max-width: 700px;
+        margin: 0 auto;
+        opacity: 0;
+        animation: fadeIn 0.5s ease forwards;
+        flex: 1 0 auto;
+        padding-bottom: env(safe-area-inset-bottom);
+    }
         .empty-cart {
             text-align: center;
             padding: 80px 15px;
@@ -353,77 +354,79 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .osahan-menu-fotter {
-            padding: 10px !important;
-            min-height: 70px;
-            background: #1a1a1a;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
-        }
-        .osahan-menu-fotter .row {
-            margin: 0;
-            height: 100%;
-            align-items: center;
-            justify-content: space-around;
-        }
-        .osahan-menu-fotter .col {
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-            min-width: 60px;
-        }
-        .osahan-menu-fotter .col a {
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            width: 100%;
-            transition: transform 0.2s ease;
-        }
-        .osahan-menu-fotter .col a:hover {
-            transform: scale(1.05);
-        }
-        .osahan-menu-fotter .col a p {
-            font-size: clamp(1.2rem, 4vw, 1.8rem);
-            margin-bottom: 4px;
-            line-height: 1;
-        }
-        .osahan-menu-fotter .small, .osahan-menu-fotter small {
-            font-size: clamp(0.6rem, 2.5vw, 0.9rem) !important;
-            font-weight: 600;
-            line-height: 1.2;
-        }
-        .osahan-menu-fotter .col.selected a, .osahan-menu-fotter .col.selected p {
-            color: #00c8ff;
-        }
-        .footer-item {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 1px;
-            border-radius: 10px;
-            transition: background 0.3s ease, transform 0.2s ease;
-        }
-        .footer-item.selected {
-            background: #00566d;
-            transform: scale(1.05);
-        }
-        .footer-item a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .footer-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+        background: #1a1a1a;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+        padding: 15px 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 1000;
+        padding-bottom: env(safe-area-inset-bottom);
+        opacity: 1; /* Ensure immediate visibility */
+        will-change: transform;
+    }
+    .osahan-menu-fotter .row {
+        margin: 0;
+        height: 100%;
+        align-items: center;
+        justify-content: space-around;
+    }
+    .osahan-menu-fotter .col {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        min-width: 60px;
+    }
+    .osahan-menu-fotter .col a {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        transition: transform 0.2s ease;
+    }
+    .osahan-menu-fotter .col a:hover {
+        transform: scale(1.05);
+    }
+    .osahan-menu-fotter .col a p {
+        font-size: clamp(1.2rem, 4vw, 1.8rem);
+        margin-bottom: 4px;
+        line-height: 1;
+    }
+    .osahan-menu-fotter .small, .osahan-menu-fotter small {
+        font-size: clamp(0.6rem, 2.5vw, 0.9rem) !important;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+    .osahan-menu-fotter .col.selected a, .osahan-menu-fotter .col.selected p {
+        color: #00c8ff;
+    }
+    .footer-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1px;
+        border-radius: 10px;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .footer-item.selected {
+        background: #00566d;
+        transform: scale(1.05);
+    }
+    .footer-item a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .footer-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
     </style>
 </head>
 <body class="fixed-bottom-bar">
@@ -480,7 +483,7 @@
             </div>
         </div>
     </div>
-    <script type="module">
+    <script type="module" defer>
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
         const firebaseConfig = {
@@ -510,7 +513,7 @@
         const getPersistentDeliveryDetails = () => {
             const details = JSON.parse(localStorage.getItem("deliveryDetails") || "{}");
             return { 
-                hostel: details.hostel || "Hostel A", // Default to Hostel A
+                hostel: details.hostel || "Hostel A",
                 location: details.location || "",
                 contactNumber: details.contactNumber || ""
             };
@@ -531,7 +534,9 @@
             { id: "hostel_b", name: "Hostel B", fee: 4.00 },
             { id: "hostel_c", name: "Hostel C", fee: 5.00 }
         ];
+        let deliveryFeesCache = null;
         const fetchDeliveryFees = async () => {
+            if (deliveryFeesCache) return deliveryFeesCache;
             try {
                 const querySnapshot = await getDocs(collection(db, "deliveryFees"));
                 deliveryFees = querySnapshot.docs.map(doc => ({
@@ -539,9 +544,12 @@
                     name: doc.data().name,
                     fee: doc.data().fee
                 }));
+                deliveryFeesCache = deliveryFees;
+                return deliveryFees;
             } catch (error) {
                 console.error("Error fetching delivery fees:", error);
                 showNotification("Failed to load delivery fees. Using defaults.", "error");
+                return deliveryFees;
             }
         };
         const getDeliveryFee = (hostelName) => {
@@ -549,13 +557,13 @@
             return hostel.fee;
         };
         const renderCart = async () => {
-            await fetchDeliveryFees();
             const cart = getCart();
-            const persistentDetails = getPersistentDeliveryDetails();
             if (!cart.length) {
                 elements.cartContainer.innerHTML = `<div class="empty-cart"><h2>Your Cart is Empty</h2><p>Looks like you haven't added anything yet.<br>Explore the shops and treat yourself🍔</p><a href="index.html" class="btn btn-primary">Start Shopping</a></div>`;
                 return;
             }
+            await fetchDeliveryFees();
+            const persistentDetails = getPersistentDeliveryDetails();
             let subtotal = 0;
             const groupedCart = new Map();
             cart.forEach(item => {
@@ -641,7 +649,7 @@
             const location = document.getElementById("delivery-location").value.trim();
             const contactNumber = document.getElementById("delivery-contact").value.trim();
             savePersistentDeliveryDetails(hostel, location, contactNumber);
-            renderCart(); // Re-render to update delivery fee
+            renderCart();
         };
         let isProcessing = false;
         window.handlePaymentCallback = function(response) {
@@ -770,12 +778,33 @@
             checkoutBtn.innerHTML = `Proceed to Checkout <i class="feather-arrow-right"></i><span class="spinner"></span>`;
             isProcessing = false;
         };
+        const initFooter = () => {
+            const footerLinks = document.querySelectorAll('.osahan-menu-fotter .col a');
+            footerLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const href = link.getAttribute('href');
+                    document.querySelectorAll('.osahan-menu-fotter .footer-item').forEach(item => item.classList.remove('selected'));
+                    link.closest('.footer-item').classList.add('selected');
+                    window.location.href = href;
+                });
+            });
+        };
         document.addEventListener("DOMContentLoaded", () => {
             renderCart();
-            feather.replace();
+            initFooter();
+            const featherObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    feather.replace();
+                    featherObserver.disconnect();
+                }
+            }, { root: null, threshold: 0.1 });
+            featherObserver.observe(document.body);
         });
         window.addEventListener("online", renderCart);
         window.addEventListener("offline", () => showNotification("You're offline! Some features may be limited.", "error"));
     </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d180120be31377',t:'MTc0Njc5Njg5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d1add4bb3c44dd',t:'MTc0Njc5ODc2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

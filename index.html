@@ -35,40 +35,41 @@
 
     <style>
         html {
-            height: 100%;
-            min-height: -webkit-fill-available;
-            overscroll-behavior-y: none;
-            scroll-behavior: smooth;
-            margin: 0;
-        }
-        body {
-            background: #2c2c2c;
-            font-family: 'Poppins', sans-serif;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            min-height: -webkit-fill-available;
-            overflow-x: hidden;
-            overscroll-behavior-y: none;
-            -webkit-overflow-scrolling: touch;
-            display: flex;
-            flex-direction: column;
-        }
-        .osahan-home-page {
-            flex: 1 0 auto;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        .trending-section, .welcome-header, .promo-banner, .osahan-menu-fotter {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-            will-change: opacity, transform;
-        }
-        .trending-section.loaded, .welcome-header.loaded, .promo-banner.loaded, .osahan-menu-fotter.loaded {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        height: 100%;
+        min-height: -webkit-fill-available;
+        overscroll-behavior-y: none;
+        scroll-behavior: smooth;
+        margin: 0;
+    }
+    body {
+        background: #2c2c2c;
+        font-family: 'Poppins', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        min-height: -webkit-fill-available;
+        overflow-x: hidden;
+        overscroll-behavior-y: none;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 70px; /* Matches footer height to prevent overlap */
+    }
+    .osahan-home-page {
+        flex: 1 0 auto;
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    .trending-section, .welcome-header, .promo-banner {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        will-change: opacity, transform;
+    }
+    .trending-section.loaded, .welcome-header.loaded, .promo-banner.loaded {
+        opacity: 1;
+        transform: translateY(0);
+    }
         .list-card {
             background: #565656;
             border-radius: 10px;
@@ -161,7 +162,7 @@
             padding: 6px 12px;
             border-radius: 8px;
             font-size: 0.85rem;
-            font-weight: 600;
+            font3333333333-weight: 600;
             margin-left: 10px;
             cursor: pointer;
             transition: background 0.2s ease, transform 0.2s ease;
@@ -236,16 +237,19 @@
             color: #b0b0b0;
         }
         .osahan-menu-fotter {
-            background: #1a1a1a;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
-            padding: 15px 0;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
+        background: #1a1a1a;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+        padding: 15px 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 1000;
+        padding-bottom: env(safe-area-inset-bottom);
+        opacity: 1; /* Ensure immediate visibility */
+        will-change: transform;
+    }
         .all {
             padding-bottom: 70px; /* Matches footer height */
             flex: 1;
@@ -299,7 +303,7 @@
             align-items: center;
         }
         .footer-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 255, 0.1);
         }
         .footer-item.selected {
             background: #00566d;
@@ -479,7 +483,7 @@
                     You’re offline. Check your connection.
                 </div>
                 <div class="network-slow-notice">
-                    Slow Network Detected. Your connection is taking longer than usual. Please check your network.
+                    Slow Network Detected...
                 </div>
                 <div id="trending-list" class="trending-list">
                     
@@ -586,6 +590,9 @@
                 renderRestaurants(restaurants, trendingList);
             } 
     
+            // Skip fetching if offline
+            if (!navigator.onLine) return;
+    
             try {
                 const q = query(collection(db, "restaurant"), limit(10), orderBy("delivery_time", "asc"));
                 const querySnapshot = await getDocs(q);
@@ -605,8 +612,9 @@
                     restaurants.push({ id: restaurantId, ...data });
                 });
     
-                // Cache the restaurants
+                // Cache the restaurants with timestamp
                 localStorage.setItem("trending-restaurants-cache", JSON.stringify(restaurants));
+                localStorage.setItem("trending-restaurants-cache-time", Date.now());
                 renderRestaurants(restaurants, trendingList);
     
             } catch (error) {
@@ -671,7 +679,7 @@
                     card.innerHTML = `
                         <div class="list-card-image">
                             <a href="restaurant.html?id=${restaurantId}">
-                                <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="eager">
+                                <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
                                 ${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
                             </a>
                         </div>
@@ -723,23 +731,27 @@
             const slowNotice = document.querySelector('.network-slow-notice');
     
             function checkNetworkType() {
-    if ('connection' in navigator && navigator.connection.effectiveType) {
-        const slowTypes = ['slow-2g', '2g', '3g', '4g'];
-        if (slowTypes.includes(navigator.connection.effectiveType)) {
-            slowNotice.style.display = 'block';
-            slowNotice.classList.add('visible');
-        } else {
-            slowNotice.classList.remove('visible');
-            slowNotice.style.display = 'none';
-        }
-    }
-}
+                if ('connection' in navigator && navigator.connection.effectiveType) {
+                    const slowTypes = ['slow-2g', '2g', '3g'];
+                    if (slowTypes.includes(navigator.connection.effectiveType)) {
+                        slowNotice.style.display = 'block';
+                        slowNotice.classList.add('visible');
+                    } else {
+                        slowNotice.classList.remove('visible');
+                        slowNotice.style.display = 'none';
+                    }
+                }
+            }
     
             window.addEventListener('online', () => {
                 document.body.classList.remove('offline');
                 offlineNotice.style.display = 'none';
                 checkNetworkType();
-                fetchTrendingRestaurants();
+                // Only fetch if cache is stale (older than 5 minutes)
+                const cacheTime = localStorage.getItem("trending-restaurants-cache-time");
+                if (!cacheTime || (Date.now() - cacheTime) > 5 * 60 * 1000) {
+                    fetchTrendingRestaurants();
+                }
             });
     
             window.addEventListener('offline', () => {
@@ -754,29 +766,29 @@
                 checkNetworkType(); // Initial check
             }
     
+            // Optimize fetch for slow networks
             const originalFetch = window.fetch;
-            window.fetch = function (...args) {
+            window.fetch = async function (...args) {
                 const startTime = performance.now();
-                const request = originalFetch.apply(this, args);
-    
-                request.then(response => {
+                try {
+                    const response = await originalFetch.apply(this, args);
                     const duration = performance.now() - startTime;
                     if (duration > 2000 && navigator.onLine) {
                         slowNotice.style.display = 'block';
                         slowNotice.classList.add('visible');
-                    } else if (duration <= 2000 && navigator.onLine) {
+                    } else if (navigator.onLine) {
                         slowNotice.classList.remove('visible');
                         slowNotice.style.display = 'none';
                     }
-                }).catch(() => {
+                    return response;
+                } catch (error) {
                     if (!navigator.onLine) {
                         document.body.classList.add('offline');
                         offlineNotice.style.display = 'block';
                         setTimeout(() => offlineNotice.style.opacity = '1', 10);
                     }
-                });
-    
-                return request;
+                    throw error;
+                }
             };
         }
     
@@ -791,7 +803,7 @@
             updateWelcomeMessage();
             monitorNetwork();
     
-            // Load cached restaurants if available, or show offline message
+            // Load cached restaurants immediately
             const cachedRestaurants = localStorage.getItem("trending-restaurants-cache");
             const trendingList = document.getElementById("trending-list");
             if (cachedRestaurants) {
@@ -803,8 +815,9 @@
                 `;
             } 
     
-            // Fetch fresh data in the background if online
-            if (navigator.onLine) {
+            // Fetch fresh data in the background if online and cache is stale
+            const cacheTime = localStorage.getItem("trending-restaurants-cache-time");
+            if (navigator.onLine && (!cacheTime || (Date.now() - cacheTime) > 5 * 60 * 1000)) {
                 fetchTrendingRestaurants();
             }
     
@@ -842,19 +855,20 @@
             document.getElementById('ios-install-prompt').style.display = 'none';
         }
 
-        window.onload = function () {
+        // Defer iOS prompt to reduce initial load impact
+        window.addEventListener('load', () => {
             if (isIosSafari()) {
                 setTimeout(() => {
                     const prompt = document.getElementById('ios-install-prompt');
                     prompt.style.display = 'block';
                     setTimeout(() => prompt.classList.add('visible'), 10);
-                }, 1000);
+                }, 2000); // Delayed to prioritize content rendering
             }
-        };
+        });
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93784c4a5c7e678a',t:'MTc0NTg2MTUzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9378aae7d831bfb0',t:'MTc0NTg2NTQxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9378f4460ae77221',t:'MTc0NTg2ODQxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93794d42db4badcc',t:'MTc0NTg3MjA2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9380160edd4431b6',t:'MTc0NTk0MzIwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9380160edd4431b6',t:'MTc0NTk0MzIwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d1b904bd863382',t:'MTc0Njc5OTIyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

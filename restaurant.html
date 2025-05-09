@@ -434,7 +434,7 @@
         </div>
     </div>
     <div class="menu-section" id="menu-section">
-        <div class="loading-spinner">Loading menu... Slow network detected..</div>
+        <div class="loading-spinner">Loading menu...</div>
     </div>
     <div id="closed-message" class="toast-container error" style="display: none; opacity: 1; z-index: 1000; position: fixed; bottom: 30px; top: auto; left: 50%; transform: translateX(-50%); width: 300px; text-align: center;">
         <span>This restaurant is currently closed. Please check back later!</span>
@@ -567,14 +567,14 @@
                 renderMenu(menuItems);
             } catch (e) {
                 console.error("Error loading menu:", e);
-                elements.menuSection.innerHTML = `<div class="error-message">Failed to load menu. Please check your internet connection try again later...</div>`;
+                elements.menuSection.innerHTML = `<div class="error-message">Failed to load menu. Please check your internet connection...</div>`;
                 showToast("Failed to load menu.", "error");
             }
         };
         const renderMenu = items => {
             console.log("Rendering menu with items:", items);
             if (!items || items.length === 0) {
-                elements.menuSection.innerHTML = `<div class="error-message">No menu items available. Please check your internet connection and try again...</div>`;
+                elements.menuSection.innerHTML = `<div class="error-message">Your're offline. Please check your internet connection...</div>`;
                 return;
             }
             const menuList = `<div class="menu-container">${items.map(item => `
@@ -739,7 +739,7 @@
             feather.replace();
         }).catch(e => {
             console.error("Initialization failed:", e);
-            elements.menuSection.innerHTML = `<div class="error-message">Failed to initialize page. Please check your internet connection and try again...</div>`;
+            elements.menuSection.innerHTML = `<div class="error-message">Failed to load page. Please check your internet connection...</div>`;
             showToast("Failed to load page.", "error");
         });
     </script>
@@ -755,7 +755,7 @@
       toastContainer.className = 'toast-container';
       toastContainer.style.background = 'rgba(255, 152, 0, 0.9)'; // Orange for warning
       toastContainer.style.zIndex = '1001'; // Above other toasts
-      toastContainer.innerHTML = '<span>Slow Network Detected. Please check your connection.</span>';
+      toastContainer.innerHTML = '<span>Slow Network Detected...</span>';
       document.body.appendChild(toastContainer);
   
       // Show toast
