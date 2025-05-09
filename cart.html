@@ -516,12 +516,13 @@
         hostel: details.hostel || "Hostel A",
         location: details.location || "",
         contactNumber: details.contactNumber || "",
-        note: details.note || ""
+        note: ""  // Don't load any saved note
+
     };
 };
 
-const savePersistentDeliveryDetails = (hostel, location, contactNumber, note) => {
-    localStorage.setItem("deliveryDetails", JSON.stringify({ hostel, location, contactNumber, note }));
+const savePersistentDeliveryDetails = (hostel, location, contactNumber) => {
+    localStorage.setItem("deliveryDetails", JSON.stringify({ hostel, location, contactNumber }));
 };
         const getDeviceId = () => {
             let deviceId = localStorage.getItem("deviceId");
@@ -619,7 +620,10 @@ const savePersistentDeliveryDetails = (hostel, location, contactNumber, note) =>
                 <p class="refund-note"><i class="feather-info"></i> By proceeding with checkout, you agree to our <a href="refund.html">refund policy</a>.</p>
                 <div class="action-buttons">
                     <button id="checkout-btn" class="btn btn-success w-100">Proceed to Checkout <i class="feather-arrow-right"></i><span class="spinner"></span></button>
-                    <button id="remove-all-btn" class="btn btn-danger w-100">Remove All <i class="feather-trash-2"></i></button>
+                    <button id="remove-all-btn" class="btn btn-danger w-100 pb-3">
+    Remove All <i class="feather-trash-2"></i>
+</button>
+
                 </div>
             `;
             elements.cartContainer.querySelectorAll(".increase").forEach(btn => btn.onclick = () => updateItemQuantity(btn.closest(".cart-item").dataset.key, 1));
