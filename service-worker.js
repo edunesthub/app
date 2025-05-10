@@ -1,5 +1,5 @@
-const CACHE_NAME = 'Chawp-cache-v27';
-const DYNAMIC_CACHE_NAME = 'Chawp-dynamic-v30';
+const CACHE_NAME = 'Chawp-cache-v31';
+const DYNAMIC_CACHE_NAME = 'Chawp-dynamic-v31';
 const urlsToCache = [
     '/',
     '/index.html',

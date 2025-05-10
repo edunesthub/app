@@ -326,6 +326,78 @@
             --btn-color: #000;
             --shadow-color: rgba(0, 0, 0, 0.6);
         }
+        #android-install-prompt {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: var(--modal-bg);
+    color: var(--modal-color);
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    z-index: 1000;
+    box-shadow: 0 -2px 12px var(--shadow-color);
+    border-top-left-radius: var(--modal-border-radius);
+    border-top-right-radius: var(--modal-border-radius);
+    animation: slideUp 0.3s ease-out;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+#android-install-prompt.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+.android-modal .title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #fff;
+}
+.android-modal .app-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--modal-accent-bg);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.android-modal .app-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+}
+.android-modal .app-info .name {
+    font-weight: 600;
+    margin: 0;
+    font-size: 15px;
+    color: #fff;
+}
+.android-modal .app-info .url {
+    font-size: 13px;
+    color: #aaa;
+    margin: 0;
+}
+.android-modal ol {
+    padding-left: 20px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+.android-modal li {
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+.android-modal button {
+    width: 100%;
+    padding: 10px;
+    font-weight: bold;
+    background: #0098c2;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
         #ios-install-prompt {
             position: fixed;
             bottom: 0;
@@ -458,6 +530,62 @@
             border-radius: 4px;
             pointer-events: none;
         }
+
+        /* Existing styles unchanged, only adding skeleton UI styles */
+.skeleton-card {
+    background: #565656;
+    border-radius: 10px;
+    overflow: hidden;
+    opacity: 1;
+    height: 170px; /* Matches list-card height */
+}
+.skeleton-image {
+    height: 110px;
+    background: #4a4a4a;
+    position: relative;
+    overflow: hidden;
+}
+.skeleton-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 1.5s infinite;
+}
+.skeleton-body {
+    padding: 8px;
+    height: 60px;
+}
+.skeleton-text {
+    background: #4a4a4a;
+    height: 16px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    position: relative;
+    overflow: hidden;
+}
+.skeleton-text::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 1.5s infinite;
+}
+.skeleton-text.short {
+    width: 60%;
+    height: 12px;
+}
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
     </style>
 </head>
 <body class="fixed-bottom-bar" style="background: #2c2c2c;">
@@ -561,6 +689,25 @@
         </div>
     </div>
 
+    <div id="android-install-prompt" style="display: none;">
+        <div class="android-modal">
+            <p class="title">Install the app</p>
+            <div class="app-info">
+                <img src="https://app.chawp.me/img/icon-192x192.png" alt="App Icon" />
+                <div>
+                    <p class="name">Chawp</p>
+                    <p class="url">app.chawp.me</p>
+                </div>
+            </div>
+            <ol>
+                <li>Tap the <span class="btn">Menu</span> button in your browser (usually three dots)</li>
+                <li>Select <span class="btn">Add to Home screen</span> or <span class="btn">Install app</span></li>
+                <li>Look for the <img src="https://app.chawp.me/img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
+            </ol>
+            <button onclick="closeAndroidPrompt()">OK, Got it</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
@@ -579,10 +726,32 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        // Check authentication state
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, update welcome message
+            updateWelcomeMessage();
+            // Cache user data for offline use
+            localStorage.setItem('current-user', JSON.stringify({ uid: user.uid, email: user.email }));
+        } else {
+            // No user is signed in, redirect to login page
+            if (!window.location.pathname.includes("login.html")) {
+                window.location.href = "login.html";
+            }
+        }
+    });
     
         async function fetchTrendingRestaurants() {
             const trendingList = document.getElementById("trending-list");
             
+            // Show skeleton UI after 500ms if no data yet
+    let skeletonTimeout = setTimeout(() => {
+        if (elements.trendingList.children.length === 0) {
+            renderSkeletonCards(elements.trendingList);
+        }
+    }, 500);
+
             // Check for cached restaurants in localStorage
             const cachedRestaurants = localStorage.getItem("trending-restaurants-cache");
             if (cachedRestaurants) {
@@ -598,13 +767,18 @@
                 const querySnapshot = await getDocs(q);
     
                 const restaurants = [];
-                if (querySnapshot.empty) {
-                    trendingList.innerHTML = `
-                        <div class="text-wrap text-white">No trending restaurants found...</div>
-                    `;
-                    console.log("No restaurants found in Firestore.");
-                    return;
-                }
+
+if (querySnapshot.empty) {
+    trendingList.innerHTML = `
+        <div class="text-wrap text-white text-center py-4">
+            <p class="text-lg font-semibold text-red-400">⚠️ Something went wrong</p>
+            <p class="text-sm text-gray-300">We couldn’t load trending restaurants. Please try again later.</p>
+        </div>
+    `;
+    console.error("⚠️ Firestore returned an empty result. Possible issue with fetching trending restaurants.");
+    return;
+}
+
     
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
@@ -624,8 +798,30 @@
                 `;
             }
         }
+
+        function renderSkeletonCards(trendingList) {
+    trendingList.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i < 4; i++) { // Show 4 skeleton cards
+        const skeletonCard = document.createElement("div");
+        skeletonCard.className = "skeleton-card";
+        skeletonCard.innerHTML = `
+            <div class="skeleton-image"></div>
+            <div class="skeleton-body">
+                <div class="skeleton-text"></div>
+                <div class="skeleton-text short"></div>
+            </div>
+        `;
+        fragment.appendChild(skeletonCard);
+    }
+    trendingList.appendChild(fragment);
+}
+
+
     
         function renderRestaurants(restaurants, trendingList) {
+            // Clear any skeleton cards
+    trendingList.innerHTML = '';
             // Get existing cards
             const existingCards = Array.from(trendingList.querySelectorAll(".list-card"));
             const existingIds = new Set(existingCards.map(card => card.dataset.id));
@@ -635,7 +831,7 @@
             existingCards.forEach(card => {
                 if (!newIds.has(card.dataset.id)) {
                     card.classList.add("removing");
-                    setTimeout(() => card.remove(), 300); // Match CSS transition duration
+                    setTimeout(() => card.remove(), 100); // Match CSS transition duration
                 }
             });
     
@@ -755,11 +951,12 @@
             });
     
             window.addEventListener('offline', () => {
-                document.body.classList.add('offline');
-                offlineNotice.style.display = 'block';
-                setTimeout(() => offlineNotice.style.opacity = '1', 10);
-                slowNotice.style.display = 'none';
-            });
+        document.body.classList.add('offline');
+        offlineNotice.style.display = 'block';
+        setTimeout(() => offlineNotice.style.opacity = '1', 10);
+        slowNotice.style.display = 'none';
+        renderSkeletonCards(elements.trendingList); // Show skeleton on offline
+    });
     
             if ('connection' in navigator) {
                 navigator.connection.addEventListener('change', checkNetworkType);
@@ -863,6 +1060,43 @@
                     prompt.style.display = 'block';
                     setTimeout(() => prompt.classList.add('visible'), 10);
                 }, 2000); // Delayed to prioritize content rendering
+            }
+        });
+    </script>
+    <script>
+        let deferredPrompt;
+    
+        function isAndroidChrome() {
+            const ua = window.navigator.userAgent;
+            const isAndroid = /Android/.test(ua);
+            const isChrome = /Chrome/.test(ua) && !/Edge/.test(ua);
+            const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+            return isAndroid && isChrome && !isStandalone;
+        }
+    
+        function closeAndroidPrompt() {
+            document.getElementById('android-install-prompt').style.display = 'none';
+        }
+    
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (isAndroidChrome()) {
+                setTimeout(() => {
+                    const prompt = document.getElementById('android-install-prompt');
+                    prompt.style.display = 'block';
+                    setTimeout(() => prompt.classList.add('visible'), 10);
+                }, 2000);
+            }
+        });
+    
+        window.addEventListener('load', () => {
+            if (isAndroidChrome() && deferredPrompt) {
+                setTimeout(() => {
+                    const prompt = document.getElementById('android-install-prompt');
+                    prompt.style.display = 'block';
+                    setTimeout(() => prompt.classList.add('visible'), 10);
+                }, 2000);
             }
         });
     </script>

@@ -16,7 +16,14 @@
         html,body{height:100vh;margin:0;padding:0;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;touch-action:pan-y;user-scalable:no;overscroll-behavior-y:none;-webkit-text-size-adjust:none;-webkit-overflow-scrolling:touch;font-family:'Poppins',sans-serif}
         body::-webkit-scrollbar{display:none}
         body{display:flex;flex-direction:column;background:#2c2c2c;color:#fff}
-        .osahan-checkout{flex:1 0 auto;padding-bottom:env(safe-area-inset-bottom)}
+        .osahan-checkout {
+    flex: 1 0 auto;
+    padding-top: 70px; /* Match or slightly exceed header height */
+    padding-bottom: calc(env(safe-area-inset-bottom) + 80px); /* For footer */
+}
+.bg-ash{
+    background-color: #2c2c2c;
+}
         .order-box{cursor:pointer;transition:background 0.2s ease}
         .order-box:hover{background:#1e1e1e}
         .order-details{display:none;margin-top:10px}
@@ -42,9 +49,10 @@
 </head>
 <body class="fixed-bottom-bar">
     <div class="osahan-checkout">
-        <div class="bg-transparent border-bottom p-3 d-flex align-items-center">
+        <div class="bg-ash border-bottom p-3 d-flex align-items-center fixed-top" style="z-index: 1040;">
             <h4 class="fw-bold m-0 text-white"><i class="feather-list me-2"></i>My Orders</h4>
         </div>
+        
         <div class="container py-5">
             <div id="orders-list">
                 <div class="loading-placeholder"></div>
@@ -189,8 +197,9 @@
                                 <p class="text-white small">Subtotal: GH₵${subtotal.toFixed(2)}</p>
                                 <p class="text-white small">Processing Fee: GH₵${processingFee.toFixed(2)}</p>
                                 <p class="text-white small">Delivery Fee: GH₵${deliveryFee.toFixed(2)}</p>
+                               <p class="text-white small">Location: ${order.deliveryDetails.hostel}, Room ${order.deliveryDetails.location}</p>
                                 <hr class="bg-light"><p class="order-total text-white fw-bold">Total: GH₵${total.toFixed(2)}</p>
-                                <p class="text-white small">Delivery: ${order.deliveryDetails.hostel}, Room ${order.deliveryDetails.location}</p>
+                                
                             </div>`;
                         orderDiv.onclick = () => orderDiv.classList.toggle("expanded");
                         fragment.appendChild(orderDiv);

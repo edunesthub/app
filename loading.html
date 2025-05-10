@@ -8,6 +8,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>Loading...</title>
+  <script>
+    // Immediately redirect Android devices to index.html without rendering
+    if (/Android/i.test(navigator.userAgent)) {
+      window.location.replace('/index.html');
+    }
+  </script>
   <style>
     html {
       height: 100%;
@@ -66,6 +72,7 @@
       border-top: 4px solid transparent;
       border-radius: 50%;
       animation: spin 1s linear infinite;
+      display: none; /* Hidden by default */
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
@@ -78,34 +85,27 @@
       margin-top: 15px;
       text-align: center;
       max-width: 80%;
+      display: none; /* Hidden by default */
     }
   </style>
 </head>
 <body>
   <div id="slow-network-spinner">
     <div class="spinner-logo">CHAWP</div>
-    <div class="spinner" style="display: none;"></div>
-    <p class="spinner-message" style="display: none;">Offline. Please connect to the internet.</p>
+    <div class="spinner"></div>
+    <p class="spinner-message">Offline. Please connect to the internet.</p>
   </div>
   <script>
+    // For non-Android devices, handle loading logic
     window.addEventListener('load', () => {
-      // Check if the device is Android based on user agent
-      const isAndroid = /Android/i.test(navigator.userAgent);
-      
-      if (isAndroid) {
-        // Immediately redirect Android devices to index.html
-        window.location.href = '/index.html';
+      if (navigator.onLine) {
+        setTimeout(() => {
+          window.location.href = '/index.html';
+        }, 500);
       } else {
-        // For non-Android devices (including iOS), proceed with original loading logic
-        if (navigator.onLine) {
-          setTimeout(() => {
-            window.location.href = '/index.html';
-          }, 500);
-        } else {
-          document.querySelector('.spinner').style.display = 'block';
-          document.querySelector('.spinner-message').style.display = 'block';
-          document.querySelector('.spinner-message').textContent = 'Offline. Please connect to the internet.';
-        }
+        document.querySelector('.spinner').style.display = 'block';
+        document.querySelector('.spinner-message').style.display = 'block';
+        document.querySelector('.spinner-message').textContent = 'Offline. Please connect to the internet.';
       }
     });
 
@@ -115,5 +115,6 @@
   </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93804797fe544513',t:'MTc0NTk0NTIzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d1b3fd5bca60c7',t:'MTc0Njc5OTAxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d9f74668486759',t:'MTc0Njg4NTY1OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
