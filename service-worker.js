@@ -1,5 +1,5 @@
-const CACHE_NAME = 'Chawp-cache-v35';
-const DYNAMIC_CACHE_NAME = 'Chawp-dynamic-v35';
+const CACHE_NAME = 'Chawp-cache-v36';
+const DYNAMIC_CACHE_NAME = 'Chawp-dynamic-v36';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -8,6 +8,8 @@ const urlsToCache = [
     '/loading.html',
     '/restaurant.html',
     '/cart.html',
+    '/login.html',
+    '/signup.html',
     '/orders.html',
     '/profile.html',
     '/vendor/bootstrap/css/bootstrap.min.css?ver=1.0.2',

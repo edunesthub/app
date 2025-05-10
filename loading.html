@@ -96,22 +96,53 @@
     <p class="spinner-message">Offline. Please connect to the internet.</p>
   </div>
   <script>
-    // For non-Android devices, handle loading logic
-    window.addEventListener('load', () => {
-      if (navigator.onLine) {
-        setTimeout(() => {
-          window.location.href = '/login.html';
-        }, 500);
-      } else {
-        document.querySelector('.spinner').style.display = 'block';
-        document.querySelector('.spinner-message').style.display = 'block';
-        document.querySelector('.spinner-message').textContent = 'Offline. Please connect to the internet.';
-      }
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+    authDomain: "von600-7982d.firebaseapp.com",
+    projectId: "von600-7982d",
+    storageBucket: "von600-7982d.appspot.com",
+    messagingSenderId: "164591218045",
+    appId: "1:164591218045:web:afe17512e16573e7903014",
+    measurementId: "G-E69DMPLXBK"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Immediately redirect Android devices to avoid rendering
+if (/Android/i.test(navigator.userAgent)) {
+    window.location.replace("/login.html");
+} else {
+    // For non-Android devices, handle loading and auth logic
+    window.addEventListener("load", () => {
+        if (!navigator.onLine) {
+            // Show offline message and spinner
+            document.querySelector(".spinner").style.display = "block";
+            document.querySelector(".spinner-message").style.display = "block";
+            document.querySelector(".spinner-message").textContent = "Offline. Please connect to the internet.";
+            return;
+        }
+
+        // Check authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is logged in, redirect to index.html
+                window.location.href = "/index.html";
+            } else {
+                // User is not logged in, redirect to login.html
+                window.location.href = "/login.html";
+            }
+        });
     });
 
-    window.addEventListener('online', () => {
-      window.location.reload();
+    // Reload page when back online
+    window.addEventListener("online", () => {
+        window.location.reload();
     });
+}
   </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93804797fe544513',t:'MTc0NTk0NTIzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d1b3fd5bca60c7',t:'MTc0Njc5OTAxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
