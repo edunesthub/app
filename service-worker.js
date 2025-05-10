@@ -23,7 +23,6 @@ const urlsToCache = [
     '/img/vendors/cravee.webp',
     '/img/vendors/street.webp',
     '/img/vendors/trending2.png',
-    '/img/vendors/jakpa.JPG', // Changed to .webp
     '/manifest.json',
     'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js?ver=1.0.2',
     'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js',
