@@ -11,7 +11,7 @@
   <script>
     // Immediately redirect Android devices to index.html without rendering
     if (/Android/i.test(navigator.userAgent)) {
-      window.location.replace('/index.html');
+      window.location.replace('/login.html');
     }
   </script>
   <style>
@@ -100,7 +100,7 @@
     window.addEventListener('load', () => {
       if (navigator.onLine) {
         setTimeout(() => {
-          window.location.href = '/index.html';
+          window.location.href = '/login.html';
         }, 500);
       } else {
         document.querySelector('.spinner').style.display = 'block';
