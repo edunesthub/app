@@ -772,7 +772,7 @@ if (querySnapshot.empty) {
     trendingList.innerHTML = `
         <div class="text-wrap text-white text-center py-4">
             <p class="text-lg font-semibold text-red-400">⚠️ Something went wrong</p>
-            <p class="text-sm text-gray-300">We couldn’t load trending restaurants. Please try again later.</p>
+            <p class="text-sm text-gray-300">We couldn’t load restaurants. Please try again later.</p>
         </div>
     `;
     console.error("⚠️ Firestore returned an empty result. Possible issue with fetching trending restaurants.");
