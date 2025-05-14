@@ -83,30 +83,34 @@
         }
         .menu-section h2 {
             text-align: center;
-            margin-bottom: 15px;
             font-size: 1.7rem;
             font-weight: 700;
             color: #fff;
             letter-spacing: -0.02em;
         }
         .menu-container {
-            background: #2c2c2c;
-            border-radius: 8px;
-            padding: 8px;
-            width: 100%;
-        }
-        .menu-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #333;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            padding: 8px 10px;
-            transition: transform 0.2s ease, background 0.2s ease;
-            width: 100%;
-            box-sizing: border-box;
-        }
+    background: #2c2c2c;
+    border-radius: 8px;
+    padding: 8px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Adds space between menu items */
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #333;
+    border-radius: 8px;
+    padding: 8px 10px;
+    transition: transform 0.2s ease, background 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+    /* Removed margin-bottom to avoid spacing issues */
+}
+
         .menu-item:hover {
             transform: translateY(-1px);
             background: #3a3a3a;
@@ -387,10 +391,7 @@
                 padding-top: 20px; /* Added to maintain space on smaller screens */
                 margin-top: 230px; /* Adjusted to match new header height */
             }
-            .menu-item {
-                padding: 6px 8px;
-                margin-bottom: 15px; /* Increased from 6px for more space between items */
-            }
+            
             .menu-item-name {
                 font-size: 0.9rem;
             }
@@ -577,15 +578,31 @@
                 elements.menuSection.innerHTML = `<div class="error-message">Your're offline. Please check your internet connection...</div>`;
                 return;
             }
-            const menuList = `<div class="menu-container">${items.map(item => `
-                <div class="menu-item" data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
-                    <p class="menu-item-name">${item.name}</p>
-                    <div class="menu-item-right">
-                        <p class="menu-item-price">${item.sizes.length === 0 && item.extras.length === 0 ? `GH₵${item.price.toFixed(2)}` : ''}</p>
-                        <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
-                    </div>
-                </div>`).join("")}</div>`;
-            elements.menuSection.innerHTML = `<h2 class="fw-bold">Menu</h2>${menuList}`;
+           const grouped = {};
+items.forEach(item => {
+    const category = item.category || "Others";
+    if (!grouped[category]) grouped[category] = [];
+    grouped[category].push(item);
+});
+
+let menuHTML = '';
+for (const [category, groupItems] of Object.entries(grouped)) {
+  menuHTML += `<h3 style="margin: 15px 0 10px; color: #ccc; font-weight: 700; padding-left: 10px; padding-top: 15px;">${category}</h3>`;
+    menuHTML += `<div class="menu-container">`;
+    menuHTML += groupItems.map(item => `
+        <div class="menu-item" data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
+            <p class="menu-item-name">${item.name}</p>
+            <div class="menu-item-right">
+                <p class="menu-item-price">${item.sizes.length === 0 && item.extras.length === 0 ? `GH₵${item.price.toFixed(2)}` : ''}</p>
+                <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
+            </div>
+        </div>
+    `).join("");
+    menuHTML += `</div>`;
+}
+
+elements.menuSection.innerHTML = `<h2 class="fw-bold">Menu</h2>${menuHTML}`;
+
         };
         const updateTotalPrice = () => {
             if (!currentItem) return;
