@@ -483,262 +483,190 @@
             </div>
         </div>
     </div>
-    <script type="module" defer>
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-        const firebaseConfig = {
-            apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
-            authDomain: "von600-7982d.firebaseapp.com",
-            projectId: "von600-7982d",
-            storageBucket: "von600-7982d.appspot.com",
-            messagingSenderId: "164591218045",
-            appId: "1:164591218045:web:afe17512e16573e7903014",
-            measurementId: "G-E69DMPLXBK"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const elements = {
-            cartContainer: document.getElementById("cart-container"),
-            notification: document.getElementById("notification"),
-            notificationMessage: document.getElementById("notification-message")
-        };
-        const showNotification = (message, type = "success") => {
-            elements.notificationMessage.textContent = message;
-            elements.notification.className = `notification ${type === "error" ? "error" : ""}`;
-            elements.notification.classList.add("show");
-            setTimeout(() => elements.notification.classList.remove("show"), 2000);
-        };
-        const getCart = () => JSON.parse(localStorage.getItem("cart") || "[]");
-        const saveCart = cart => localStorage.setItem("cart", JSON.stringify(cart));
-        const getPersistentDeliveryDetails = () => {
-    const details = JSON.parse(localStorage.getItem("deliveryDetails") || "{}");
-    return { 
-        hostel: details.hostel || "Hostel A",
-        location: details.location || "",
-        contactNumber: details.contactNumber || "",
-        note: ""  // Don't load any saved note
-
+   <script type="module" defer>
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+        authDomain: "von600-7982d.firebaseapp.com",
+        projectId: "von600-7982d",
+        storageBucket: "von600-7982d.appspot.com",
+        messagingSenderId: "164591218045",
+        appId: "1:164591218045:web:afe17512e16573e7903014",
+        measurementId: "G-E69DMPLXBK"
     };
-};
-
-const savePersistentDeliveryDetails = (hostel, location, contactNumber) => {
-    localStorage.setItem("deliveryDetails", JSON.stringify({ hostel, location, contactNumber }));
-};
-        const getDeviceId = () => {
-            let deviceId = localStorage.getItem("deviceId");
-            if (!deviceId) {
-                deviceId = "device_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
-                localStorage.setItem("deviceId", deviceId);
-            }
-            return deviceId;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const elements = {
+        cartContainer: document.getElementById("cart-container"),
+        notification: document.getElementById("notification"),
+        notificationMessage: document.getElementById("notification-message")
+    };
+    const showNotification = (message, type = "success") => {
+        elements.notificationMessage.textContent = message;
+        elements.notification.className = `notification ${type === "error" ? "error" : ""}`;
+        elements.notification.classList.add("show");
+        setTimeout(() => elements.notification.classList.remove("show"), 2000);
+    };
+    const getCart = () => JSON.parse(localStorage.getItem("cart") || "[]");
+    const saveCart = cart => localStorage.setItem("cart", JSON.stringify(cart));
+    const getPersistentDeliveryDetails = () => {
+        const details = JSON.parse(localStorage.getItem("deliveryDetails") || "{}");
+        return { 
+            hostel: details.hostel || "Hostel A",
+            location: details.location || "",
+            contactNumber: details.contactNumber || "",
+            note: details.note || ""
         };
-        let deliveryFees = [
-            { id: "hostel_a", name: "Hostel A", fee: 3.00 },
-            { id: "hostel_b", name: "Hostel B", fee: 4.00 },
-            { id: "hostel_c", name: "Hostel C", fee: 5.00 }
-        ];
-        let deliveryFeesCache = null;
-        const fetchDeliveryFees = async () => {
-            if (deliveryFeesCache) return deliveryFeesCache;
-            try {
-                const querySnapshot = await getDocs(collection(db, "deliveryFees"));
-                deliveryFees = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    name: doc.data().name,
-                    fee: doc.data().fee
-                }));
-                deliveryFeesCache = deliveryFees;
-                return deliveryFees;
-            } catch (error) {
-                console.error("Error fetching delivery fees:", error);
-                showNotification("Failed to load delivery fees. Using defaults.", "error");
-                return deliveryFees;
+    };
+    const savePersistentDeliveryDetails = (hostel, location, contactNumber, note) => {
+        localStorage.setItem("deliveryDetails", JSON.stringify({
+            hostel: hostel || "Hostel A",
+            location: location || "",
+            contactNumber: contactNumber || "",
+            note: note || ""
+        }));
+    };
+    const getDeviceId = () => {
+        let deviceId = localStorage.getItem("deviceId");
+        if (!deviceId) {
+            deviceId = "device_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
+            localStorage.setItem("deviceId", deviceId);
+        }
+        return deviceId;
+    };
+    let deliveryFees = [
+        { id: "hostel_a", name: "Hostel A", fee: 3.00 },
+        { id: "hostel_b", name: "Hostel B", fee: 4.00 },
+        { id: "hostel_c", name: "Hostel C", fee: 5.00 }
+    ];
+    let deliveryFeesCache = null;
+    const fetchDeliveryFees = async () => {
+        if (deliveryFeesCache) return deliveryFeesCache;
+        try {
+            const querySnapshot = await getDocs(collection(db, "deliveryFees"));
+            deliveryFees = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                name: doc.data().name,
+                fee: doc.data().fee
+            }));
+            deliveryFeesCache = deliveryFees;
+            return deliveryFees;
+        } catch (error) {
+            console.error("Error fetching delivery fees:", error);
+            showNotification("Failed to load delivery fees. Using defaults.", "error");
+            return deliveryFees;
+        }
+    };
+    const getDeliveryFee = (hostelName) => {
+        const hostel = deliveryFees.find(h => h.name === hostelName) || deliveryFees[0];
+        return hostel.fee;
+    };
+    const renderCart = async () => {
+        const cart = getCart();
+        if (!cart.length) {
+            elements.cartContainer.innerHTML = `<div class="empty-cart"><h2>Your Cart is Empty</h2><p>Looks like you haven't added anything yet.<br>Explore the shops and treat yourself🍔</p><a href="index.html" class="btn btn-primary">Start Shopping</a></div>`;
+            return;
+        }
+        await fetchDeliveryFees();
+        const persistentDetails = getPersistentDeliveryDetails();
+        let subtotal = 0;
+        const groupedCart = new Map();
+        cart.forEach(item => {
+            const key = `${item.name}-${item.price}`;
+            if (groupedCart.has(key)) {
+                const existing = groupedCart.get(key);
+                existing.quantity += item.quantity;
+                existing.ids.push(item.id);
+            } else {
+                groupedCart.set(key, { ...item, ids: [item.id] });
             }
-        };
-        const getDeliveryFee = (hostelName) => {
-            const hostel = deliveryFees.find(h => h.name === hostelName) || deliveryFees[0];
-            return hostel.fee;
-        };
-        const renderCart = async () => {
-            const cart = getCart();
-            if (!cart.length) {
-                elements.cartContainer.innerHTML = `<div class="empty-cart"><h2>Your Cart is Empty</h2><p>Looks like you haven't added anything yet.<br>Explore the shops and treat yourself🍔</p><a href="index.html" class="btn btn-primary">Start Shopping</a></div>`;
-                return;
-            }
-            await fetchDeliveryFees();
-            const persistentDetails = getPersistentDeliveryDetails();
-            let subtotal = 0;
-            const groupedCart = new Map();
-            cart.forEach(item => {
-                const key = `${item.name}-${item.price}`;
-                if (groupedCart.has(key)) {
-                    const existing = groupedCart.get(key);
-                    existing.quantity += item.quantity;
-                    existing.ids.push(item.id);
-                } else {
-                    groupedCart.set(key, { ...item, ids: [item.id] });
-                }
-            });
-            const itemsHTML = Array.from(groupedCart.values()).map(item => {
-                const itemTotal = item.price * item.quantity;
-                subtotal += itemTotal;
-                return `<div class="cart-item" data-key="${item.name}-${item.price}">
-                    <div><p class="item-name">${item.name}</p><p class="item-price">GH₵${item.price.toFixed(2)} each</p></div>
-                    <div class="controls">
-                        <button class="btn-sm btn decrease"><i class="feather-minus"></i></button>
-                        <span class="quantity">${item.quantity}</span>
-                        <button class="btn-sm btn increase"><i class="feather-plus"></i></button>
-                        <p class="item-total">GH₵${itemTotal.toFixed(2)}</p>
-                        <button class="btn-sm btn-danger remove"><i class="feather-trash-2"></i></button>
-                    </div>
-                </div>`;
-            }).join("");
-            const deliveryFee = getDeliveryFee(persistentDetails.hostel);
-            const hostelOptions = deliveryFees.map(hostel => 
-                `<option value="${hostel.name}" ${persistentDetails.hostel === hostel.name ? "selected" : ""}>${hostel.name}</option>`
-            ).join("");
-            elements.cartContainer.innerHTML = `
-                <div class="cart-items">${itemsHTML}</div>
-                <div class="delivery-details">
-    <h6>Delivery Details</h6><br>
-    <label for="delivery-hostel">Hostel</label>
-    <select id="delivery-hostel">${hostelOptions}</select><br><br>
-    <label for="delivery-location">Room</label>
-    <input type="tel" id="delivery-location" value="${persistentDetails.location}" placeholder="Enter only room number (e.g, 555)" maxlength="3" pattern="\d{3}" inputmode="numeric"><br><br>
-    <label for="delivery-contact">Active Contact Number</label>
-    <input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number" maxlength="10" pattern="\d{10}" inputmode="numeric"><br><br>
-    <label for="delivery-note">Note to Restaurant (Optional)</label>
-    <textarea id="delivery-note" placeholder="Add any special instructions for the restaurant" rows="3">${persistentDetails.note || ""}</textarea>
-</div>
-
-                <div class="order-summary">
-                    <p>Subtotal <span class="float-end">GH₵${subtotal.toFixed(2)}</span></p>
-                    <p>Processing Fee <span class="float-end">GH₵2.00</span></p>
-                    <p>Delivery Fee <span class="float-end">GH₵${deliveryFee.toFixed(2)}</span></p>
-                    <hr><h6>Total <span class="float-end">GH₵${(subtotal + 2 + deliveryFee).toFixed(2)}</span></h6>
+        });
+        const itemsHTML = Array.from(groupedCart.values()).map(item => {
+            const itemTotal = item.price * item.quantity;
+            subtotal += itemTotal;
+            return `<div class="cart-item" data-key="${item.name}-${item.price}">
+                <div><p class="item-name">${item.name}</p><p class="item-price">GH₵${item.price.toFixed(2)} each</p></div>
+                <div class="controls">
+                    <button class="btn-sm btn decrease"><i class="feather-minus"></i></button>
+                    <span class="quantity">${item.quantity}</span>
+                    <button class="btn-sm btn increase"><i class="feather-plus"></i></button>
+                    <p class="item-total">GH₵${itemTotal.toFixed(2)}</p>
+                    <button class="btn-sm btn-danger remove"><i class="feather-trash-2"></i></button>
                 </div>
-                <p class="refund-note"><i class="feather-info"></i> By proceeding with checkout, you agree to our <a href="refund.html">refund policy</a>.</p>
-                <div class="action-buttons">
-                    <button id="checkout-btn" class="btn btn-success w-100">Proceed to Checkout <i class="feather-arrow-right"></i><span class="spinner"></span></button>
-                    <button id="remove-all-btn" class="btn btn-danger w-100 pb-3">
-    Remove All <i class="feather-trash-2"></i>
-</button>
-
-                </div>
-            `;
-            elements.cartContainer.querySelectorAll(".increase").forEach(btn => btn.onclick = () => updateItemQuantity(btn.closest(".cart-item").dataset.key, 1));
-            elements.cartContainer.querySelectorAll(".decrease").forEach(btn => btn.onclick = () => updateItemQuantity(btn.closest(".cart-item").dataset.key, -1));
-            elements.cartContainer.querySelectorAll(".remove").forEach(btn => btn.onclick = () => removeItem(btn.closest(".cart-item").dataset.key));
-            document.getElementById("delivery-hostel").onchange = saveDeliveryInputs;
-            document.getElementById("delivery-location").onchange = saveDeliveryInputs;
-            document.getElementById("delivery-contact").onchange = saveDeliveryInputs;
-            document.getElementById("checkout-btn").onclick = proceedToCheckout;
-            document.getElementById("remove-all-btn").onclick = removeAllItems;
-        };
-        const updateItemQuantity = (key, delta) => {
-            const cart = getCart();
-            cart.filter(item => `${item.name}-${item.price}` === key).forEach(item => item.quantity = Math.max(1, item.quantity + delta));
-            saveCart(cart.filter(item => item.quantity > 0));
-            renderCart();
-        };
-        const removeItem = key => {
-            const cart = getCart();
-            const firstItem = cart.find(item => `${item.name}-${item.price}` === key);
-            saveCart(cart.filter(item => `${item.name}-${item.price}` !== key));
-            renderCart();
-            showNotification(`${firstItem.name} removed from cart`);
-        };
-        const removeAllItems = () => {
-            saveCart([]);
-            renderCart();
-            showNotification("All items removed from cart");
-        };
-        const saveDeliveryInputs = () => {
-    const hostel = document.getElementById("delivery-hostel").value;
-    const location = document.getElementById("delivery-location").value.trim();
-    const contactNumber = document.getElementById("delivery-contact").value.trim();
-    const note = document.getElementById("delivery-note").value.trim();
-    savePersistentDeliveryDetails(hostel, location, contactNumber, note);
-    renderCart();
-};
-        let isProcessing = false;
-        window.handlePaymentCallback = function(response) {
-    const checkoutBtn = document.getElementById("checkout-btn");
-    const cart = getCart();
-    const persistentDetails = getPersistentDeliveryDetails();
-    if (response.status === "success") {
-        const sanitizedCart = cart.filter(item => 
-            item.name && 
-            typeof item.price === "number" && 
-            !isNaN(item.price) && 
-            typeof item.quantity === "number" && 
-            !isNaN(item.quantity)
-        );
+            </div>`;
+        }).join("");
         const deliveryFee = getDeliveryFee(persistentDetails.hostel);
-        const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 2 + deliveryFee;
-        const orderData = {
-            restaurantId: sanitizedCart[0].restaurantId,
-            items: sanitizedCart.map(item => ({
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-                total: item.price * item.quantity,
-                note: item.note || ""
-            })),
-            totalAmount: totalAmount,
-            deliveryDetails: {
-                hostel: persistentDetails.hostel,
-                location: persistentDetails.location,
-                contactNumber: persistentDetails.contactNumber,
-                note: persistentDetails.note || ""
-            },
-            deliveryFee: deliveryFee,
-            processingFee: 2.00,
-            timestamp: new Date().toISOString(),
-            status: "pending",
-            deviceId: getDeviceId(),
-            paymentReference: response.reference,
-            paymentStatus: "success",
-            paymentDate: new Date().toISOString()
-        };
-        addDoc(collection(db, "orders"), orderData)
-            .then(() => {
-                saveCart([]);
-                showNotification("Payment successful! Order placed.");
-                setTimeout(() => {
-                    window.location.href = "successful.html";
-                }, 1500);
-            })
-            .catch(error => {
-                console.error("Firestore error:", error);
-                showNotification("Error saving order. Contact support.", "error");
-            })
-            .finally(() => {
-                resetCheckoutButton();
-            });
-    } else {
-        showNotification("Payment failed. Please try again.", "error");
-        resetCheckoutButton();
-    }
-};
-        const proceedToCheckout = async () => {
-            if (isProcessing) return;
-            isProcessing = true;
-            const checkoutBtn = document.getElementById("checkout-btn");
-            checkoutBtn.disabled = true;
-            checkoutBtn.classList.add("loading");
-            const cart = getCart();
-            const persistentDetails = getPersistentDeliveryDetails();
-            if (!cart.length) {
-                showNotification("Your cart is empty!", "error");
-                resetCheckoutButton();
-                return;
-            }
-            if (!persistentDetails.hostel || !persistentDetails.location || !persistentDetails.contactNumber || !persistentDetails.note) {
-                showNotification("Please select a hostel, enter your room number, and contact number!", "error");
-                resetCheckoutButton();
-                return;
-            }
+        const hostelOptions = deliveryFees.map(hostel => 
+            `<option value="${hostel.name}" ${persistentDetails.hostel === hostel.name ? "selected" : ""}>${hostel.name}</option>`
+        ).join("");
+        elements.cartContainer.innerHTML = `
+            <div class="cart-items">${itemsHTML}</div>
+            <div class="delivery-details">
+                <h6>Delivery Details</h6><br>
+                <label for="delivery-hostel">Hostel</label>
+                <select id="delivery-hostel" required>${hostelOptions}</select><br><br>
+                <label for="delivery-location">Room</label>
+                <input type="tel" id="delivery-location" value="${persistentDetails.location}" placeholder="Enter room number (e.g., 555)" maxlength="3" pattern="\d{3}" inputmode="numeric" required><br><br>
+                <label for="delivery-contact">Active Contact Number</label>
+                <input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number" maxlength="10" pattern="\d{10}" inputmode="numeric" required><br><br>
+                <label for="delivery-note">Note to Restaurant (Optional)</label>
+                <textarea id="delivery-note" placeholder="Add any special instructions for the restaurant" rows="3">${persistentDetails.note || ""}</textarea>
+            </div>
+            <div class="order-summary">
+                <p>Subtotal <span class="float-end">GH₵${subtotal.toFixed(2)}</span></p>
+                <p>Processing Fee <span class="float-end">GH₵2.00</span></p>
+                <p>Delivery Fee <span class="float-end">GH₵${deliveryFee.toFixed(2)}</span></p>
+                <hr><h6>Total <span class="float-end">GH₵${(subtotal + 2 + deliveryFee).toFixed(2)}</span></h6>
+            </div>
+            <p class="refund-note"><i class="feather-info"></i> By proceeding with checkout, you agree to our <a href="refund.html">refund policy</a>.</p>
+            <div class="action-buttons">
+                <button id="checkout-btn" class="btn btn-success w-100">Proceed to Checkout <i class="feather-arrow-right"></i><span class="spinner"></span></button>
+                <button id="remove-all-btn" class="btn btn-danger w-100 pb-3">Remove All <i class="feather-trash-2"></i></button>
+            </div>
+        `;
+        elements.cartContainer.querySelectorAll(".increase").forEach(btn => btn.onclick = () => updateItemQuantity(btn.closest(".cart-item").dataset.key, 1));
+        elements.cartContainer.querySelectorAll(".decrease").forEach(btn => btn.onclick = () => updateItemQuantity(btn.closest(".cart-item").dataset.key, -1));
+        elements.cartContainer.querySelectorAll(".remove").forEach(btn => btn.onclick = () => removeItem(btn.closest(".cart-item").dataset.key));
+        document.getElementById("delivery-hostel").onchange = saveDeliveryInputs;
+        document.getElementById("delivery-location").onchange = saveDeliveryInputs;
+        document.getElementById("delivery-contact").onchange = saveDeliveryInputs;
+        document.getElementById("delivery-note").onchange = saveDeliveryInputs;
+        document.getElementById("checkout-btn").onclick = proceedToCheckout;
+        document.getElementById("remove-all-btn").onclick = removeAllItems;
+    };
+    const updateItemQuantity = (key, delta) => {
+        const cart = getCart();
+        cart.filter(item => `${item.name}-${item.price}` === key).forEach(item => item.quantity = Math.max(1, item.quantity + delta));
+        saveCart(cart.filter(item => item.quantity > 0));
+        renderCart();
+    };
+    const removeItem = key => {
+        const cart = getCart();
+        const firstItem = cart.find(item => `${item.name}-${item.price}` === key);
+        saveCart(cart.filter(item => `${item.name}-${item.price}` !== key));
+        renderCart();
+        showNotification(`${firstItem.name} removed from cart`);
+    };
+    const removeAllItems = () => {
+        saveCart([]);
+        renderCart();
+        showNotification("All items removed from cart");
+    };
+    const saveDeliveryInputs = () => {
+        const hostel = document.getElementById("delivery-hostel").value || "Hostel A";
+        const location = document.getElementById("delivery-location").value.trim();
+        const contactNumber = document.getElementById("delivery-contact").value.trim();
+        const note = document.getElementById("delivery-note").value.trim();
+        savePersistentDeliveryDetails(hostel, location, contactNumber, note);
+        renderCart();
+    };
+    let isProcessing = false;
+    window.handlePaymentCallback = function(response) {
+        const checkoutBtn = document.getElementById("checkout-btn");
+        const cart = getCart();
+        const persistentDetails = getPersistentDeliveryDetails();
+        if (response.status === "success") {
             const sanitizedCart = cart.filter(item => 
                 item.name && 
                 typeof item.price === "number" && 
@@ -746,75 +674,148 @@ const savePersistentDeliveryDetails = (hostel, location, contactNumber) => {
                 typeof item.quantity === "number" && 
                 !isNaN(item.quantity)
             );
-            if (!sanitizedCart.length) {
-                showNotification("Invalid items in cart!", "error");
-                resetCheckoutButton();
-                return;
-            }
-            const restaurantIds = [...new Set(sanitizedCart.map(item => item.restaurantId))];
-            if (restaurantIds.length > 1) {
-                showNotification("Cart contains items from multiple restaurants!", "error");
-                resetCheckoutButton();
-                return;
-            }
-            if (!sanitizedCart[0].restaurantId) {
-                showNotification("Restaurant ID is missing in cart items!", "error");
-                resetCheckoutButton();
-                return;
-            }
-            const deliveryFee = getDeliveryFee(persistentDetails.hostel);
+            const deliveryFee = getDeliveryFee(persistentDetails.hostel || "Hostel A");
             const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 2 + deliveryFee;
-            const handler = PaystackPop.setup({
-                key: "pk_test_93dd3909dd59a3ae47c5a531d8370b49052465ec",
-                email: "customer@chawp.com",
-                amount: Math.round(totalAmount * 100),
-                currency: "GHS",
-                ref: "ORDER_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9),
-                metadata: {
-                    device_id: getDeviceId(),
-                    order_items: sanitizedCart.length
+            const orderData = {
+                restaurantId: sanitizedCart[0].restaurantId,
+                items: sanitizedCart.map(item => ({
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    total: item.price * item.quantity,
+                    note: item.note || ""
+                })),
+                totalAmount: totalAmount,
+                deliveryDetails: {
+                    hostel: persistentDetails.hostel || "Hostel A",
+                    location: persistentDetails.location || "",
+                    contactNumber: persistentDetails.contactNumber || "",
+                    note: persistentDetails.note || ""
                 },
-                callback: window.handlePaymentCallback,
-                onClose: function() {
-                    showNotification("Payment cancelled.", "error");
+                deliveryFee: deliveryFee,
+                processingFee: 2.00,
+                timestamp: new Date().toISOString(),
+                status: "pending",
+                deviceId: getDeviceId(),
+                paymentReference: response.reference,
+                paymentStatus: "success",
+                paymentDate: new Date().toISOString()
+            };
+            addDoc(collection(db, "orders"), orderData)
+                .then(() => {
+                    saveCart([]);
+                    showNotification("Payment successful! Order placed.");
+                    setTimeout(() => {
+                        window.location.href = "successful.html";
+                    }, 1500);
+                })
+                .catch(error => {
+                    console.error("Firestore error:", error);
+                    showNotification("Error saving order. Contact support.", "error");
+                })
+                .finally(() => {
                     resetCheckoutButton();
-                }
-            });
-            handler.openIframe();
-        };
-        const resetCheckoutButton = () => {
-            const checkoutBtn = document.getElementById("checkout-btn");
-            checkoutBtn.disabled = false;
-            checkoutBtn.classList.remove("loading");
-            checkoutBtn.innerHTML = `Proceed to Checkout <i class="feather-arrow-right"></i><span class="spinner"></span>`;
-            isProcessing = false;
-        };
-        const initFooter = () => {
-            const footerLinks = document.querySelectorAll('.osahan-menu-fotter .col a');
-            footerLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const href = link.getAttribute('href');
-                    document.querySelectorAll('.osahan-menu-fotter .footer-item').forEach(item => item.classList.remove('selected'));
-                    link.closest('.footer-item').classList.add('selected');
-                    window.location.href = href;
                 });
-            });
-        };
-        document.addEventListener("DOMContentLoaded", () => {
-            renderCart();
-            initFooter();
-            const featherObserver = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) {
-                    feather.replace();
-                    featherObserver.disconnect();
-                }
-            }, { root: null, threshold: 0.1 });
-            featherObserver.observe(document.body);
+        } else {
+            showNotification("Payment failed. Please try again.", "error");
+            resetCheckoutButton();
+        }
+    };
+    const proceedToCheckout = async () => {
+        if (isProcessing) return;
+        isProcessing = true;
+        const checkoutBtn = document.getElementById("checkout-btn");
+        checkoutBtn.disabled = true;
+        checkoutBtn.classList.add("loading");
+        const cart = getCart();
+        const persistentDetails = getPersistentDeliveryDetails();
+        if (!cart.length) {
+            showNotification("Your cart is empty!", "error");
+            resetCheckoutButton();
+            return;
+        }
+        const sanitizedCart = cart.filter(item => 
+            item.name && 
+            typeof item.price === "number" && 
+            !isNaN(item.price) && 
+            typeof item.quantity === "number" && 
+            !isNaN(item.quantity)
+        );
+        if (!sanitizedCart.length) {
+            showNotification("Invalid items in cart!", "error");
+            resetCheckoutButton();
+            return;
+        }
+        const restaurantIds = [...new Set(sanitizedCart.map(item => item.restaurantId))];
+        if (restaurantIds.length > 1) {
+            showNotification("Cart contains items from multiple restaurants!", "error");
+            resetCheckoutButton();
+            return;
+        }
+        if (!sanitizedCart[0].restaurantId) {
+            showNotification("Restaurant ID is missing in cart items!", "error");
+            resetCheckoutButton();
+            return;
+        }
+        // Validate required fields
+        if (!persistentDetails.hostel || !persistentDetails.location || !persistentDetails.contactNumber) {
+            showNotification("Please fill in all required delivery details!", "error");
+            resetCheckoutButton();
+            return;
+        }
+        const deliveryFee = getDeliveryFee(persistentDetails.hostel || "Hostel A");
+        const totalAmount = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 2 + deliveryFee;
+        const handler = PaystackPop.setup({
+            key: "pk_test_93dd3909dd59a3ae47c5a531d8370b49052465ec",
+            email: "customer@chawp.com",
+            amount: Math.round(totalAmount * 100),
+            currency: "GHS",
+            ref: "ORDER_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9),
+            metadata: {
+                device_id: getDeviceId(),
+                order_items: sanitizedCart.length
+            },
+            callback: window.handlePaymentCallback,
+            onClose: function() {
+                showNotification("Payment cancelled.", "error");
+                resetCheckoutButton();
+            }
         });
-        window.addEventListener("online", renderCart);
-        window.addEventListener("offline", () => showNotification("You're offline! Some features may be limited.", "error"));
-    </script>
+        handler.openIframe();
+    };
+    const resetCheckoutButton = () => {
+        const checkoutBtn = document.getElementById("checkout-btn");
+        checkoutBtn.disabled = false;
+        checkoutBtn.classList.remove("loading");
+        checkoutBtn.innerHTML = `Proceed to Checkout <i class="feather-arrow-right"></i><span class="spinner"></span>`;
+        isProcessing = false;
+    };
+    const initFooter = () => {
+        const footerLinks = document.querySelectorAll('.osahan-menu-fotter .col a');
+        footerLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = link.getAttribute('href');
+                document.querySelectorAll('.osahan-menu-fotter .footer-item').forEach(item => item.classList.remove('selected'));
+                link.closest('.footer-item').classList.add('selected');
+                window.location.href = href;
+            });
+        });
+    };
+    document.addEventListener("DOMContentLoaded", () => {
+        renderCart();
+        initFooter();
+        const featherObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                feather.replace();
+                featherObserver.disconnect();
+            }
+        }, { root: null, threshold: 0.1 });
+        featherObserver.observe(document.body);
+    });
+    window.addEventListener("online", renderCart);
+    window.addEventListener("offline", () => showNotification("You're offline! Some features may be limited.", "error"));
+</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d180120be31377',t:'MTc0Njc5Njg5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d1add4bb3c44dd',t:'MTc0Njc5ODc2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
