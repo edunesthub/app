@@ -101,20 +101,28 @@
     background: rgba(255, 255, 255, 0.1);
 }
 /* Hide Scrollbar for PWA */
-html, body {
-    overflow-y: scroll; /* Ensures scrolling is still possible */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-}
-body::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-}
-html, body {
-    touch-action: pan-x pan-y;
-    -webkit-user-scalable: no;
-    -ms-user-scalable: no;
-    user-scalable: no;
-}
+html {
+        height: 100%;
+        min-height: -webkit-fill-available;
+        overscroll-behavior-y: none;
+        scroll-behavior: smooth;
+        margin: 0;
+    }
+    body {
+        background: #2c2c2c;
+        font-family: 'Poppins', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        min-height: -webkit-fill-available;
+        overflow-x: hidden;
+        overscroll-behavior-y: none;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 70px; /* Matches footer height to prevent overlap */
+    }
     </style>
 </head>
 <body class="fixed-bottom-bar">
