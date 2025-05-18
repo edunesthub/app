@@ -296,7 +296,7 @@ html {
                     const data = doc.data();
                     const restaurantId = doc.id;
                     const deliveryTime = data.delivery_time || "N/A";
-                    const deliveryFee = data.delivery_fee || "25.00";
+                   
                     const isOpen = data.isOpen !== false; // Default to true if isOpen is undefined
                     allRestaurants.push({ id: restaurantId, ...data });
                     output += `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
@@ -308,7 +308,7 @@ html {
                 <div class="list-card-body">
                     <h6 class="mb-1 text-white">${data.name}</h6>
                     <p class="mb-0">
-                        <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
+                        <span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
                     </p>
                 </div>
                 <div class="list-card-badge">
@@ -351,11 +351,13 @@ html {
                 <div class="list-card-body">
                     <h6 class="mb-1 text-white">${data.name}</h6>
                     <p class="mb-0">
-                        <span class="fee"><i class="feather-truck me-1"></i>₵${deliveryFee}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
+                        <span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
                     </p>
                 </div>
-                <div class="list-card-badge"><span>${isOpen ? 'Open' : 'Closed'}</span></div>
-            </div>
+<div class="list-card-badge">
+        <span class="${isOpen ? 'open' : 'closed'}">${isOpen ? 'Open' : 'Closed'}</span>
+    </div>
+                </div>
         </a>
     </div>`;
             }).join("") : "<div class='col-12 text-center'><p>No matching restaurants found.</p></div>";
