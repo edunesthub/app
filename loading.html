@@ -1,63 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <meta name="theme-color" content="#2c2c2c">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="mobile-web-app-capable" content="yes">
-  <title>Loading...</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#2c2c2c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Chawp</title>
   <style>
-    html {
-      height: 100%;
-      min-height: -webkit-fill-available;
-      overscroll-behavior-y: none;
-      margin: 0;
-    }
-    body {
-      background: #2c2c2c;
-      font-family: 'Poppins', sans-serif;
-      color: #fff;
+    html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      min-height: -webkit-fill-available;
-      overflow-x: hidden;
-      overscroll-behavior-y: none;
-      -webkit-overflow-scrolling: touch;
-      display: flex;
-      flex-direction: column;
-    }
-    #slow-network-spinner {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
       background: #2c2c2c;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    #splash {
+      height: 100%;
+      width: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      z-index: 9998;
-      opacity: 1;
-      transition: opacity 0.3s ease-out;
+      justify-content: center;
+      background: #2c2c2c;
     }
-    #slow-network-spinner.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .spinner-logo {
-      color: #2596be;
+    .logo {
+      font-family: Impact, sans-serif;
       font-size: 4rem;
       font-weight: 590;
-      font-style: normal;
+      color: #2596be;
       text-transform: uppercase;
-      margin-bottom: 20px;
-      font-family: Impact, sans-serif;
-      letter-spacing: -0.02em;
       transform: scaleY(1.5);
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
     }
     .spinner {
       width: 40px;
@@ -66,29 +46,36 @@
       border-top: 4px solid transparent;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      display: none; /* Hidden by default */
+      display: none; /* HIDDEN by default */
+    }
+    .message {
+      margin-top: 15px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #fff;
+      text-align: center;
+      display: none; /* HIDDEN by default */
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    .spinner-message {
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 500;
-      margin-top: 15px;
-      text-align: center;
-      max-width: 80%;
-      display: none; /* Hidden by default */
-    }
   </style>
 </head>
 <body>
-  <div id="slow-network-spinner">
-    <div class="spinner-logo">CHAWP</div>
-    <div class="spinner"></div>
-    <p class="spinner-message">Offline. Please connect to the internet.</p>
+  <div id="splash">
+    <div class="logo">CHAWP</div>
+    <div class="spinner" id="loader"></div>
+    <p class="message" id="offline-msg">Offline. Please connect to the internet.</p>
   </div>
+
+  <noscript>
+    <style>
+      .message { display: block; }
+    </style>
+    <p class="message">Please enable JavaScript to continue using Chawp.</p>
+  </noscript>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
@@ -108,29 +95,17 @@
 
     window.addEventListener("load", () => {
       if (!navigator.onLine) {
-        // Show offline message and spinner
-        document.querySelector(".spinner").style.display = "block";
-        document.querySelector(".spinner-message").style.display = "block";
-        document.querySelector(".spinner-message").textContent = "Offline. Please connect to the internet.";
+        document.getElementById("loader").style.display = "block";
+        document.getElementById("offline-msg").style.display = "block";
         return;
       }
 
-      // Check authentication state
       onAuthStateChanged(auth, (user) => {
-        if (user) {
-          // User is logged in, redirect to index.html
-          window.location.replace("/index.html");
-        } else {
-          // User is not logged in, redirect to login.html
-          window.location.replace("/login.html");
-        }
+        window.location.replace(user ? "/index.html" : "/login.html");
       });
     });
 
-    // Reload page when back online
-    window.addEventListener("online", () => {
-      window.location.reload();
-    });
+    window.addEventListener("online", () => window.location.reload());
   </script>
 </body>
 </html>
