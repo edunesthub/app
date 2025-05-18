@@ -1,3 +1,22 @@
+const CACHE_NAME = 'Chawp-cache-v50';
+const DYNAMIC_CACHE_NAME = 'Chawp-dynamic-v50';
+const ALLOWED_CACHES = [CACHE_NAME, DYNAMIC_CACHE_NAME, 'assets-cache', 'api-cache', 'ChawpOrderQueue'];
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cache => {
+          if (!ALLOWED_CACHES.includes(cache)) {
+            console.log('🗑️ Deleting old cache:', cache);
+            return caches.delete(cache);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
+});
+
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute, setCatchHandler } from 'workbox-routing';
 import { CacheFirst, NetworkFirst, NetworkOnly } from 'workbox-strategies';
@@ -54,6 +73,12 @@ setCatchHandler(async ({ event }) => {
   return Response.error();
 });
 
-// Take control immediately
+// Allow manual skipWaiting call from app
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});
+
+// Install immediately
 self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', () => self.clients.claim());

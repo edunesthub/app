@@ -1019,13 +1019,52 @@ if (querySnapshot.empty) {
     </script>
 
     <script>
-        if ('serviceWorker' in navigator) {
+       if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('Service Worker registered:', reg))
-      .catch(err => console.error('Service Worker failed:', err));
+    navigator.serviceWorker.register('/service-worker.js').then(reg => {
+      console.log('Service Worker registered:', reg);
+
+      reg.onupdatefound = () => {
+        const newWorker = reg.installing;
+        newWorker.onstatechange = () => {
+          if (newWorker.state === 'installed') {
+            if (navigator.serviceWorker.controller) {
+              // New update available
+              showUpdateToast(newWorker);
+            }
+          }
+        };
+      };
+    }).catch(err => console.error('SW registration failed:', err));
   });
 }
+
+function showUpdateToast(worker) {
+  const toast = document.createElement('div');
+  toast.textContent = '🔄 New version available. Tap to refresh.';
+  toast.style = `
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 9999;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  `;
+
+  toast.onclick = () => {
+    worker.postMessage({ action: 'skipWaiting' });
+    window.location.reload(); // ← Reload after activation
+  };
+
+  document.body.appendChild(toast);
+}
+
 
     </script>
 
