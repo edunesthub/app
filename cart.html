@@ -486,8 +486,6 @@
    <script type="module" defer>
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-
     const firebaseConfig = {
         apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
         authDomain: "von600-7982d.firebaseapp.com",
@@ -703,32 +701,7 @@
                 paymentStatus: "success",
                 paymentDate: new Date().toISOString()
             };
-const auth = getAuth();
-const user = auth.currentUser;
-
-if (!user) {
-    showNotification("You're not logged in. Please sign in first.", "error");
-    resetCheckoutButton();
-    return;
-}
-
-orderData.userId = user.uid; // Track which user placed the order
-
-addDoc(collection(db, "orders"), orderData)
-    .then(() => {
-        saveCart([]);
-        showNotification("Payment successful! Order placed.");
-        setTimeout(() => {
-            window.location.href = "successful.html";
-        }, 1500);
-    })
-    .catch(error => {
-        console.error("Firestore error:", error);
-        showNotification("Error saving order. Contact support.", "error");
-    })
-    .finally(() => {
-        resetCheckoutButton();
-    });
+            addDoc(collection(db, "orders"), orderData)
                 .then(() => {
                     saveCart([]);
                     showNotification("Payment successful! Order placed.");
