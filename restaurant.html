@@ -461,305 +461,163 @@
         <span id="toast-message"></span>
     </div>
     <a href="cart.html" class="view-cart-btn" id="view-cart-btn">View Cart - GH₵0.00</a>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-        const firebaseConfig = {
-            apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
-            authDomain: "von600-7982d.firebaseapp.com",
-            projectId: "von600-7982d",
-            storageBucket: "von600-7982d.appspot.com",
-            messagingSenderId: "164591218045",
-            appId: "1:164591218045:web:afe17512e16573e7903014",
-            measurementId: "G-E69DMPLXBK"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const urlParams = new URLSearchParams(window.location.search);
-        const restaurantId = urlParams.get("id");
-        let cartCount = 0, currentItem = null, isRestaurantOpen = true;
-        const elements = {
-            restaurantName: document.getElementById("restaurant-name"),
-            restaurantInfo: document.getElementById("restaurant-info"),
-            restaurantImage: document.getElementById("restaurant-image"),
-            menuSection: document.getElementById("menu-section"),
-            optionsPanel: document.getElementById("options-panel"),
-            optionsTitle: document.getElementById("options-title"),
-            sizeGroup: document.getElementById("size-group"),
-            extraGroup: document.getElementById("extra-group"),
-            sizeOptions: document.getElementById("size-options"),
-            extraOptions: document.getElementById("extra-options"),
-            vendorNote: document.getElementById("vendor-note"),
-            toast: document.getElementById("toast"),
-            toastMessage: document.getElementById("toast-message"),
-            viewCartBtn: document.getElementById("view-cart-btn"),
-            closedMessage: document.getElementById("closed-message"),
-            totalPrice: document.getElementById("total-price")
-        };
-        const showToast = (message, type = "success") => {
-            elements.toastMessage.textContent = message;
-            elements.toast.className = `toast-container ${type}`;
-            elements.toast.classList.add("show");
-            setTimeout(() => {
-                elements.toast.classList.remove("show");
-                elements.toast.classList.add("hide");
-            }, 5000);
-            setTimeout(() => {
-                elements.toast.classList.remove("hide");
-            }, 5300);
-        };
-        const loadRestaurant = async () => {
-            try {
-                const cachedData = localStorage.getItem(`restaurant-${restaurantId}`);
-                if (cachedData) {
-                    try {
-                        const data = JSON.parse(cachedData);
-                        elements.restaurantName.textContent = data.name || "Restaurant";
-                        elements.restaurantInfo.textContent = `🕓 ${data.delivery_time || 'N/A'} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
-                        elements.restaurantImage.src = data.image || "img/placeholder.webp";
-                        isRestaurantOpen = data.isOpen !== false;
-                        elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
-                    } catch (e) {
-                        console.error("Failed to parse cached restaurant data:", e);
-                    }
-                }
-                const docRef = doc(db, "restaurant", restaurantId);
-                const docSnap = await getDoc(docRef);
-                if (!docSnap.exists()) {
-                    showToast("Restaurant not found.", "error");
-                    return;
-                }
-                const data = docSnap.data();
-                localStorage.setItem(`restaurant-${restaurantId}`, JSON.stringify(data));
-                elements.restaurantName.textContent = data.name || "Restaurant";
-                elements.restaurantInfo.textContent = `🕓 ${data.delivery_time || 'N/A'} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
-                elements.restaurantImage.src = data.image || "img/placeholder.webp";
-                isRestaurantOpen = data.isOpen !== false;
-                elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
-            } catch (e) {
-                console.error("Error loading restaurant:", e);
-                showToast("Failed to load restaurant data.", "error");
-            }
-        };
-        const loadMenu = async () => {
-            try {
-                console.log("Loading menu for restaurant:", restaurantId);
-                const cachedMenu = localStorage.getItem(`menu-${restaurantId}`);
-                if (cachedMenu) {
-                    try {
-                        const items = JSON.parse(cachedMenu);
-                        renderMenu(items);
-                    } catch (e) {
-                        console.error("Failed to parse cached menu:", e);
-                        localStorage.removeItem(`menu-${restaurantId}`);
-                    }
-                }
-                const menuRef = collection(db, "restaurant", restaurantId, "menu");
-                const querySnapshot = await getDocs(menuRef);
-                const menuItems = querySnapshot.docs.map(doc => ({ 
-                    id: doc.id, 
-                    ...doc.data(), 
-                    price: parseFloat(doc.data().price) || 0, 
-                    sizes: doc.data().sizes || [], 
-                    extras: doc.data().extras || []
-                }));
-                localStorage.setItem(`menu-${restaurantId}`, JSON.stringify(menuItems));
-                console.log("Menu items fetched:", menuItems);
-                renderMenu(menuItems);
-            } catch (e) {
-                console.error("Error loading menu:", e);
-                elements.menuSection.innerHTML = `<div class="error-message">Failed to load menu. Please check your internet connection...</div>`;
-                showToast("Failed to load menu.", "error");
-            }
-        };
-        const renderMenu = items => {
-            console.log("Rendering menu with items:", items);
-            if (!items || items.length === 0) {
-                elements.menuSection.innerHTML = `<div class="error-message">Your're offline. Please check your internet connection...</div>`;
-                return;
-            }
-           const grouped = {};
-items.forEach(item => {
-    const category = item.category || "Others";
-    if (!grouped[category]) grouped[category] = [];
-    grouped[category].push(item);
-});
+   <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-let menuHTML = '';
-for (const [category, groupItems] of Object.entries(grouped)) {
-  menuHTML += `<h3 style="margin: 15px 0 10px; color: #ccc; font-weight: 700; padding-left: 10px; padding-top: 15px;">${category}</h3>`;
-    menuHTML += `<div class="menu-container">`;
-    menuHTML += groupItems.map(item => `
-        <div class="menu-item" data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
-            <p class="menu-item-name">${item.name}</p>
-            <div class="menu-item-right">
-                <p class="menu-item-price">${item.sizes.length === 0 && item.extras.length === 0 ? `GH₵${item.price.toFixed(2)}` : ''}</p>
-                <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
+const firebaseConfig = {
+    apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+    authDomain: "von600-7982d.firebaseapp.com",
+    projectId: "von600-7982d",
+    storageBucket: "von600-7982d.appspot.com",
+    messagingSenderId: "164591218045",
+    appId: "1:164591218045:web:afe17512e16573e7903014",
+    measurementId: "G-E69DMPLXBK"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const urlParams = new URLSearchParams(window.location.search);
+const restaurantId = urlParams.get("id");
+
+let isRestaurantOpen = true;
+let currentItem = null;
+
+const elements = {
+    restaurantName: document.getElementById("restaurant-name"),
+    restaurantInfo: document.getElementById("restaurant-info"),
+    restaurantImage: document.getElementById("restaurant-image"),
+    menuSection: document.getElementById("menu-section"),
+    optionsPanel: document.getElementById("options-panel"),
+    optionsTitle: document.getElementById("options-title"),
+    sizeGroup: document.getElementById("size-group"),
+    extraGroup: document.getElementById("extra-group"),
+    sizeOptions: document.getElementById("size-options"),
+    extraOptions: document.getElementById("extra-options"),
+    vendorNote: document.getElementById("vendor-note"),
+    toast: document.getElementById("toast"),
+    toastMessage: document.getElementById("toast-message"),
+    viewCartBtn: document.getElementById("view-cart-btn"),
+    closedMessage: document.getElementById("closed-message"),
+    totalPrice: document.getElementById("total-price")
+};
+
+const showToast = (message, type = "success") => {
+    elements.toastMessage.textContent = message;
+    elements.toast.className = `toast-container ${type}`;
+    elements.toast.classList.add("show");
+    setTimeout(() => {
+        elements.toast.classList.remove("show");
+        elements.toast.classList.add("hide");
+    }, 5000);
+    setTimeout(() => {
+        elements.toast.classList.remove("hide");
+    }, 5300);
+};
+
+const loadRestaurant = async () => {
+    try {
+        const docRef = doc(db, "restaurant", restaurantId);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            showToast("Restaurant not found.", "error");
+            return;
+        }
+        const data = docSnap.data();
+        elements.restaurantName.textContent = data.name || "Restaurant";
+        elements.restaurantInfo.textContent = `🕓 ${data.delivery_time || 'N/A'} mins • ${data.isOpen !== false ? 'Open' : 'Closed'}`;
+        elements.restaurantImage.src = data.image || "img/placeholder.webp";
+        isRestaurantOpen = data.isOpen !== false;
+        elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
+    } catch (e) {
+        console.error("Error loading restaurant:", e);
+        showToast("Failed to load restaurant data.", "error");
+    }
+};
+
+const renderMenu = grouped => {
+    if (!grouped || Object.keys(grouped).length === 0) {
+        elements.menuSection.innerHTML = `<div class="error-message">No menu available.</div>`;
+        return;
+    }
+
+    let menuHTML = '<h2 class="fw-bold">Menu</h2>';
+
+    // Sort categories by categoryOrder
+    const sortedCategories = Object.entries(grouped).sort((a, b) => {
+        const aOrder = a[1][0]?.categoryOrder ?? 9999;
+        const bOrder = b[1][0]?.categoryOrder ?? 9999;
+        return aOrder - bOrder;
+    });
+
+    for (const [category, items] of sortedCategories) {
+        menuHTML += `<h3 style="margin: 15px 0 10px; color: #ccc; font-weight: 700; padding-left: 10px; padding-top: 15px;">${category}</h3>`;
+        menuHTML += `<div class="menu-container">`;
+
+        // Sort items within category by orderNumber
+        items.sort((a, b) => (a.orderNumber ?? 9999) - (b.orderNumber ?? 9999));
+
+        menuHTML += items.map(item => `
+            <div class="menu-item" data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
+                <p class="menu-item-name">${item.name}</p>
+                <div class="menu-item-right">
+                    <p class="menu-item-price">${item.sizes.length === 0 && item.extras.length === 0 ? `GH₵${item.price.toFixed(2)}` : ''}</p>
+                    <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
+                </div>
             </div>
-        </div>
-    `).join("");
-    menuHTML += `</div>`;
-}
+        `).join("");
 
-elements.menuSection.innerHTML = `<h2 class="fw-bold">Menu</h2>${menuHTML}`;
+        menuHTML += `</div>`;
+    }
 
+    elements.menuSection.innerHTML = menuHTML;
+};
+
+const loadMenuLive = async () => {
+    const menuRef = collection(db, "restaurant", restaurantId, "menu");
+    const categoriesRef = collection(db, "restaurant", restaurantId, "categories");
+
+    const [menuSnap, catSnap] = await Promise.all([
+        getDocs(menuRef),
+        getDocs(categoriesRef)
+    ]);
+
+    const categoryOrderMap = {};
+    catSnap.forEach(doc => {
+        const data = doc.data();
+        categoryOrderMap[data.name] = data.sortOrder ?? 9999;
+    });
+
+    const items = menuSnap.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            price: parseFloat(data.price) || 0,
+            sizes: data.sizes || [],
+            extras: data.extras || [],
+            category: data.category || "Uncategorized",
+            categoryOrder: categoryOrderMap[data.category] ?? 9999,
+            orderNumber: typeof data.orderNumber === "number" ? data.orderNumber : 9999,
         };
-        const updateTotalPrice = () => {
-            if (!currentItem) return;
-            const sizeIndex = document.querySelector('input[name="size"]:checked')?.value;
-            const selectedSize = sizeIndex ? currentItem.sizes[sizeIndex] : null;
-            let total = selectedSize ? selectedSize.price : currentItem.price;
-            const extras = Array.from(document.querySelectorAll('input[name="extra"]:checked')).map(input => {
-                const qty = parseInt(input.closest('label').querySelector('.extra-qty').textContent);
-                return { price: parseFloat(input.dataset.price), quantity: qty };
-            });
-            extras.forEach(extra => total += extra.price * extra.quantity);
-            elements.totalPrice.textContent = `Total: GH₵${total.toFixed(2)}`;
-        };
-        const showOptionsPanel = item => {
-            if (!isRestaurantOpen) {
-                showToast("This restaurant is currently closed.", "error");
-                return;
-            }
-            currentItem = item;
-            elements.optionsTitle.textContent = item.name;
-            elements.sizeGroup.style.display = item.sizes.length ? "block" : "none";
-            elements.extraGroup.style.display = item.extras.length ? "block" : "none";
-            elements.sizeOptions.innerHTML = item.sizes.length ? item.sizes.map((size, i) => `
-                <label>
-                    <input type="radio" name="size" value="${i}" ${i === 0 ? "checked" : ""}>
-                    <span>${size.name.charAt(0).toUpperCase() + size.name.slice(1)}</span>
-                    <span class="price">GH₵${size.price.toFixed(2)}</span>
-                </label>`).join("") : "";
-            elements.extraOptions.innerHTML = item.extras.length ? item.extras.map(extra => `
-                <label>
-                    <input type="checkbox" name="extra" value="${extra.name}" data-price="${extra.price}">
-                    <span>${extra.name.charAt(0).toUpperCase() + extra.name.slice(1)}</span>
-                    <div class="extra-quantity" data-extra="${extra.name}">
-                        <span class="price">GH₵${extra.price.toFixed(2)}</span>
-                        <button class="extra-quantity-btn decrease">-</button>
-                        <span class="extra-qty">0</span>
-                        <button class="extra-quantity-btn increase">+</button>
-                    </div>
-                </label>`).join("") : "";
-            elements.vendorNote.value = "";
-            elements.optionsPanel.classList.add("show");
-            updateTotalPrice();
-            document.querySelectorAll('.extra-quantity').forEach(group => {
-                const decreaseBtn = group.querySelector('.decrease');
-                const increaseBtn = group.querySelector('.increase');
-                const qtySpan = group.querySelector('.extra-qty');
-                const checkbox = group.closest('label').querySelector('input[type="checkbox"]');
-                decreaseBtn.onclick = () => {
-                    let qty = parseInt(qtySpan.textContent);
-                    if (qty > 0) {
-                        qtySpan.textContent = qty - 1;
-                        checkbox.checked = qty > 0;
-                        updateTotalPrice();
-                    }
-                };
-                increaseBtn.onclick = () => {
-                    let qty = parseInt(qtySpan.textContent);
-                    qtySpan.textContent = qty + 1;
-                    checkbox.checked = true;
-                    updateTotalPrice();
-                };
-                checkbox.onchange = () => {
-                    if (checkbox.checked && parseInt(qtySpan.textContent) === 0) {
-                        qtySpan.textContent = "1";
-                    } else if (!checkbox.checked) {
-                        qtySpan.textContent = "0";
-                    }
-                    updateTotalPrice();
-                };
-            });
-            document.querySelectorAll('input[name="size"]').forEach(radio => {
-                radio.onchange = updateTotalPrice;
-            });
-        };
-        const hideOptionsPanel = () => {
-            elements.optionsPanel.classList.remove("show");
-            currentItem = null;
-        };
-        const updateCartButton = () => {
-            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-            const totalCartPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            elements.viewCartBtn.textContent = `View Cart - GH₵${totalCartPrice.toFixed(2)}`;
-            elements.viewCartBtn.classList.toggle("show", cartCount > 0);
-        };
-        const loadCartCount = () => {
-            cartCount = JSON.parse(localStorage.getItem("cart") || "[]").length;
-            updateCartButton();
-        };
-        const addToCart = item => {
-            if (!isRestaurantOpen) {
-                showToast("This restaurant is currently closed.", "error");
-                return;
-            }
-            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-            if (cart.length > 0 && cart[0].restaurantId !== restaurantId) {
-                showToast("Please clear your cart or complete your current order before ordering from a different restaurant", "error");
-                return;
-            }
-            cart.push(item);
-            localStorage.setItem("cart", JSON.stringify(cart));
-            cartCount++;
-            updateCartButton();
-            showToast(`${item.name} added to cart!`, "success");
-        };
-        document.onclick = e => {
-            const menuItem = e.target.closest(".menu-item");
-            const addButton = e.target.closest(".add-to-cart");
-            if (addButton) {
-                const item = JSON.parse(menuItem.dataset.item);
-                if (!isRestaurantOpen) {
-                    showToast("This restaurant is currently closed.", "error");
-                    return;
-                }
-                if (!item.sizes.length && !item.extras.length) addToCart({ name: item.name, price: item.price, restaurantId, quantity: 1, id: Date.now(), extras: [], note: "" });
-                else showOptionsPanel(item);
-            } else if (menuItem && !elements.optionsPanel.contains(e.target)) {
-                const item = JSON.parse(menuItem.dataset.item);
-                if (item.sizes.length || item.extras.length) showOptionsPanel(item);
-            } else if (!elements.optionsPanel.contains(e.target) && elements.optionsPanel.classList.contains("show")) hideOptionsPanel();
-        };
-        document.getElementById("close-panel").onclick = hideOptionsPanel;
-        document.getElementById("confirm-add").onclick = () => {
-            if (!currentItem || !isRestaurantOpen) {
-                if (!isRestaurantOpen) showToast("This restaurant is currently closed.", "error");
-                return;
-            }
-            const sizeIndex = document.querySelector('input[name="size"]:checked')?.value;
-            const selectedSize = sizeIndex ? currentItem.sizes[sizeIndex] : null;
-            const extras = Array.from(document.querySelectorAll('input[name="extra"]:checked')).map(input => {
-                const qty = parseInt(input.closest('label').querySelector('.extra-qty').textContent);
-                return { name: input.value, price: parseFloat(input.dataset.price), quantity: qty };
-            }).filter(extra => extra.quantity > 0);
-            const item = {
-                name: selectedSize ? `${currentItem.name} (${selectedSize.name})` : currentItem.name,
-                price: selectedSize ? selectedSize.price : currentItem.price,
-                restaurantId,
-                quantity: 1,
-                id: Date.now(),
-                extras,
-                note: elements.vendorNote.value.trim()
-            };
-            extras.forEach(extra => { 
-                item.name += ` + ${extra.name} (x${extra.quantity})`; 
-                item.price += extra.price * extra.quantity; 
-            });
-            addToCart(item);
-            hideOptionsPanel();
-        };
-        Promise.all([loadRestaurant(), loadMenu()]).then(() => {
-            loadCartCount();
-            feather.replace();
-        }).catch(e => {
-            console.error("Initialization failed:", e);
-            elements.menuSection.innerHTML = `<div class="error-message">Failed to load page. Please check your internet connection...</div>`;
-            showToast("Failed to load page.", "error");
-        });
-    </script>
+    });
+
+    const grouped = {};
+    items.forEach(item => {
+        const category = item.category || "Uncategorized";
+        if (!grouped[category]) grouped[category] = [];
+        grouped[category].push(item);
+    });
+
+    renderMenu(grouped);
+};
+
+// Load restaurant and menu
+loadRestaurant();
+loadMenuLive();
+</script>
+
 
 <script>
     // Slow network detection
