@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="description" content="Contact Chawp - Sleek Food Delivery">
+    <meta name="description" content="VON">
     <meta name="author" content="VON">
-    <meta name="theme-color" content="#2c2c2c">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
     <link rel="icon" type="image/png" href="img/icon-192x192.png">
-    <link rel="apple-touch-icon" href="img/icon-192x192.png">
-    <title>Chawp - Contact Us</title>
+    <title>Chawp</title>
+    <!-- Slick Slider -->
     <link href="vendor/slick/slick/slick.css" rel="stylesheet" type="text/css">
     <link href="vendor/slick/slick/slick-theme.css" rel="stylesheet" type="text/css">
+    <!-- Feather Icon-->
     <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
+    <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
     <link href="css/style.css" rel="stylesheet">
+    <!-- Sidebar CSS -->
     <link href="vendor/sidebar/demo.css" rel="stylesheet">
     <style>
         html, body {
@@ -85,7 +86,7 @@
             color: #fff;
         }
         .contact-card {
-            background: #3f3f3f;
+            background: #333;
             border-radius: 15px;
             padding: 1.5rem;
             margin-bottom: 3rem;
@@ -211,15 +212,27 @@
                 font-size: 0.8rem;
             }
         }
+
+body {
+    background: #2c2c2c;
+    color: #fff;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+    line-height: 1.6;
+}
     </style>
 </head>
+
 <body class="fixed-bottom-bar">
     <div class="osahan-profile">
-        <div class="bg-transparent border-bottom p-3 d-flex align-items-center">
-            <a class="toggle togglew toggle-2" href="#"><span></span></a>
-            <h4 class="fw-bold m-0 text-white">Contact Us</h4>
+        <div class="d-none">
+            <div class="bg-transparent border-bottom p-3 d-flex align-items-center">
+                <h4 class="fw-bold m-0 text-white">Contact Us</h4>
+            </div>
         </div>
-        <div class="container position-relative">
+         <div class="container position-relative">
             <div class="py-4 osahan-profile row">
                 <div class="col-md-4 mb-3">
                     <div class="contact-card">
@@ -266,51 +279,58 @@
                 </div>
             </div>
         </div>
-        <div class="osahan-menu-fotter fixed-bottom bg-darks px-3 py-2 text-center">
-            <div class="row">
-                <div class="col">
-                    <div class="footer-item">
-                        <a href="index.html" class="text-white small fw-bold text-decoration-none">
-                            <p class="h4 m-0"><i class="feather-map-pin text-white"></i></p>Trending
-                        </a>
-                    </div>
+    </div>
+    <!-- footer -->
+    <div class="osahan-menu-fotter fixed-bottom bg-darks px-3 py-2 text-center">
+        <div class="row">
+            <div class="col">
+                <div class="footer-item">
+                    <a href="index.html" class="text-white small fw-bold text-decoration-none">
+                        <p class="h4 m-0"><i class="feather-map-pin text-white"></i></p>Trending
+                    </a>
                 </div>
-                <div class="col">
-                    <div class="footer-item">
-                        <a href="home.html" class="text-white small fw-bold text-decoration-none">
-                            <p class="h4 m-0"><i class="feather-home text-white"></i></p>Home
-                        </a>
-                    </div>
+            </div>
+            <div class="col">
+                <div class="footer-item ">
+                    <a href="home.html" class="text-white small fw-bold text-decoration-none">
+                        <p class="h4 m-0"><i class="feather-home text-white"></i></p>Home
+                    </a>
                 </div>
-                <div class="col">
-                    <div class="footer-item">
-                        <a href="cart.html" class="text-white small fw-bold text-decoration-none">
-                            <p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart
-                        </a>
-                    </div>
+            </div>
+            <div class="col">
+                <div class="footer-item ">
+                    <a href="cart.html" class="text-white small fw-bold text-decoration-none">
+                        <p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart
+                    </a>
                 </div>
-                <div class="col">
-                    <div class="footer-item">
-                        <a href="orders.html" class="text-white small fw-bold text-decoration-none">
-                            <p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders
-                        </a>
-                    </div>
+            </div>
+            <div class="col">
+                <div class="footer-item">
+                    <a href="orders.html" class="text-white small fw-bold text-decoration-none">
+                        <p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders
+                    </a>
                 </div>
-                <div class="col">
-                    <div class="footer-item">
-                        <a href="profile.html" class="text-white small fw-bold text-decoration-none">
-                            <p class="h4 m-0"><i class="feather-user"></i></p>Profile
-                        </a>
-                    </div>
+            </div>
+            <div class="col">
+                <div class="footer-item selected">
+                    <a href="profile.html" class="text-white small fw-bold text-decoration-none">
+                        <p class="h4 m-0"><i class="feather-user"></i></p>Profile
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-    <script defer src="vendor/jquery/jquery.min.js"></script>
-    <script defer src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script defer src="vendor/slick/slick/slick.min.js"></script>
-    <script defer src="vendor/sidebar/hc-offcanvas-nav.js"></script>
-    <script defer src="js/osahan.js"></script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92fb076c4ec24584',t:'MTc0NDU0Nzk5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-</body>
+   
+    
+    <!-- Bootstrap core JavaScript -->
+    <script data-cfasync="false" src="cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="ff0880c6aff28dc9d5be589f-text/javascript" src="vendor/jquery/jquery.min.js"></script>
+    <script type="ff0880c6aff28dc9d5be589f-text/javascript" src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- slick Slider JS-->
+    <script type="ff0880c6aff28dc9d5be589f-text/javascript" src="vendor/slick/slick/slick.min.js"></script>
+    <!-- Sidebar JS-->
+    <script type="ff0880c6aff28dc9d5be589f-text/javascript" src="vendor/sidebar/hc-offcanvas-nav.js"></script>
+    <!-- Custom scripts for all pages-->
+    <script type="ff0880c6aff28dc9d5be589f-text/javascript" src="js/osahan.js"></script>
+<script src="cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="ff0880c6aff28dc9d5be589f-|49" defer></script></body>
+
 </html>
