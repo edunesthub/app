@@ -917,18 +917,18 @@ if (querySnapshot.empty) {
             const slowNotice = document.querySelector('.network-slow-notice');
     
             function checkNetworkType() {
-                if ('connection' in navigator && navigator.connection.effectiveType) {
-                    const slowTypes = ['slow-2g', '2g', '3g'];
-                    if (slowTypes.includes(navigator.connection.effectiveType)) {
-                        slowNotice.style.display = 'block';
-                        slowNotice.classList.add('visible');
-                    } else {
-                        slowNotice.classList.remove('visible');
-                        slowNotice.style.display = 'none';
-                    }
-                }
-            }
-    
+    if ('connection' in navigator && navigator.connection.effectiveType) {
+        const slowTypes = ['slow-2g', '2g', '3g', '4g']; // Added '4g'
+        if (slowTypes.includes(navigator.connection.effectiveType)) {
+            slowNotice.style.display = 'block';
+            slowNotice.classList.add('visible');
+        } else {
+            slowNotice.classList.remove('visible');
+            slowNotice.style.display = 'none';
+        }
+    }
+}
+
             window.addEventListener('online', () => {
                 document.body.classList.remove('offline');
                 offlineNotice.style.display = 'none';
