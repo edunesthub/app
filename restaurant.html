@@ -655,6 +655,52 @@ const updateCartButton = () => {
     }
 };
 
+document.getElementById("confirm-add").addEventListener("click", () => {
+    if (!currentItem) return;
+
+    // Get selected size
+    const selectedSize = document.querySelector('input[name="size"]:checked');
+    const size = selectedSize ? selectedSize.value : null;
+    const sizePrice = selectedSize
+        ? parseFloat(selectedSize.closest("label").querySelector(".price").textContent.replace("GH₵", ""))
+        : 0;
+
+    // Get selected extras
+    const extras = [];
+    let extrasTotal = 0;
+    document.querySelectorAll('#extra-options input[type="checkbox"]:checked').forEach(input => {
+        const label = input.closest("label");
+        const name = input.value;
+        const price = parseFloat(label.querySelector(".price").textContent.replace("GH₵", ""));
+        extras.push({ name, price });
+        extrasTotal += price;
+    });
+
+    // Get note
+    const note = elements.vendorNote.value;
+
+    // Calculate total price
+    const basePrice = currentItem.price || 0;
+    const totalPrice = (sizePrice || basePrice) + extrasTotal;
+
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    cart.push({
+        id: currentItem.id,
+        name: currentItem.name,
+        size,
+        extras,
+        note,
+        price: totalPrice,
+        quantity: 1
+    });
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    elements.optionsPanel.classList.remove("show");
+    showToast(`${currentItem.name} added to cart!`);
+    updateCartButton();
+});
+
+
 document.getElementById("close-panel").addEventListener("click", () => {
     elements.optionsPanel.classList.remove("show");
 });
