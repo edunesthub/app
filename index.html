@@ -710,7 +710,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
     
         const firebaseConfig = {
             apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
@@ -762,7 +762,12 @@
             if (!navigator.onLine) return;
     
             try {
-                const q = query(collection(db, "restaurant"), limit(10), orderBy("delivery_time", "asc"));
+              const q = query(
+  collection(db, "restaurant"),
+  where("isTrending", "==", true),
+  limit(10)
+);
+
                 const querySnapshot = await getDocs(q);
     
                 const restaurants = [];
