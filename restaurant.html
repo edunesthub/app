@@ -571,8 +571,47 @@ const renderMenu = grouped => {
         menuHTML += `</div>`;
     }
 
-    elements.menuSection.innerHTML = menuHTML;
+elements.menuSection.innerHTML = menuHTML;
+setupAddToCartButtons(); // <- This is missing in your current code
 };
+
+const setupAddToCartButtons = () => {
+    document.querySelectorAll(".add-to-cart").forEach(button => {
+        button.addEventListener("click", e => {
+            const itemElement = button.closest(".menu-item");
+            const itemData = itemElement?.dataset?.item;
+            if (!itemData) return;
+
+            const item = JSON.parse(itemData.replace(/&#39;/g, "'"));
+
+            // Simple cart logic using localStorage
+            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            cart.push({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: 1
+            });
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            // Optionally update cart button
+            showToast(`${item.name} added to cart!`);
+            updateCartButton();
+        });
+    });
+};
+
+const updateCartButton = () => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (cart.length > 0) {
+        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        elements.viewCartBtn.textContent = `View Cart - GH₵${total.toFixed(2)}`;
+        elements.viewCartBtn.classList.add("show");
+    } else {
+        elements.viewCartBtn.classList.remove("show");
+    }
+};
+
 
 const loadMenuLive = async () => {
     const menuRef = collection(db, "restaurant", restaurantId, "menu");
