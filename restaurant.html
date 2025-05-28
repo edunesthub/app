@@ -597,7 +597,7 @@ const loadMenuLive = async () => {
             price: parseFloat(data.price) || 0,
             sizes: data.sizes || [],
             extras: data.extras || [],
-            category: data.category || "Uncategorized",
+            category: data.category || "",
             categoryOrder: categoryOrderMap[data.category] ?? 9999,
             orderNumber: typeof data.orderNumber === "number" ? data.orderNumber : 9999,
         };
@@ -605,7 +605,7 @@ const loadMenuLive = async () => {
 
     const grouped = {};
     items.forEach(item => {
-        const category = item.category || "Uncategorized";
+        const category = item.category || "";
         if (!grouped[category]) grouped[category] = [];
         grouped[category].push(item);
     });
