@@ -24,11 +24,11 @@
         html, body {-webkit-text-size-adjust: none; touch-action: manipulation;}
         .most_popular .list-card {background: #565656; border-radius: 12px; overflow: hidden; position: relative; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); transition: transform 0.3s ease, box-shadow 0.3s ease; opacity: 0; animation: fadeIn 0.5s ease forwards;}
         .most_popular .list-card:hover {transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0, 200, 255, 0.2);}
-        .most_popular .list-card-image {position: relative; height: 160px; overflow: hidden;}
+        .most_popular .list-card-image {position: relative; height: 110px; overflow: hidden;}
         .most_popular .list-card-image img {height: 100%; width: 100%; object-fit: cover; transition: transform 0.3s ease, opacity 0.3s ease; opacity: 0.9;}
         .most_popular .list-card-image img.loaded {opacity: 1;}
         .most_popular .list-card:hover .list-card-image img {transform: scale(1.08);}
-        .most_popular .list-card-image::after {content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);}
+        .most_popular .list-card-image::after {content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0, 0, 0, 0), transparent);}
         .most_popular .list-card-body {padding: 12px; height: 80px; position: relative;}
         .most_popular .list-card-body h6 {font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 6px; overflow-wrap: break-word; white-space: normal; max-height: 36px; line-height: 1.2; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);}
         .most_popular .list-card-body p {font-size: 0.8rem; color: #d0d0d0; margin-bottom: 0; margin-top: 4px; display: flex; flex-wrap: wrap;}
@@ -142,6 +142,50 @@ html {
         flex-direction: column;
         padding-bottom: 70px; /* Matches footer height to prevent overlap */
     }
+    #all-restaurants .list-card {
+    background: #565656;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 1;
+    transform: scale(1);
+}
+#all-restaurants .list-card-image img {
+    height: 110px;
+    object-fit: cover;
+    width: 100%;
+    border-radius: 10px 10px 0 0;
+}
+#all-restaurants .list-card-body {
+    padding: 8px;
+    height: 60px;
+    text-align: left;
+}
+#all-restaurants .list-card-body h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+}
+#all-restaurants .time span {
+    background: #4a4a4a;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+.closed-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: #ff3b30;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
     </style>
 </head>
 <body class="fixed-bottom-bar">
@@ -199,7 +243,7 @@ html {
                     <h5 class="m-0">All Restaurants</h5>
                 </div>
                 <div class="most_popular">
-                    <div class="row" id="all-restaurants"></div>
+                    <div id="all-restaurants" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 0 10px;"></div>
                 </div>
             </div>
         </div>
@@ -299,24 +343,19 @@ html {
                    
                     const isOpen = data.isOpen !== false; // Default to true if isOpen is undefined
                     allRestaurants.push({ id: restaurantId, ...data });
-                    output += `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
-        <a href="restaurant.html?id=${restaurantId}" class="d-block text-decoration-none">
-            <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
-                <div class="list-card-image">
-                    <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
-                </div>
-                <div class="list-card-body">
-                    <h6 class="mb-1 text-white">${data.name}</h6>
-                    <p class="mb-0">
-                        <span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
-                    </p>
-                </div>
-                <div class="list-card-badge">
-        <span class="${isOpen ? 'open' : 'closed'}">${isOpen ? 'Open' : 'Closed'}</span>
-    </div>
-            </div>
+                  output += `<div class="list-card" data-id="${restaurantId}">
+    <div class="list-card-image">
+        <a href="restaurant.html?id=${restaurantId}">
+            <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
+            ${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
         </a>
-    </div>`;
+    </div>
+    <div class="list-card-body">
+        <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
+        <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
+    </div>
+</div>`;
+
                 });
     
                 requestAnimationFrame(() => {
@@ -337,38 +376,38 @@ html {
         };
     
         const filterRestaurants = searchTerm => {
-            const filtered = allRestaurants.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()));
-            let output = filtered.length ? filtered.map(data => {
-                const deliveryTime = data.delivery_time || "N/A";
-                const deliveryFee = data.delivery_fee || "3.00";
-                const isOpen = data.isOpen !== false; // Default to true if isOpen is undefined
-                return `<div class="col-md-2 pb-3" style="margin-bottom: 15px; padding-right: 8px;">
-        <a href="restaurant.html?id=${data.id}" class="d-block text-decoration-none">
-            <div class="list-card bg-darker h-100 rounded overflow-hidden position-relative shadow-sm">
-                <div class="list-card-image">
-                    <img alt="${data.name || "Restaurant"}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img w-100" loading="lazy">
-                </div>
-                <div class="list-card-body">
-                    <h6 class="mb-1 text-white">${data.name}</h6>
-                    <p class="mb-0">
-                        <span class="time"><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span>
-                    </p>
-                </div>
-<div class="list-card-badge">
-        <span class="${isOpen ? 'open' : 'closed'}">${isOpen ? 'Open' : 'Closed'}</span>
-    </div>
-                </div>
+    const filtered = allRestaurants.filter(r =>
+        r.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    let output = filtered.length
+        ? filtered.map(data => {
+            const deliveryTime = data.delivery_time || "N/A";
+            const isOpen = data.isOpen !== false;
+            return `<div class="list-card" data-id="${data.id}">
+    <div class="list-card-image">
+        <a href="restaurant.html?id=${data.id}">
+            <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
+            ${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
         </a>
-    </div>`;
-            }).join("") : "<div class='col-12 text-center'><p>No matching restaurants found.</p></div>";
-            requestAnimationFrame(() => {
-                restaurantList.innerHTML = output;
-                document.querySelectorAll(".list-card-image img").forEach(img => {
-                    if (img.complete) img.classList.add("loaded");
-                    else img.onload = () => img.classList.add("loaded");
-                });
-            });
-        };
+    </div>
+    <div class="list-card-body">
+        <h6 class="mb-1"><a href="restaurant.html?id=${data.id}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
+        <p class="time"><a href="restaurant.html?id=${data.id}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
+    </div>
+</div>`;
+        }).join("")
+        : "<div class='col-12 text-center'><p>No matching restaurants found.</p></div>";
+
+    requestAnimationFrame(() => {
+        restaurantList.innerHTML = output;
+        document.querySelectorAll(".list-card-image img").forEach(img => {
+            if (img.complete) img.classList.add("loaded");
+            else img.onload = () => img.classList.add("loaded");
+        });
+    });
+};
+
     
         const updateDropdown = searchTerm => {
             const dropdown = document.getElementById("search-dropdown");
