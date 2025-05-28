@@ -418,6 +418,8 @@
                 min-width: 160px;
             }
         }
+
+        
     </style>
     <script defer src="https://unpkg.com/feather-icons"></script>
 </head>
@@ -576,30 +578,71 @@ setupAddToCartButtons(); // <- This is missing in your current code
 };
 
 const setupAddToCartButtons = () => {
-    document.querySelectorAll(".add-to-cart").forEach(button => {
+    document.querySelectorAll(".menu-item").forEach(itemElement => {
+        const button = itemElement.querySelector(".add-to-cart");
+        const itemData = itemElement?.dataset?.item;
+        if (!itemData) return;
+
+        const item = JSON.parse(itemData.replace(/&#39;/g, "'"));
+
+        // Full item click shows modal if needed
+        itemElement.addEventListener("click", () => {
+            if (item.sizes.length > 0 || item.extras.length > 0) {
+                showOptionsPanel(item);
+            }
+        });
+
+        // Add button adds directly or shows modal
         button.addEventListener("click", e => {
-            const itemElement = button.closest(".menu-item");
-            const itemData = itemElement?.dataset?.item;
-            if (!itemData) return;
+            e.stopPropagation(); // Prevent parent from triggering
 
-            const item = JSON.parse(itemData.replace(/&#39;/g, "'"));
+            if (item.sizes.length > 0 || item.extras.length > 0) {
+                showOptionsPanel(item);
+            } else {
+                const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+                cart.push({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: 1
+                });
+                localStorage.setItem("cart", JSON.stringify(cart));
 
-            // Simple cart logic using localStorage
-            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-            cart.push({
-                id: item.id,
-                name: item.name,
-                price: item.price,
-                quantity: 1
-            });
-            localStorage.setItem("cart", JSON.stringify(cart));
-
-            // Optionally update cart button
-            showToast(`${item.name} added to cart!`);
-            updateCartButton();
+                showToast(`${item.name} added to cart!`);
+                updateCartButton();
+            }
         });
     });
 };
+
+const showOptionsPanel = (item) => {
+    currentItem = item;
+    elements.optionsTitle.textContent = item.name;
+    elements.optionsPanel.classList.add("show");
+
+    // Populate sizes
+    elements.sizeOptions.innerHTML = item.sizes.map((size, index) => `
+        <label>
+            <input type="radio" name="size" value="${size.name}" ${index === 0 ? 'checked' : ''}>
+            <span>${size.name}</span>
+            <span class="price">GH₵${parseFloat(size.price).toFixed(2)}</span>
+        </label>
+    `).join("");
+
+    // Populate extras
+    elements.extraOptions.innerHTML = item.extras.map(extra => `
+        <label>
+            <input type="checkbox" value="${extra.name}">
+            <span>${extra.name}</span>
+            <span class="price">GH₵${parseFloat(extra.price).toFixed(2)}</span>
+        </label>
+    `).join("");
+
+    // Optionally reset other fields
+    elements.vendorNote.value = "";
+    elements.totalPrice.textContent = "Total: GH₵0.00";
+};
+
 
 const updateCartButton = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -611,6 +654,11 @@ const updateCartButton = () => {
         elements.viewCartBtn.classList.remove("show");
     }
 };
+
+document.getElementById("close-panel").addEventListener("click", () => {
+    elements.optionsPanel.classList.remove("show");
+});
+
 
 
 const loadMenuLive = async () => {
