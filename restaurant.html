@@ -505,18 +505,85 @@ const elements = {
     totalPrice: document.getElementById("total-price")
 };
 
-const showToast = (message, type = "success") => {
-    elements.toastMessage.textContent = message;
-    elements.toast.className = `toast-container ${type}`;
-    elements.toast.classList.add("show");
+const isLoggedIn = () => {
+    return Boolean(localStorage.getItem("user")); // Replace with Firebase Auth if needed
+};
+
+const showToast = (htmlContent, type = "success") => {
+    const toast = elements.toast;
+    toast.innerHTML = htmlContent;
+    toast.className = `toast-container ${type}`;
+
+    Object.assign(toast.style, {
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%) scale(0.95)",
+        width: "calc(100vw - 40px)",
+        maxWidth: "340px",
+        textAlign: "center",
+        background: "rgba(245, 245, 245, 0.12)",
+        color: "#fff",
+        border: "1px solid rgba(255,255,255,0.08)",
+        boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        padding: "22px 20px",
+        borderRadius: "20px",
+        opacity: "0",
+        zIndex: "9999",
+        pointerEvents: "auto",
+        display: "block",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
+        transition: "opacity 0.35s ease, transform 0.35s ease"
+    });
+
+    requestAnimationFrame(() => {
+        toast.style.opacity = "1";
+        toast.style.transform = "translate(-50%, -50%) scale(1)";
+    });
+
     setTimeout(() => {
-        elements.toast.classList.remove("show");
-        elements.toast.classList.add("hide");
+        toast.style.opacity = "0";
+        toast.style.transform = "translate(-50%, -50%) scale(0.95)";
     }, 5000);
+
     setTimeout(() => {
-        elements.toast.classList.remove("hide");
+        toast.innerHTML = "";
+        toast.style.display = "none";
     }, 5300);
 };
+
+const promptLogin = () => {
+    showToast(`
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+            <span style="
+                font-size: 1.05rem;
+                font-weight: 500;
+                color: rgba(255,255,255,0.95);
+                letter-spacing: -0.01em;
+            ">
+                Cravings? Let’s log in first.
+            </span>
+            <button style="
+                background: linear-gradient(135deg, #007aff, #0051d4);
+                color: white;
+                padding: 12px 22px;
+                border: none;
+                border-radius: 14px;
+                font-weight: 600;
+                font-size: 1rem;
+                width: 100%;
+                max-width: 200px;
+                box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+                cursor: pointer;
+                transition: transform 0.2s ease, background 0.3s ease;
+                font-family: inherit;
+            " onclick="window.location.href='login.html'">Log In</button>
+        </div>
+    `, "error");
+};
+
 
 const loadRestaurant = async () => {
     try {
@@ -585,33 +652,34 @@ const setupAddToCartButtons = () => {
 
         const item = JSON.parse(itemData.replace(/&#39;/g, "'"));
 
-        // Full item click shows modal if needed
+        // Show options if item has customizations
         itemElement.addEventListener("click", () => {
-    if (!isRestaurantOpen) return; // Prevent modal if closed
-    if (item.sizes.length > 0 || item.extras.length > 0) {
-        showOptionsPanel(item);
-    }
-});
+            if (!isRestaurantOpen) return;
+            if (!isLoggedIn()) return promptLogin();
+            if (item.sizes.length > 0 || item.extras.length > 0) {
+                showOptionsPanel(item);
+            }
+        });
 
-
-        // Add button adds directly or shows modal
         button.addEventListener("click", e => {
-            e.stopPropagation(); // Prevent parent from triggering
+            e.stopPropagation();
+
+            if (!isRestaurantOpen) return;
+            if (!isLoggedIn()) return promptLogin();
 
             if (item.sizes.length > 0 || item.extras.length > 0) {
                 showOptionsPanel(item);
             } else {
                 const cart = JSON.parse(localStorage.getItem("cart") || "[]");
                 cart.push({
-    id: item.id,
-    name: item.name,
-    price: item.price,
-    quantity: 1,
-    restaurantId: restaurantId // ✅ FIX HERE
-});
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: 1,
+                    restaurantId: restaurantId
+                });
 
                 localStorage.setItem("cart", JSON.stringify(cart));
-
                 showToast(`${item.name} added to cart!`);
                 updateCartButton();
             }

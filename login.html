@@ -19,11 +19,15 @@
     <script>
   const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-  if (!isPWA) {
-    // Not running inside the PWA
-    window.location.href = "index.html"; // or any other page you prefer
+  // Check if this page was opened via user navigation (not programmatic)
+  const accessedDirectly = window.history.length <= 1 && document.referrer === "";
+
+  if (!isPWA && accessedDirectly) {
+    // Redirect only if user typed in or manually navigated
+    window.location.href = "index.html";
   }
 </script>
+
 
     <style>
 html, body {
