@@ -327,7 +327,7 @@ html {
             }
     
             try {
-                const q = query(collection(db, "restaurant"), orderBy("delivery_time", "asc"));
+                const q = query(collection(db, "restaurant"), orderBy("trendingOrder", "asc"));
                 const querySnapshot = await getDocs(q);
     
                 if (querySnapshot.empty) {
