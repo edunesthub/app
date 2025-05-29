@@ -575,6 +575,23 @@
     0% { left: -100%; }
     100% { left: 100%; }
 }
+#install-blur-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+#install-blur-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
 
     </style>
 </head>
@@ -706,6 +723,8 @@
             <button onclick="closeAndroidPrompt()">OK, Got it</button>
         </div>
     </div>
+    <div id="install-blur-overlay"></div>
+
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
@@ -1101,7 +1120,7 @@ function showUpdateToast(worker) {
 }
 
   document.body.appendChild(toast);
-}
+
 </script>
 
 
@@ -1116,17 +1135,24 @@ function showUpdateToast(worker) {
         }
 
         function closePrompt() {
-            document.getElementById('ios-install-prompt').style.display = 'none';
-        }
+    document.getElementById('ios-install-prompt').style.display = 'none';
+    document.getElementById('install-blur-overlay').classList.remove('active');
+}
+
 
         // Defer iOS prompt to reduce initial load impact
         window.addEventListener('load', () => {
             if (isIosSafari()) {
                 setTimeout(() => {
                     const prompt = document.getElementById('ios-install-prompt');
-                    prompt.style.display = 'block';
-                    setTimeout(() => prompt.classList.add('visible'), 10);
-                }, 2000); // Delayed to prioritize content rendering
+                    const overlay = document.getElementById('install-blur-overlay');
+prompt.style.display = 'block';
+setTimeout(() => {
+    prompt.classList.add('visible');
+    overlay.classList.add('active');
+}, 10);
+
+                }, 10); // Delayed to prioritize content rendering
             }
         });
     </script>
@@ -1142,17 +1168,24 @@ function showUpdateToast(worker) {
         }
     
         function closeAndroidPrompt() {
-            document.getElementById('android-install-prompt').style.display = 'none';
-        }
+    document.getElementById('android-install-prompt').style.display = 'none';
+    document.getElementById('install-blur-overlay').classList.remove('active');
+}
+
     
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
             if (isAndroidChrome()) {
                 setTimeout(() => {
-                    const prompt = document.getElementById('android-install-prompt');
-                    prompt.style.display = 'block';
-                    setTimeout(() => prompt.classList.add('visible'), 10);
+                   const prompt = document.getElementById('android-install-prompt');
+const overlay = document.getElementById('install-blur-overlay');
+prompt.style.display = 'block';
+setTimeout(() => {
+    prompt.classList.add('visible');
+    overlay.classList.add('active');
+}, 10);
+
                 }, 2000);
             }
         });
@@ -1161,8 +1194,12 @@ function showUpdateToast(worker) {
             if (isAndroidChrome() && deferredPrompt) {
                 setTimeout(() => {
                     const prompt = document.getElementById('android-install-prompt');
-                    prompt.style.display = 'block';
-                    setTimeout(() => prompt.classList.add('visible'), 10);
+const overlay = document.getElementById('install-blur-overlay');
+prompt.style.display = 'block';
+setTimeout(() => {
+    prompt.classList.add('visible');
+    overlay.classList.add('active');
+}, 10);
                 }, 2000);
             }
         });
