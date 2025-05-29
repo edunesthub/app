@@ -724,22 +724,33 @@ const loadMenuLive = async () => {
         categoryOrderMap[data.name] = data.sortOrder ?? 9999;
     });
 
+    const categoryVisibilityMap = {};
+catSnap.forEach(doc => {
+    const data = doc.data();
+    categoryOrderMap[data.name] = data.sortOrder ?? 9999;
+    categoryVisibilityMap[data.name] = data.visible !== false; // Default to true
+});
+
     const items = menuSnap.docs.map(doc => {
-        const data = doc.data();
-        return {
-            id: doc.id,
-            ...data,
-            price: parseFloat(data.price) || 0,
-            sizes: data.sizes || [],
-            extras: data.extras || [],
-            category: data.category || "",
-            categoryOrder: categoryOrderMap[data.category] ?? 9999,
-            orderNumber: typeof data.orderNumber === "number" ? data.orderNumber : 9999,
-        };
-    });
+    const data = doc.data();
+    return {
+        id: doc.id,
+        ...data,
+        price: parseFloat(data.price) || 0,
+        sizes: data.sizes || [],
+        extras: data.extras || [],
+        category: data.category || "",
+        categoryOrder: categoryOrderMap[data.category] ?? 9999,
+        orderNumber: typeof data.orderNumber === "number" ? data.orderNumber : 9999,
+        visible: data.visible !== false // default to true
+    };
+});
+
+const visibleItems = items.filter(item => item.visible && categoryVisibilityMap[item.category] !== false);
+
 
     const grouped = {};
-    items.forEach(item => {
+    visibleItems.forEach(item => {
         const category = item.category || "";
         if (!grouped[category]) grouped[category] = [];
         grouped[category].push(item);
