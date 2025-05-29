@@ -1,5 +1,5 @@
-const CACHE_NAME = 'Chawp-cache-v63';
-const DYNAMIC_CACHE_NAME = 'Chawp-dynamic-v63';
+const CACHE_NAME = 'Chawp-cache-v64';
+const DYNAMIC_CACHE_NAME = 'Chawp-dynamic-v64';
 const ALLOWED_CACHES = [CACHE_NAME, DYNAMIC_CACHE_NAME, 'assets-cache', 'api-cache', 'ChawpOrderQueue'];
 
 self.addEventListener('activate', event => {
