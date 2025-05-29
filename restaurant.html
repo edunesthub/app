@@ -699,12 +699,17 @@ const setupAddToCartButtons = () => {
 
         const item = JSON.parse(itemData.replace(/&#39;/g, "'"));
 
-        // Show options if item has customizations
         itemElement.addEventListener("click", () => {
             if (!isRestaurantOpen) return;
-            if (!isLoggedIn()) return promptLogin();
+
+            // ✅ Block unauthenticated users
+            if (!isLoggedIn()) {
+                promptLogin();
+                return;
+            }
+
             if (item.sizes.length > 0 || item.extras.length > 0) {
-                showOptionsPanel(item);
+                showOptionsPanel(item); // Will show customized options
             }
         });
 
@@ -712,10 +717,15 @@ const setupAddToCartButtons = () => {
             e.stopPropagation();
 
             if (!isRestaurantOpen) return;
-            if (!isLoggedIn()) return promptLogin();
+
+            // ✅ Block unauthenticated users
+            if (!isLoggedIn()) {
+                promptLogin();
+                return;
+            }
 
             if (item.sizes.length > 0 || item.extras.length > 0) {
-                showOptionsPanel(item);
+                showOptionsPanel(item); // Button and container will now behave same
             } else {
                 const cart = JSON.parse(localStorage.getItem("cart") || "[]");
                 cart.push({
@@ -735,6 +745,11 @@ const setupAddToCartButtons = () => {
 };
 
 const showOptionsPanel = (item) => {
+    if (!isLoggedIn()) {
+        promptLogin();
+        return;
+    }
+
     currentItem = item;
     elements.optionsTitle.textContent = item.name;
     elements.optionsPanel.classList.add("show");
@@ -757,7 +772,6 @@ const showOptionsPanel = (item) => {
         </label>
     `).join("");
 
-    // Optionally reset other fields
     elements.vendorNote.value = "";
     elements.totalPrice.textContent = "Total: GH₵0.00";
 };
@@ -777,14 +791,18 @@ const updateCartButton = () => {
 document.getElementById("confirm-add").addEventListener("click", () => {
     if (!currentItem) return;
 
-    // Get selected size
+    // ✅ Block if not logged in
+    if (!isLoggedIn()) {
+        promptLogin();
+        return;
+    }
+
     const selectedSize = document.querySelector('input[name="size"]:checked');
     const size = selectedSize ? selectedSize.value : null;
     const sizePrice = selectedSize
         ? parseFloat(selectedSize.closest("label").querySelector(".price").textContent.replace("GH₵", ""))
         : 0;
 
-    // Get selected extras
     const extras = [];
     let extrasTotal = 0;
     document.querySelectorAll('#extra-options input[type="checkbox"]:checked').forEach(input => {
@@ -795,29 +813,26 @@ document.getElementById("confirm-add").addEventListener("click", () => {
         extrasTotal += price;
     });
 
-    // Get note
     const note = elements.vendorNote.value;
 
-    // Calculate total price
     const basePrice = currentItem.price || 0;
     const totalPrice = (sizePrice || basePrice) + extrasTotal;
 
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     cart.push({
-    id: currentItem.id,
-    name: currentItem.name,
-    size,
-    extras,
-    note,
-    price: totalPrice,
-    quantity: 1,
-    restaurantId: restaurantId // ✅ FIX HERE TOO
-});
-
+        id: currentItem.id,
+        name: currentItem.name,
+        size,
+        extras,
+        note,
+        price: totalPrice,
+        quantity: 1,
+        restaurantId: restaurantId
+    });
 
     localStorage.setItem("cart", JSON.stringify(cart));
     elements.optionsPanel.classList.remove("show");
-    showToast(`${currentItem.name} added to cart!`);
+    showToast(`${currentItem.name} added to cart!`, "success");
     updateCartButton();
 });
 
