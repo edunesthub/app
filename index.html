@@ -754,9 +754,15 @@
             localStorage.setItem('current-user', JSON.stringify({ uid: user.uid, email: user.email }));
         } else {
             // No user is signed in, redirect to login page
-            if (!window.location.pathname.includes("login.html")) {
-                window.location.href = "login.html";
-            }
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+if (isStandalone) {
+    window.location.href = "login.html";
+} else {
+    // Optionally show a message, or just stay on the homepage
+    console.warn("User not logged in and not in PWA mode — not redirecting.");
+}
+
         }
     });
     

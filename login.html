@@ -16,6 +16,15 @@
     <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
     <link rel="manifest" href="manifest.json">
     <link href="css/style.css" rel="stylesheet">
+    <script>
+  const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+  if (!isPWA) {
+    // Not running inside the PWA
+    window.location.href = "index.html"; // or any other page you prefer
+  }
+</script>
+
     <style>
 html, body {
     touch-action: pan-x pan-y;
