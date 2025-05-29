@@ -603,11 +603,13 @@ const setupAddToCartButtons = () => {
             } else {
                 const cart = JSON.parse(localStorage.getItem("cart") || "[]");
                 cart.push({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    quantity: 1
-                });
+    id: item.id,
+    name: item.name,
+    price: item.price,
+    quantity: 1,
+    restaurantId: restaurantId // ✅ FIX HERE
+});
+
                 localStorage.setItem("cart", JSON.stringify(cart));
 
                 showToast(`${item.name} added to cart!`);
@@ -687,14 +689,16 @@ document.getElementById("confirm-add").addEventListener("click", () => {
 
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     cart.push({
-        id: currentItem.id,
-        name: currentItem.name,
-        size,
-        extras,
-        note,
-        price: totalPrice,
-        quantity: 1
-    });
+    id: currentItem.id,
+    name: currentItem.name,
+    size,
+    extras,
+    note,
+    price: totalPrice,
+    quantity: 1,
+    restaurantId: restaurantId // ✅ FIX HERE TOO
+});
+
 
     localStorage.setItem("cart", JSON.stringify(cart));
     elements.optionsPanel.classList.remove("show");

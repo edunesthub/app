@@ -127,8 +127,8 @@
         })();
 
         const isValidOrder = (order) => {
-            if (!order.items || !Array.isArray(order.items)) return false;
-            return order.items.every(item =>
+if (!order.cart || !Array.isArray(order.cart)) return false;
+            return order.cart.every(item =>
                 typeof item.name === "string" && item.name !== "undefined" &&
                 typeof item.quantity === "number" && !isNaN(item.quantity) &&
                 typeof item.total === "number" && !isNaN(item.total)
@@ -165,14 +165,26 @@
                     return;
                 }
 
+                function isValidOrder(order) {
+  return order.cart && Array.isArray(order.cart) &&
+         order.cart.every(item => item.name && item.price);
+}
+
                 const fragment = document.createDocumentFragment();
-                validOrders
-                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+               validOrders
+    .sort((a, b) => b.timestamp.toMillis() - a.timestamp.toMillis())
+
                     .forEach(order => {
-                        const orderTime = new Date(order.timestamp).toLocaleString();
-                        const itemsListSummary = order.items.map(item => `${item.quantity}x ${item.name}`).join(", ");
-                        const itemsListFull = order.items.map(item => `<li class="text-white small">${item.quantity}x ${item.name} - GH₵${item.total.toFixed(2)}</li>`).join("");
-                        const subtotal = order.items.reduce((sum, item) => sum + item.total, 0);
+const orderTime = order.timestamp.toDate().toLocaleString();
+                        const itemsListSummary = order.cart.map(item => `${item.quantity}x ${item.name}`).join(", ");
+const itemsListFull = order.cart.map(item => {
+  const itemTotal = typeof item.total === "number" ? item.total.toFixed(2) : (item.price * item.quantity).toFixed(2);
+  return `<li class="text-white small">${item.quantity}x ${item.name} - GH₵${itemTotal}</li>`;
+}).join("");
+const subtotal = order.cart.reduce((sum, item) => {
+  const itemTotal = typeof item.total === "number" ? item.total : item.price * item.quantity;
+  return sum + itemTotal;
+}, 0);
                         const processingFee = order.processingFee || 2.00;
                         const deliveryFee = order.deliveryFee || 3.00;
                         const total = order.totalAmount || (subtotal + processingFee + deliveryFee);
@@ -219,5 +231,7 @@
     <script defer>
         (function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d1baa34989bfc0',t:'MTc0Njc5OTI4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
     </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+
 </body>
 </html>
