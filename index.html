@@ -1157,53 +1157,37 @@ setTimeout(() => {
         });
     </script>
     <script>
-        let deferredPrompt;
-    
-        function isAndroidChrome() {
-            const ua = window.navigator.userAgent;
-            const isAndroid = /Android/.test(ua);
-            const isChrome = /Chrome/.test(ua) && !/Edge/.test(ua);
-            const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
-            return isAndroid && isChrome && !isStandalone;
-        }
-    
-        function closeAndroidPrompt() {
-    document.getElementById('android-install-prompt').style.display = 'none';
-    document.getElementById('install-blur-overlay').classList.remove('active');
-}
+    let deferredPrompt;
 
-    
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            if (isAndroidChrome()) {
-                setTimeout(() => {
-                   const prompt = document.getElementById('android-install-prompt');
-const overlay = document.getElementById('install-blur-overlay');
-prompt.style.display = 'block';
-setTimeout(() => {
-    prompt.classList.add('visible');
-    overlay.classList.add('active');
-}, 10);
+    function isAndroidChrome() {
+        const ua = window.navigator.userAgent;
+        const isAndroid = /Android/i.test(ua);
+        const isChrome = /Chrome/i.test(ua) && !/Edge/i.test(ua);
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        return isAndroid && isChrome && !isStandalone;
+    }
 
-                }, 2000);
-            }
-        });
-    
-        window.addEventListener('load', () => {
-            if (isAndroidChrome() && deferredPrompt) {
-                setTimeout(() => {
-                    const prompt = document.getElementById('android-install-prompt');
-const overlay = document.getElementById('install-blur-overlay');
-prompt.style.display = 'block';
-setTimeout(() => {
-    prompt.classList.add('visible');
-    overlay.classList.add('active');
-}, 10);
-                }, 2000);
-            }
-        });
-    </script>
+    function closeAndroidPrompt() {
+        document.getElementById('android-install-prompt').style.display = 'none';
+        document.getElementById('install-blur-overlay').classList.remove('active');
+    }
+
+    window.addEventListener('load', () => {
+    if (isAndroidChrome()) {
+        setTimeout(() => {
+            const prompt = document.getElementById('android-install-prompt');
+            const overlay = document.getElementById('install-blur-overlay');
+            prompt.style.display = 'block';
+            setTimeout(() => {
+                prompt.classList.add('visible');
+                overlay.classList.add('active');
+            }, 10);
+        }, 10); // Matches iOS timing
+    }
+});
+
+</script>
+
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93784c4a5c7e678a',t:'MTc0NTg2MTUzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9378aae7d831bfb0',t:'MTc0NTg2NTQxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9378f4460ae77221',t:'MTc0NTg2ODQxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
