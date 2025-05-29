@@ -505,47 +505,46 @@ const elements = {
     totalPrice: document.getElementById("total-price")
 };
 
+// ✅ Login check using your localStorage logic
 const isLoggedIn = () => {
-    return Boolean(localStorage.getItem("user")); // Replace with Firebase Auth if needed
+    return localStorage.getItem("isLoggedIn") === "true";
 };
 
-const showToast = (htmlContent, type = "success") => {
+// ✅ NORMAL TOAST — simple top-of-screen for general notifications
+const showToast = (message, type = "success") => {
     const toast = elements.toast;
-    toast.innerHTML = htmlContent;
+    toast.innerHTML = `<span id="toast-message">${message}</span>`;
     toast.className = `toast-container ${type}`;
 
+    // Reset to top-positioned styling
     Object.assign(toast.style, {
-        position: "fixed",
-        top: "50%",
+        top: "20px",
         left: "50%",
-        transform: "translate(-50%, -50%) scale(0.95)",
-        width: "calc(100vw - 40px)",
-        maxWidth: "340px",
+        bottom: "auto",
+        transform: "translateX(-50%)",
+        width: "auto",
+        maxWidth: "90vw",
         textAlign: "center",
-        background: "rgba(245, 245, 245, 0.12)",
+        background: type === "error" ? "rgba(220, 53, 69, 0.9)" :
+                    type === "success" ? "rgba(40, 167, 69, 0.9)" :
+                    "rgba(0,0,0,0.85)",
         color: "#fff",
-        border: "1px solid rgba(255,255,255,0.08)",
-        boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        padding: "22px 20px",
-        borderRadius: "20px",
+        padding: "10px 15px",
+        borderRadius: "10px",
+        boxShadow: "0 5px 15px rgba(0,0,0,0.3)",
+        fontSize: "0.9rem",
+        zIndex: "1000",
         opacity: "0",
-        zIndex: "9999",
-        pointerEvents: "auto",
         display: "block",
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
-        transition: "opacity 0.35s ease, transform 0.35s ease"
+        transition: "opacity 0.3s ease-out"
     });
 
     requestAnimationFrame(() => {
         toast.style.opacity = "1";
-        toast.style.transform = "translate(-50%, -50%) scale(1)";
     });
 
     setTimeout(() => {
         toast.style.opacity = "0";
-        toast.style.transform = "translate(-50%, -50%) scale(0.95)";
     }, 5000);
 
     setTimeout(() => {
@@ -554,8 +553,11 @@ const showToast = (htmlContent, type = "success") => {
     }, 5300);
 };
 
-const promptLogin = () => {
-    showToast(`
+// ✅ APPLE-STYLE TOAST — used only for login prompts
+const showLoginPrompt = () => {
+    const toast = elements.toast;
+
+    toast.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
             <span style="
                 font-size: 1.05rem;
@@ -581,7 +583,52 @@ const promptLogin = () => {
                 font-family: inherit;
             " onclick="window.location.href='login.html'">Log In</button>
         </div>
-    `, "error");
+    `;
+
+    toast.className = `toast-container error`;
+
+    Object.assign(toast.style, {
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%) scale(0.95)",
+        width: "calc(100vw - 40px)",
+        maxWidth: "340px",
+        background: "rgba(245, 245, 245, 0.12)",
+        color: "#fff",
+        border: "1px solid rgba(255,255,255,0.08)",
+        boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        padding: "22px 20px",
+        borderRadius: "20px",
+        zIndex: "9999",
+        pointerEvents: "auto",
+        display: "block",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
+        opacity: "0",
+        transition: "opacity 0.35s ease, transform 0.35s ease"
+    });
+
+    requestAnimationFrame(() => {
+        toast.style.opacity = "1";
+        toast.style.transform = "translate(-50%, -50%) scale(1)";
+    });
+
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translate(-50%, -50%) scale(0.95)";
+    }, 5000);
+
+    setTimeout(() => {
+        toast.innerHTML = "";
+        toast.style.display = "none";
+    }, 5300);
+};
+
+// ✅ USE THIS WHEN USER IS NOT LOGGED IN AND TRIES TO ORDER
+const promptLogin = () => {
+    showLoginPrompt();
 };
 
 
