@@ -28,14 +28,31 @@
 
         const deviceId = localStorage.getItem("deviceId");
 
+const deliveryFee = getDeliveryFee(persistentDetails.hostel || "Hostel A");
+const subtotal = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+const baseAmount = subtotal + 2 + deliveryFee;
+
+let discountAmount = 0;
+if (window.appliedDiscount?.appliesTo) {
+  const applyBase = window.appliedDiscount.appliesTo === "delivery" ? deliveryFee : subtotal + 2;
+  discountAmount = window.appliedDiscount.type === "percent"
+    ? (window.appliedDiscount.value / 100) * applyBase
+    : Math.min(window.appliedDiscount.value, applyBase);
+}
+
+const totalAmount = baseAmount - discountAmount;
+
 await addDoc(collection(db, "orders"), {
   cart: sanitizedCart,
   deliveryDetails: persistentDetails,
+  deliveryFee: deliveryFee,
+  processingFee: 2.00,
+  totalAmount: totalAmount,
   status: "pending",
   timestamp: new Date(),
   discount: window.appliedDiscount?.code || null,
   restaurantId: sanitizedCart[0]?.restaurantId || "unknown",
-  deviceId // ✅ this is what orders.html filters on
+  deviceId
 });
 
 
@@ -594,11 +611,7 @@ window.firebaseExports = {
         }
         return deviceId;
     };
-    let deliveryFees = [
-        { id: "hostel_b", name: "Hostel B", fee: 3.00 },
-        { id: "hostel_a", name: "Hostel A", fee: 4.00 },
-        { id: "hostel_c", name: "Hostel C", fee: 5.00 }
-    ];
+    let deliveryFees = [];
     let deliveryFeesCache = null;
     const fetchDeliveryFees = async () => {
     if (deliveryFeesCache) return deliveryFeesCache;
@@ -621,10 +634,12 @@ deliveryFees.sort((a, b) => customOrder.indexOf(a.name) - customOrder.indexOf(b.
         return deliveryFees;
     }
 };
-   const getDeliveryFee = (hostelName) => {
-        const hostel = deliveryFees.find(h => h.name === hostelName) || deliveryFees[0];
-        return hostel.fee;
-    };
+  const getDeliveryFee = (hostelName) => {
+    const hostel = deliveryFees.find(h => h.name === hostelName) || deliveryFees[0];
+    return hostel.fee;
+};
+window.getDeliveryFee = getDeliveryFee;
+
 
 let appliedDiscount = null;
 window.appliedDiscount = appliedDiscount;
@@ -712,10 +727,12 @@ const finalTotal = subtotal + 2 + deliveryFee - discountAmount;
                 <label for="delivery-contact">Active Contact Number</label>
                 <input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number" maxlength="10" pattern="\d{10}" inputmode="numeric" required><br><br>
                 <label for="delivery-note">Note to Restaurant (Optional)</label>
-                <textarea id="delivery-note" placeholder="Add any special instructions for the restaurant" rows="3">${persistentDetails.note || ""}</textarea>
+                <textarea id="delivery-note" placeholder="Add note for restaurant" rows="2">${persistentDetails.note || ""}</textarea>
                 <label for="discount-code">Discount Code</label>
   <input type="text" id="discount-code" placeholder="Enter promo code">
-  <button class="btn btn-secondary w-100 mt-2" id="apply-discount-btn">Apply</button>
+<button class="btn w-100 mt-2" id="apply-discount-btn" style="background: #00c8ff; color: white;">
+  Apply
+</button>
   <p id="discount-feedback" style="margin-top: 5px; font-size: 0.9rem;"></p>
                 </div>
            <div class="order-summary">
