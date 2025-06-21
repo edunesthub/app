@@ -8,60 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>Chawp</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: #2c2c2c;
-      font-family: 'Poppins', sans-serif;
-      color: #fff;
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-    #splash {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #2c2c2c;
-    }
-    .logo {
-      font-family: Impact, sans-serif;
-      font-size: 4rem;
-      font-weight: 590;
-      color: #2596be;
-      text-transform: uppercase;
-      transform: scaleY(1.5);
-      letter-spacing: -0.02em;
-      margin-bottom: 20px;
-    }
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #00c8ff;
-      border-top: 4px solid transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      display: none; /* HIDDEN by default */
-    }
-    .message {
-      margin-top: 15px;
-      font-size: 1rem;
-      font-weight: 500;
-      color: #fff;
-      text-align: center;
-      display: none; /* HIDDEN by default */
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
-</head>
+<link rel="stylesheet" href="css/loading.css"></head>
 <body>
   <div id="splash">
     <div class="logo">CHAWP</div>
@@ -76,37 +23,7 @@
     <p class="message">Please enable JavaScript to continue using Chawp.</p>
   </noscript>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
-      authDomain: "von600-7982d.firebaseapp.com",
-      projectId: "von600-7982d",
-      storageBucket: "von600-7982d.appspot.com",
-      messagingSenderId: "164591218045",
-      appId: "1:164591218045:web:afe17512e16573e7903014",
-      measurementId: "G-E69DMPLXBK"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    window.addEventListener("load", () => {
-      if (!navigator.onLine) {
-        document.getElementById("loader").style.display = "block";
-        document.getElementById("offline-msg").style.display = "block";
-        return;
-      }
-
-      onAuthStateChanged(auth, (user) => {
-        window.location.replace(user ? "/index.html" : "/login.html");
-      });
-    });
-
-    window.addEventListener("online", () => window.location.reload());
-  </script>
+  <script type="module" src="js/loading.js"></script>
 
   <script src="/update-check.js"></script>
 </body>
