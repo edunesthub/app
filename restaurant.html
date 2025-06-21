@@ -56,7 +56,51 @@
 
 
 
-<script></script>
+<script>
+    // Slow network detection
+    function showSlowNetworkToast() {
+      // Only show if online
+      if (!navigator.onLine) return;
+  
+      const toastContainer = document.createElement('div');
+      toastContainer.id = 'slow-network-toast';
+      toastContainer.className = 'toast-container';
+      toastContainer.style.background = 'rgba(255, 152, 0, 0.9)'; // Orange for warning
+      toastContainer.style.zIndex = '1001'; // Above other toasts
+      toastContainer.innerHTML = '<span>Slow Network Detected...</span>';
+      document.body.appendChild(toastContainer);
+  
+      // Show toast
+      toastContainer.classList.add('show');
+      
+      // Auto-hide after 7 seconds
+      setTimeout(() => {
+        toastContainer.classList.remove('show');
+        toastContainer.classList.add('hide');
+        setTimeout(() => {
+          toastContainer.remove();
+        }, 300);
+      }, 7000);
+    }
+  
+    // Check network speed
+    if ('connection' in navigator) {
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const slowNetworks = ['2g', '3g', 'slow-2g', '4g'];
+  
+      // Initial check
+      if (navigator.onLine && slowNetworks.includes(connection.effectiveType)) {
+        showSlowNetworkToast();
+      }
+  
+      // Listen for network changes
+      connection.addEventListener('change', () => {
+        if (navigator.onLine && slowNetworks.includes(connection.effectiveType)) {
+          showSlowNetworkToast();
+        }
+      });
+    }
+  </script>
 
 
   <script src="/update-check.js"></script>
