@@ -158,6 +158,141 @@
 
     <script type="module" src="js/index.js"></script>
 
+<script>
+if ('serviceWorker' in navigator) {
+  let refreshing = false;
+
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').then(reg => {
+      console.log('✅ Service Worker registered:', reg);
+
+      reg.onupdatefound = () => {
+        const newWorker = reg.installing;
+        newWorker.onstatechange = () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // New update available
+            showUpdateToast(newWorker);
+          }
+        };
+      };
+    }).catch(err => console.error('❌ SW registration failed:', err));
+  });
+
+  // Reload when the new service worker takes control
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      window.location.reload();
+      refreshing = true;
+    }
+  });
+}
+
+function showUpdateToast(worker) {
+  const toast = document.createElement('div');
+  toast.textContent = '🔄 New version available. Tap to refresh.';
+  toast.style = `
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #f9fafb;
+    padding: 14px 24px;
+    border-radius: 9999px;
+    font-size: 15px;
+    font-weight: 500;
+    z-index: 10000;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: translate(-50%, 20px);
+    transition: all 0.3s ease-in-out;
+  `;
+
+  document.body.appendChild(toast);
+
+  // Animate in
+  setTimeout(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translate(-50%, 0)';
+  }, 100);
+
+  toast.onclick = () => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%, 20px)';
+    worker.postMessage({ action: 'skipWaiting' });
+  };
+}
+
+  document.body.appendChild(toast);
+
+</script>
+
+
+    <script>
+        function isIosSafari() {
+            const ua = window.navigator.userAgent;
+            const isIOS = /iPad|iPhone|iPod/.test(ua);
+            const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+            const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+
+            return isIOS && isSafari && !isStandalone;
+        }
+
+        function closePrompt() {
+    document.getElementById('ios-install-prompt').style.display = 'none';
+    document.getElementById('install-blur-overlay').classList.remove('active');
+}
+
+
+        // Defer iOS prompt to reduce initial load impact
+        window.addEventListener('load', () => {
+            if (isIosSafari()) {
+                setTimeout(() => {
+                    const prompt = document.getElementById('ios-install-prompt');
+                    const overlay = document.getElementById('install-blur-overlay');
+prompt.style.display = 'block';
+setTimeout(() => {
+    prompt.classList.add('visible');
+    overlay.classList.add('active');
+}, 10);
+
+                }, 10); // Delayed to prioritize content rendering
+            }
+        });
+    </script>
+    <script>
+    let deferredPrompt;
+
+    function isAndroidChrome() {
+        const ua = window.navigator.userAgent;
+        const isAndroid = /Android/i.test(ua);
+        const isChrome = /Chrome/i.test(ua) && !/Edge/i.test(ua);
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        return isAndroid && isChrome && !isStandalone;
+    }
+
+    function closeAndroidPrompt() {
+        document.getElementById('android-install-prompt').style.display = 'none';
+        document.getElementById('install-blur-overlay').classList.remove('active');
+    }
+
+    window.addEventListener('load', () => {
+    if (isAndroidChrome()) {
+        setTimeout(() => {
+            const prompt = document.getElementById('android-install-prompt');
+            const overlay = document.getElementById('install-blur-overlay');
+            prompt.style.display = 'block';
+            setTimeout(() => {
+                prompt.classList.add('visible');
+                overlay.classList.add('active');
+            }, 10);
+        }, 10); // Matches iOS timing
+    }
+});
+
+</script>
+
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93784c4a5c7e678a',t:'MTc0NTg2MTUzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9378aae7d831bfb0',t:'MTc0NTg2NTQxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9378f4460ae77221',t:'MTc0NTg2ODQxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
