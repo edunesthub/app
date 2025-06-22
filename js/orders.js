@@ -1,31 +1,31 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+  authDomain: "von600-7982d.firebaseapp.com",
+  projectId: "von600-7982d",
+  storageBucket: "von600-7982d.appspot.com",
+  messagingSenderId: "164591218045",
+  appId: "1:164591218045:web:afe17512e16573e7903014",
+  measurementId: "G-E69DMPLXBK"
+};
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
-            authDomain: "von600-7982d.firebaseapp.com",
-            projectId: "von600-7982d",
-            storageBucket: "von600-7982d.appspot.com",
-            messagingSenderId: "164591218045",
-            appId: "1:164591218045:web:afe17512e16573e7903014",
-            measurementId: "G-E69DMPLXBK"
-        };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const ordersList = document.getElementById("orders-list");
+const noOrdersMessage = document.getElementById("no-orders-message");
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const ordersList = document.getElementById("orders-list");
+const getDeviceId = (() => {
+  let deviceId = localStorage.getItem("deviceId");
+  if (!deviceId) {
+    deviceId = "device_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
+    localStorage.setItem("deviceId", deviceId);
+  }
+  return () => deviceId;
+})();
 
-        const getDeviceId = (() => {
-            let deviceId = localStorage.getItem("deviceId");
-            if (!deviceId) {
-                deviceId = "device_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
-                localStorage.setItem("deviceId", deviceId);
-            }
-            return () => deviceId;
-        })();
-
-        const isValidOrder = (order) => {
+const isValidOrder = (order) => {
   if (!order.cart || !Array.isArray(order.cart)) return false;
   return order.cart.every(item =>
     typeof item.name === "string" && item.name !== "undefined" &&
@@ -34,34 +34,33 @@
   );
 };
 
+const getStatusText = (status) => {
+  switch (status) {
+    case "pending": return "Order Confirmed";
+    case "being_delivered": return "In Transit";
+    case "delivered": return "Delivered!";
+    case "not_delivered": return "Delivery Failed";
+    default: return "Unknown";
+  }
+};
 
-        const getStatusText = (status) => {
-            switch (status) {
-                case "pending": return "Order Confirmed";
-                case "being_delivered": return "In Transit";
-                case "delivered": return "Delivered!";
-                case "not_delivered": return "Delivery Failed";
-                default: return "Unknown";
-            }
-        };
-
-        const loadOrders = () => {
+const loadOrders = () => {
   const deviceId = getDeviceId();
   const ordersRef = collection(db, "orders");
   const q = query(ordersRef, where("deviceId", "==", deviceId));
 
   onSnapshot(q, (querySnapshot) => {
-    if (querySnapshot.empty) {
-      ordersList.innerHTML = "<p class='text-center text-white'>No orders yet... ei, una no dey hung?</p>";
-      return;
-    }
-
     const validOrders = querySnapshot.docs
       .map(doc => ({ id: doc.id, ...doc.data() }))
       .filter(order => isValidOrder(order));
 
+    // Show/hide the no-orders message
+    if (noOrdersMessage) {
+      noOrdersMessage.style.display = validOrders.length ? "none" : "block";
+    }
+
     if (!validOrders.length) {
-      ordersList.innerHTML = "<p class='text-center text-white'>No valid orders yet.</p>";
+      ordersList.querySelectorAll(".order-box").forEach(el => el.remove());
       return;
     }
 
@@ -82,7 +81,6 @@
       .forEach(order => {
         const orderTime = order.timestamp.toDate().toLocaleString();
 
-        // 🔥 Group identical items!
         const groupedCart = groupCartItems(order.cart);
 
         const itemsListSummary = groupedCart.map(item => `${item.quantity}x ${item.name}`).join(", ");
@@ -130,14 +128,13 @@
         fragment.appendChild(orderDiv);
       });
 
-    ordersList.innerHTML = "";
+    ordersList.querySelectorAll(".order-box").forEach(el => el.remove());
     ordersList.appendChild(fragment);
   }, (error) => {
     console.error("Error loading orders:", error);
-    ordersList.innerHTML = "<p class='text-center text-white'>Error loading orders.</p>";
+    if (noOrdersMessage) noOrdersMessage.style.display = "block";
   });
 };
 
-        loadOrders();
-        feather.replace();
-    
+loadOrders();
+feather.replace();
