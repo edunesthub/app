@@ -1,76 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="description" content="VON">
-    <meta name="author" content="VON">
-    <link rel="icon" type="image/png" href="img/icon-192x192.png">
-    <title>Chawp</title>
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="vendor/icons/feather.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-        <link rel="stylesheet" href="css/orders.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="VON">
+  <meta name="author" content="VON">
+  <link rel="icon" type="image/png" href="img/icon-192x192.png">
+  <title>Chawp</title>
+
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="vendor/icons/feather.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/orders.css">
 </head>
 <body class="fixed-bottom-bar">
-    <div class="osahan-checkout">
-        <div class="bg-ash border-bottom p-3 d-flex align-items-center fixed-top" style="z-index: 1040;">
-            <h4 class="fw-bold m-0 text-white"><i class="feather-list me-2"></i>My Orders</h4>
-        </div>
-        
-        <div class="container py-5">
-            <div id="orders-list">
-                <div class="loading-placeholder"></div>
-                <div class="loading-placeholder"></div>
-            </div>
-        </div>
-    </div>
-    <div class="osahan-menu-fotter fixed-bottom bg-darks px-3 py-2 text-center">
-        <div class="row">
-            <div class="col">
-                <div class="footer-item">
-                    <a href="index.html" class="text-white small fw-bold text-decoration-none">
-                        <p class="h4 m-0"><i class="feather-map-pin text-white"></i></p>Trending
-                    </a>
-                </div>
-            </div>
-            <div class="col">
-                <div class="footer-item">
-                    <a href="home.html" class="text-white small fw-bold text-decoration-none">
-                        <p class="h4 m-0"><i class="feather-home text-white"></i></p>Home
-                    </a>
-                </div>
-            </div>
-            <div class="col">
-                <div class="footer-item">
-                    <a href="cart.html" class="text-white small fw-bold text-decoration-none">
-                        <p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart
-                    </a>
-                </div>
-            </div>
-            <div class="col">
-                <div class="footer-item selected">
-                    <a href="orders.html" class="text-white small fw-bold text-decoration-none">
-                        <p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders
-                    </a>
-                </div>
-            </div>
-            <div class="col">
-                <div class="footer-item">
-                    <a href="profile.html" class="text-white small fw-bold text-decoration-none">
-                        <p class="h4 m-0"><i class="feather-user"></i></p>Profile
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script type="module" src="js/orders.js"></script>
-    <script defer>
-        (function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d1baa34989bfc0',t:'MTc0Njc5OTI4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
-    </script>
-    <script src="https://unpkg.com/feather-icons"></script>
+  <div class="osahan-checkout">
+    <header class="modern-header">
+      <h4><i class="feather-shopping-bag me-2"></i>My Orders</h4>
+    </header>
 
+    <div class="container py-5">
+      <div id="orders-list" class="animated-orders text-center">
+        <div class="no-orders">
+          <i class="feather-shopping-bag icon"></i>
 
+          <br><br>
+          <h2>No Orders Yet</h2>
+          <h6>Why you no dey hung?</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="osahan-menu-fotter fixed-bottom bg-darks px-3 py-2 text-center">
+    <div class="row">
+      <div class="col">
+        <div class="footer-item">
+          <a href="index.html" class="text-white small fw-bold text-decoration-none">
+            <p class="h4 m-0"><i class="feather-map-pin text-white"></i></p>Trending
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <div class="footer-item">
+          <a href="home.html" class="text-white small fw-bold text-decoration-none">
+            <p class="h4 m-0"><i class="feather-home text-white"></i></p>Home
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <div class="footer-item">
+          <a href="cart.html" class="text-white small fw-bold text-decoration-none">
+            <p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <div class="footer-item selected">
+          <a href="orders.html" class="text-white small fw-bold text-decoration-none">
+            <p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <div class="footer-item">
+          <a href="profile.html" class="text-white small fw-bold text-decoration-none">
+            <p class="h4 m-0"><i class="feather-user"></i></p>Profile
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/orders.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
   <script src="/update-check.js"></script>
 </body>
 </html>
