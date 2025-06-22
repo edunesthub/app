@@ -79,24 +79,24 @@ body {
 
 /* 📦 No orders yet message */
 .no-orders {
-  margin-top: 100px;
+  margin-top: 150px;
   text-align: center;
   color: #ccc;
   padding: 20px;
 }
 .no-orders .icon {
-  font-size: 72px;
+  font-size: 90px;
   opacity: 0.7;
   margin-bottom: 20px;
   color: #0098c2;
 }
 .no-orders h2 {
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 600;
   margin-bottom: 10px;
 }
-.no-orders p {
-  font-size: 16px;
+.no-orders h6 {
+  font-size: 20px;
   opacity: 0.85;
 }
 
@@ -115,21 +115,4 @@ body {
   }
 }
 
-/* 📱 Responsive adjustments */
-@media (max-width: 600px) {
-  .modern-header h4 {
-    font-size: 20px;
-  }
 
-  .no-orders .icon {
-    font-size: 60px;
-  }
-
-  .no-orders h2 {
-    font-size: 20px;
-  }
-
-  .no-orders p {
-    font-size: 15px;
-  }
-}
