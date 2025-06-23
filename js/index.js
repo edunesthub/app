@@ -1,4 +1,21 @@
 
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, query, orderBy, where, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+            authDomain: "von600-7982d.firebaseapp.com",
+            projectId: "von600-7982d",
+            storageBucket: "von600-7982d.appspot.com",
+            messagingSenderId: "164591218045",
+            appId: "1:164591218045:web:afe17512e16573e7903014",
+            measurementId: "G-E69DMPLXBK"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         // Check authentication state
     onAuthStateChanged(auth, (user) => {
@@ -21,19 +38,9 @@ if (isStandalone) {
         }
     });
     
-       async function fetchTrendingRestaurants() {
-  const trendingList = document.getElementById("trending-list");
-
-  try {
-    const response = await fetch("https://app-chawp.vercel.app/api/firebase");
-    const restaurants = await response.json();
-    renderRestaurants(restaurants, trendingList);
-  } catch (err) {
-    console.error("❌ Failed to load trending restaurants:", err);
-    trendingList.innerHTML = `<div class="text-white">Failed to load restaurants. Try again later.</div>`;
-  }
-}
-   
+        async function fetchTrendingRestaurants() {
+            const trendingList = document.getElementById("trending-list");
+            
             // Show skeleton UI after 500ms if no data yet
     let skeletonTimeout = setTimeout(() => {
         if (elements.trendingList.children.length === 0) {
