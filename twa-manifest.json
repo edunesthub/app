@@ -1,0 +1,51 @@
+{
+  "packageId": "me.chawp.app",
+  "host": "app.chawp.me",
+  "name": "Chawp",
+  "launcherName": "Chawp",
+  "display": "standalone",
+  "themeColor": "#2C2C2C",
+  "themeColorDark": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#000000",
+  "enableNotifications": true,
+  "startUrl": "/loading.html",
+  "iconUrl": "https://app.chawp.me/img/icon-512x512.png",
+  "maskableIconUrl": "https://app.chawp.me/img/icon-512x512.png",
+  "monochromeIconUrl": "https://app.chawp.me/img/icon-512x512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "C:\\Users\\von\\Documents\\GitHub\\app\\android.keystore",
+    "alias": "chawp"
+  },
+  "appVersionName": "2",
+  "appVersionCode": 2,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://app.chawp.me/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": true
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://app.chawp.me/",
+  "minSdkVersion": 21,
+  "orientation": "portrait",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "",
+  "appVersion": "2"
+}
