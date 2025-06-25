@@ -1106,9 +1106,11 @@ const setupAddToCartButtons = () => {
             }
         });
 
+        
         button.addEventListener("click", e => {
             e.stopPropagation();
 
+            
             if (!isRestaurantOpen) return;
 
             // ✅ Block unauthenticated users
@@ -1275,9 +1277,13 @@ document.getElementById("confirm-add").addEventListener("click", () => {
     });
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    elements.optionsPanel.classList.remove("show");
+        elements.optionsPanel.classList.remove("show");
+    elements.modalBackdrop.classList.remove("show");
+    document.getElementById("blur-backdrop")?.classList.remove("show");
+
     showToast(`${currentItem.name} added to cart!`, "success");
     updateCartButton();
+
 });
 
 
