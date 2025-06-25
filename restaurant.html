@@ -760,10 +760,10 @@
 }
 .modal-close-btn {
     position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 40px;
-    height: 40px;
+    top: 14px;
+    right: 14px;
+    width: 52px;
+    height: 52px;
     border: none;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.08);
@@ -775,18 +775,25 @@
     cursor: pointer;
     z-index: 999;
     transition: background 0.25s ease, transform 0.2s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.modal-close-btn svg {
+    stroke: #fff;
+    width: 28px;
+    height: 28px;
 }
 
 .modal-close-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.15);
     transform: scale(1.05);
 }
 
 .modal-close-btn:active {
+    background: rgba(255, 255, 255, 0.25);
     transform: scale(0.95);
-    background: rgba(255, 255, 255, 0.18);
 }
+
 
 
     
@@ -819,11 +826,11 @@
         <div id="modal-drag-handle"></div>
         <h5 id="options-title"></h5>
        <button id="close-panel" class="modal-close-btn" aria-label="Close">
-  <svg viewBox="0 0 24 24" width="28" height="28" stroke-width="2.8" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
+  <svg viewBox="0 0 24 24" width="34" height="34" stroke-width="2.4" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 6l12 12M6 18L18 6" />
   </svg>
 </button>
+
 
 
         <div id="size-group" class="option-group">
