@@ -418,8 +418,172 @@
                 min-width: 160px;
             }
         }
+.options-panel {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    background: #1e1e1e;
+    padding: 20px 16px 28px;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -15px 30px rgba(0,0,0,0.45);
+    transition: bottom 0.35s ease;
+    z-index: 20;
+    max-height: 85vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    backdrop-filter: blur(10px);
+}
 
-        
+.options-panel h5 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 18px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.option-group {
+    margin-bottom: 22px;
+}
+
+.option-group h6 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.option-group .instructions {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.option-group label {
+    background: #292929;
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    transition: background 0.2s ease;
+}
+
+.option-group label:hover {
+    background: #353535;
+}
+
+.option-group input[type="radio"],
+.option-group input[type="checkbox"] {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.option-group label span {
+    font-size: 0.88rem;
+}
+
+.option-group label .price {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #aaa;
+}
+
+.extra-quantity {
+    background: #292929;
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.extra-label {
+    flex: 1;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #eee;
+}
+
+.extra-quantity-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0;
+}
+
+.extra-quantity .count {
+    width: 20px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #fff;
+}
+
+.note-input {
+    border-radius: 12px;
+    background: #292929;
+    padding: 12px;
+    font-size: 0.9rem;
+    margin-bottom: 14px;
+}
+
+.total-price {
+    background: #222;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    padding: 12px;
+    margin-bottom: 16px;
+    font-weight: 700;
+    text-align: center;
+    color: #fff;
+}
+
+.confirm-btn {
+    background: linear-gradient(to right, #007aff, #0051d4);
+    font-size: 1.05rem;
+    border-radius: 14px;
+    padding: 14px;
+    font-weight: 700;
+    transition: background 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+}
+
+.confirm-btn:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+}
+
+    .quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #1e1e1e;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.extra-quantity {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #292929;
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+    
+    
     </style>
     <script defer src="https://unpkg.com/feather-icons"></script>
 </head>
@@ -455,7 +619,6 @@
             <div class="instructions">Select any extras you’d like, and adjust the quantity.</div>
             <div id="extra-options"></div>
         </div>
-        <textarea id="vendor-note" class="note-input" placeholder="Add a note (e.g., no onions)"></textarea>
         <div class="total-price" id="total-price">Total: GH₵0.00</div>
         <button id="confirm-add" class="confirm-btn">Add to Cart</button>
     </div>
@@ -754,28 +917,75 @@ const showOptionsPanel = (item) => {
     elements.optionsTitle.textContent = item.name;
     elements.optionsPanel.classList.add("show");
 
-    // Populate sizes
-    elements.sizeOptions.innerHTML = item.sizes.map((size, index) => `
-        <label>
-            <input type="radio" name="size" value="${size.name}" ${index === 0 ? 'checked' : ''}>
-            <span>${size.name}</span>
-            <span class="price">GH₵${parseFloat(size.price).toFixed(2)}</span>
-        </label>
-    `).join("");
+    // Sizes logic
+    if (item.sizes && item.sizes.length > 0) {
+        elements.sizeGroup.style.display = "block";
+        elements.sizeOptions.innerHTML = item.sizes.map((size, index) => `
+            <label>
+                <input type="radio" name="size" value="${size.name}" data-price="${parseFloat(size.price)}" ${index === 0 ? 'checked' : ''}>
+                <span>${size.name}</span>
+                <span class="price">GH₵${parseFloat(size.price).toFixed(2)}</span>
+            </label>
+        `).join("");
+    } else {
+        elements.sizeGroup.style.display = "none";
+        elements.sizeOptions.innerHTML = "";
+    }
 
-    // Populate extras
-    elements.extraOptions.innerHTML = item.extras.map(extra => `
-        <label>
-            <input type="checkbox" value="${extra.name}">
-            <span>${extra.name}</span>
-            <span class="price">GH₵${parseFloat(extra.price).toFixed(2)}</span>
-        </label>
-    `).join("");
+    // Extras logic
+    if (item.extras && item.extras.length > 0) {
+        elements.extraGroup.style.display = "block";
+        elements.extraOptions.innerHTML = item.extras.map(extra => `
+    <div class="extra-quantity" data-name="${extra.name}" data-price="${parseFloat(extra.price)}">
+        <span class="extra-label">${extra.name}</span>
+        <div class="quantity-controls">
+            <button class="extra-quantity-btn minus">−</button>
+            <span class="count">0</span>
+            <button class="extra-quantity-btn plus">+</button>
+        </div>
+        <span class="price">GH₵${parseFloat(extra.price).toFixed(2)}</span>
+    </div>
+`).join("");
 
-    elements.vendorNote.value = "";
-    elements.totalPrice.textContent = "Total: GH₵0.00";
+    } else {
+        elements.extraGroup.style.display = "none";
+        elements.extraOptions.innerHTML = "";
+    }
+
+    updateModalTotal();
+
+    // Events
+    document.querySelectorAll('input[name="size"]').forEach(radio => {
+        radio.addEventListener("change", updateModalTotal);
+    });
+
+    document.querySelectorAll(".extra-quantity-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const parent = e.target.closest(".extra-quantity");
+            const countSpan = parent.querySelector(".count");
+            let count = parseInt(countSpan.textContent);
+            if (e.target.classList.contains("plus")) count++;
+            if (e.target.classList.contains("minus") && count > 0) count--;
+            countSpan.textContent = count;
+            updateModalTotal();
+        });
+    });
 };
 
+const updateModalTotal = () => {
+    const sizeInput = document.querySelector('input[name="size"]:checked');
+    const sizePrice = sizeInput ? parseFloat(sizeInput.dataset.price) : currentItem.price;
+
+    let extrasTotal = 0;
+    document.querySelectorAll(".extra-quantity").forEach(extra => {
+        const count = parseInt(extra.querySelector(".count").textContent);
+        const price = parseFloat(extra.dataset.price);
+        extrasTotal += count * price;
+    });
+
+    const total = sizePrice + extrasTotal;
+    elements.totalPrice.textContent = `Total: GH₵${total.toFixed(2)}`;
+};
 
 const updateCartButton = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -789,34 +999,28 @@ const updateCartButton = () => {
 };
 
 document.getElementById("confirm-add").addEventListener("click", () => {
-    if (!currentItem) return;
-
-    // ✅ Block if not logged in
-    if (!isLoggedIn()) {
+    if (!currentItem || !isLoggedIn()) {
         promptLogin();
         return;
     }
 
     const selectedSize = document.querySelector('input[name="size"]:checked');
     const size = selectedSize ? selectedSize.value : null;
-    const sizePrice = selectedSize
-        ? parseFloat(selectedSize.closest("label").querySelector(".price").textContent.replace("GH₵", ""))
-        : 0;
+    const sizePrice = selectedSize ? parseFloat(selectedSize.dataset.price) : currentItem.price;
 
     const extras = [];
     let extrasTotal = 0;
-    document.querySelectorAll('#extra-options input[type="checkbox"]:checked').forEach(input => {
-        const label = input.closest("label");
-        const name = input.value;
-        const price = parseFloat(label.querySelector(".price").textContent.replace("GH₵", ""));
-        extras.push({ name, price });
-        extrasTotal += price;
+    document.querySelectorAll(".extra-quantity").forEach(extra => {
+        const count = parseInt(extra.querySelector(".count").textContent);
+        const name = extra.dataset.name;
+        const price = parseFloat(extra.dataset.price);
+        if (count > 0) {
+            extras.push({ name, price, quantity: count });
+            extrasTotal += price * count;
+        }
     });
 
-    const note = elements.vendorNote.value;
-
-    const basePrice = currentItem.price || 0;
-    const totalPrice = (sizePrice || basePrice) + extrasTotal;
+    const totalPrice = sizePrice + extrasTotal;
 
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     cart.push({
@@ -824,7 +1028,6 @@ document.getElementById("confirm-add").addEventListener("click", () => {
         name: currentItem.name,
         size,
         extras,
-        note,
         price: totalPrice,
         quantity: 1,
         restaurantId: restaurantId
@@ -839,6 +1042,31 @@ document.getElementById("confirm-add").addEventListener("click", () => {
 
 document.getElementById("close-panel").addEventListener("click", () => {
     elements.optionsPanel.classList.remove("show");
+});
+
+// Tap outside to close
+document.addEventListener("click", function(e) {
+    if (elements.optionsPanel.classList.contains("show")) {
+        const isInside = e.target.closest("#options-panel");
+        const isButton = e.target.closest(".menu-item, .add-to-cart");
+        if (!isInside && !isButton) {
+            elements.optionsPanel.classList.remove("show");
+        }
+    }
+});
+
+// Swipe down to close
+let startY = null;
+elements.optionsPanel.addEventListener("touchstart", e => {
+    startY = e.touches[0].clientY;
+});
+elements.optionsPanel.addEventListener("touchmove", e => {
+    if (startY === null) return;
+    const currentY = e.touches[0].clientY;
+    if (currentY - startY > 70) {
+        elements.optionsPanel.classList.remove("show");
+        startY = null;
+    }
 });
 
 
