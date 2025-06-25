@@ -738,6 +738,27 @@
     transform: scale(0.96);
     background: rgba(255, 255, 255, 0.18);
 }
+#blur-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    background: rgba(10, 10, 10, 0.3); /* dark glass tint */
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    will-change: opacity;
+}
+
+#blur-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 
     
     </style>
@@ -763,6 +784,8 @@
     <div id="closed-message" class="toast-container error" style="display: none; opacity: 1; z-index: 1000; position: fixed; bottom: 30px; top: auto; left: 50%; transform: translateX(-50%); width: 300px; text-align: center;">
         <span>This restaurant is currently closed. Please check back later!</span>
     </div>
+    <div id="blur-backdrop"></div>
+
     <div id="options-panel" class="options-panel">
         <div id="modal-drag-handle"></div>
         <h5 id="options-title"></h5>
@@ -773,7 +796,7 @@
             <div id="size-options"></div>
         </div>
         <div id="extra-group" class="option-group">
-            <h6>Add Extras</h6>
+            <h6>Add Extras (Optional)</h6>
             <div class="instructions">Select any extras you’d like, and adjust the quantity.</div>
             <div id="extra-options"></div>
         </div>
@@ -1080,6 +1103,8 @@ const showOptionsPanel = (item) => {
     currentItem = item;
     elements.optionsTitle.textContent = item.name;
     elements.optionsPanel.classList.add("show");
+    document.getElementById("blur-backdrop").classList.add("show");
+
 
 elements.viewCartBtn.classList.remove("show");
 elements.modalBackdrop.classList.add("show");
@@ -1216,6 +1241,8 @@ document.getElementById("confirm-add").addEventListener("click", () => {
 document.getElementById("close-panel").addEventListener("click", () => {
     elements.optionsPanel.classList.remove("show");
     elements.modalBackdrop.classList.remove("show");
+    document.getElementById("blur-backdrop").classList.remove("show");
+
     updateCartButton();
 });
 
@@ -1223,16 +1250,19 @@ document.getElementById("close-panel").addEventListener("click", () => {
 
 // Tap outside to close
 document.addEventListener("click", function(e) {
-    if (elements.optionsPanel.classList.contains("show")) {
-        const isInside = e.target.closest("#options-panel");
-        const isButton = e.target.closest(".menu-item, .add-to-cart");
-        if (!isInside && !isButton) {
-            elements.optionsPanel.classList.remove("show");
-            elements.modalBackdrop.classList.remove("show");
-            updateCartButton();
-        }
+    if (!elements.optionsPanel.classList.contains("show")) return;
+
+    const isInside = e.target.closest("#options-panel");
+    const isTrigger = e.target.closest(".menu-item, .add-to-cart");
+
+    if (!isInside && !isTrigger) {
+        elements.optionsPanel.classList.remove("show");
+        elements.modalBackdrop.classList.remove("show");
+        document.getElementById("blur-backdrop").classList.remove("show");
+        updateCartButton();
     }
 });
+
 
 
 
