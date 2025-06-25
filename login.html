@@ -7,11 +7,11 @@
   <meta name="theme-color" content="#1e1e1e" />
   <link rel="icon" href="img/icon-192x192.png" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="vendor/icons/feather.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.css" rel="stylesheet" />
   <style>
     :root {
       --primary: #007aff;
-      --bg: #121212;
+      --bg: #1e1e1e;
       --card: rgba(255, 255, 255, 0.08);
       --blur: blur(16px);
       --radius: 16px;
@@ -41,18 +41,6 @@
       padding: 1.5rem 1rem;
     }
 
-    .back-button {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      background: none;
-      border: none;
-      color: var(--primary);
-      font-size: 1.8rem;
-      cursor: pointer;
-      padding: 0.4rem;
-    }
-
     .login-container {
       width: 100%;
       background: var(--card);
@@ -60,6 +48,19 @@
       padding: 2rem 1.25rem;
       border-radius: var(--radius);
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .back-button {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 0.6rem;
+      z-index: 99999;
     }
 
     .form-group {
@@ -194,7 +195,11 @@
   </style>
 </head>
 <body>
-  <button class="back-button" onclick="history.back()"><i class="feather-arrow-left"></i></button>
+
+  <!-- BACK BUTTON with Feather Icon -->
+  <button class="back-button" id="back-btn" type="button">
+<i data-feather="chevron-left"></i>
+  </button>
 
   <div class="login-wrapper">
     <div class="login-container">
@@ -206,14 +211,11 @@
         <div class="form-group">
           <label for="password">Password</label>
           <input id="password" type="password" placeholder="••••••••" required />
-          <button type="button" class="password-toggle" id="toggle-password">
-            <i class="feather-eye"></i>
-          </button>
+          <button type="button" class="password-toggle" id="toggle-password">👁</button>
         </div>
         <button type="submit" class="btn-primary">
           <span class="button-text">Login</span>
           <span class="spinner"></span>
-          <i class="feather-arrow-right-circle"></i>
         </button>
         <p class="text-center">New? <a href="signup.html">Create account</a></p>
       </form>
@@ -222,11 +224,25 @@
 
   <div class="notification-container">
     <div id="notification" class="notification">
-      <i class="feather-check-circle"></i>
       <span id="notification-message"></span>
     </div>
   </div>
 
+  <!-- Your Firebase login logic -->
   <script type="module" src="login-script.js"></script>
+
+  <!-- Feather icons + back button logic -->
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script>
+    feather.replace();
+    const backBtn = document.getElementById("back-btn");
+    backBtn?.addEventListener("click", () => {
+      if (document.referrer && !document.referrer.includes(location.href)) {
+        history.back();
+      } else {
+        window.location.href = "/welcome.html";
+      }
+    });
+  </script>
 </body>
 </html>

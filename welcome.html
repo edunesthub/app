@@ -28,7 +28,6 @@
 
     .wrapper {
       width: 100%;
-      max-width: 420px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -37,11 +36,11 @@
 
     .image-container {
       width: 100%;
-      height: 300px;
-      border-radius: 28px;
+      height: 260px;
+      border-radius: 22px;
       overflow: hidden;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
-      margin-bottom: 2.2rem;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+      margin-bottom: 2rem;
     }
 
     .image-container img {
@@ -52,9 +51,9 @@
     }
 
     .tagline {
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       text-align: center;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
       color: #eeeeee;
       line-height: 1.5;
       min-height: 3.5rem;
@@ -74,7 +73,7 @@
 
     .btn {
       padding: 1rem 1.2rem;
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 600;
       border-radius: 14px;
       border: none;
@@ -112,6 +111,18 @@
     @keyframes taglineIn {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* MOBILE-ONLY: Restrict layout to small screens */
+    @media (min-width: 600px) {
+      .wrapper {
+        max-width: 100%;
+        padding: 0 1rem;
+      }
+
+      .image-container {
+        height: 260px;
+      }
     }
   </style>
 </head>
@@ -154,7 +165,7 @@
     });
 
     // Tagline Slider w/ Soft-Life Vibes
-     const taglines = [
+    const taglines = [
       "Abi you dey hung?",
       "Look fast and chawp!",
       "Fufu? Fried rice? We got you."
@@ -171,7 +182,7 @@
         el.textContent = taglines[current];
         el.classList.remove("out");
       }, 400);
-    }, 3500);
+    }, 2100);
   </script>
 </body>
 </html>
