@@ -335,30 +335,64 @@
             from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
             to { transform: translateX(-50%) translateY(0); opacity: 1; }
         }
-        .view-cart-btn {
-            position: fixed;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #007aff;
-            color: #fff;
-            padding: 12px 40px;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: 600;
-            text-decoration: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            display: none;
-            min-width: 180px;
-            text-align: center;
-        }
-        .view-cart-btn.show {
-            display: block;
-        }
-        .view-cart-btn:hover {
-            background: #005bb5;
-            transform: translateX(-50%) scale(1.05);
-        }
+        ..view-cart-btn {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(to right, #007aff, #0051d4);
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+    z-index: 30;
+    min-width: 200px;
+    text-align: center;
+    display: none;
+    animation: bounceInUp 0.45s ease;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.view-cart-btn:hover {
+    transform: translateX(-50%) scale(1.05);
+    background: linear-gradient(to right, #0063d1, #003ea1);
+}
+
+.view-cart-btn:active {
+    transform: translateX(-50%) scale(0.97);
+}
+
+@keyframes bounceInUp {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 100%);
+    }
+    60% {
+        opacity: 1;
+        transform: translate(-50%, -10%);
+    }
+    80% {
+        transform: translate(-50%, 5%);
+    }
+    100% {
+        transform: translate(-50%, 0%);
+    }
+}
+
+.cart-badge {
+    display: inline-block;
+    background: white;
+    color: #007aff;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+}
+
         .back-arrow {
             position: absolute;
             top: 15px;
@@ -1124,21 +1158,15 @@ const updateModalTotal = () => {
 const updateCartButton = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     const cartBtn = elements.viewCartBtn;
-    const cartBadge = document.getElementById("cart-badge");
 
     if (cart.length > 0) {
         const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
         const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-        cartBtn.textContent = `View Cart - GH₵${totalPrice.toFixed(2)}`;
-        cartBtn.appendChild(cartBadge);
+        cartBtn.innerHTML = `Checkout - GH₵${totalPrice.toFixed(2)} <span class="cart-badge">${itemCount}</span>`;
         cartBtn.classList.add("show");
-
-        cartBadge.textContent = itemCount;
-        cartBadge.style.display = "inline-block";
     } else {
         cartBtn.classList.remove("show");
-        cartBadge.style.display = "none";
     }
 };
 
@@ -1206,64 +1234,6 @@ document.addEventListener("click", function(e) {
     }
 });
 
-let startY = null;
-let currentY = null;
-let translateY = 0;
-let isDragging = false;
-
-const panel = elements.optionsPanel;
-
-panel.addEventListener("touchstart", (e) => {
-    if (e.touches.length !== 1) return;
-    startY = e.touches[0].clientY;
-    currentY = startY;
-    translateY = 0;
-    isDragging = true;
-
-    panel.style.transition = "none";
-    panel.classList.add("dragging");
-});
-
-panel.addEventListener("touchmove", (e) => {
-    if (!isDragging) return;
-    currentY = e.touches[0].clientY;
-    translateY = Math.max(0, currentY - startY);
-    panel.style.transform = `translateY(${translateY}px)`;
-});
-
-panel.addEventListener("touchend", () => {
-    if (!isDragging) return;
-
-    panel.classList.remove("dragging");
-    panel.style.transition = "transform 0.35s ease";
-
-    const velocity = translateY; // crude but works
-    const threshold = 80;
-
-    if (velocity > threshold) {
-        // Dismiss modal smoothly
-        panel.style.transform = `translateY(100%)`;
-        setTimeout(() => {
-            panel.classList.remove("show");
-            panel.style.transform = "";
-            panel.style.transition = "";
-            elements.modalBackdrop.classList.remove("show");
-            updateCartButton();
-        }, 300);
-    } else {
-        // Snap back to top
-        panel.style.transform = `translateY(0)`;
-        setTimeout(() => {
-            panel.style.transition = "";
-            panel.style.transform = "";
-        }, 350);
-    }
-
-    isDragging = false;
-    startY = null;
-    currentY = null;
-    translateY = 0;
-});
 
 
 const loadMenuLive = async () => {
