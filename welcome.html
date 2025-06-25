@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#2c2c2c" />
+  <title>Welcome</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: #2c2c2c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    .image-container {
+      width: 100%;
+      height: 300px;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+      margin-bottom: 2.2rem;
+    }
+
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .tagline {
+      font-size: 1.3rem;
+      text-align: center;
+      margin-bottom: 2.5rem;
+      color: #eeeeee;
+      line-height: 1.5;
+      min-height: 3.5rem;
+      animation: taglineIn 0.6s ease forwards;
+    }
+
+    .tagline.out {
+      animation: taglineOut 0.4s ease forwards;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .btn {
+      padding: 1rem 1.2rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn.login {
+      background-color: #00c8ff;
+      color: #000;
+    }
+
+    .btn.signup {
+      background: transparent;
+      border: 2px solid #fff;
+      color: #fff;
+    }
+
+    .btn:hover {
+      transform: scale(1.03);
+      opacity: 0.9;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes taglineOut {
+      from { opacity: 1; transform: translateY(0); }
+      to   { opacity: 0; transform: translateY(20px); }
+    }
+
+    @keyframes taglineIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="image-container">
+      <img src="/img/vendors/fufu.png" alt="Delicious Food" />
+    </div>
+
+    <div class="tagline" id="tagline">Abi you dey hung?</div>
+
+    <div class="buttons">
+      <button class="btn login" onclick="window.location.href='/login.html'">Login</button>
+      <button class="btn signup" onclick="window.location.href='/signup.html'">Sign Up</button>
+    </div>
+  </div>
+
+  <script type="module">
+    // Firebase Auto-Skip Logic
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+      authDomain: "von600-7982d.firebaseapp.com",
+      projectId: "von600-7982d",
+      storageBucket: "von600-7982d.appspot.com",
+      messagingSenderId: "164591218045",
+      appId: "1:164591218045:web:afe17512e16573e7903014",
+      measurementId: "G-E69DMPLXBK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.replace("/index.html");
+      }
+    });
+
+    // Tagline Slider w/ Soft-Life Vibes
+     const taglines = [
+      "Abi you dey hung?",
+      "Look fast and chawp!",
+      "Fufu? Fried rice? We got you."
+    ];
+
+    const el = document.getElementById("tagline");
+    let current = 0;
+
+    setInterval(() => {
+      el.classList.add("out");
+
+      setTimeout(() => {
+        current = (current + 1) % taglines.length;
+        el.textContent = taglines[current];
+        el.classList.remove("out");
+      }, 400);
+    }, 3500);
+  </script>
+</body>
+</html>
