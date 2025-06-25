@@ -12,7 +12,7 @@
   "navigationDividerColorDark": "#000000",
   "backgroundColor": "#000000",
   "enableNotifications": true,
-  "startUrl": "/loading.html",
+  "startUrl": "/",
   "iconUrl": "https://app.chawp.me/img/icon-512x512.png",
   "maskableIconUrl": "https://app.chawp.me/img/icon-512x512.png",
   "monochromeIconUrl": "https://app.chawp.me/img/icon-512x512.png",
@@ -21,8 +21,8 @@
     "path": "C:\\Users\\von\\Documents\\GitHub\\app\\android.keystore",
     "alias": "chawp"
   },
-  "appVersionName": "2",
-  "appVersionCode": 2,
+  "appVersionName": "1",
+  "appVersionCode": 1,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://app.chawp.me/manifest.json",
@@ -47,5 +47,5 @@
   "protocolHandlers": [],
   "fileHandlers": [],
   "launchHandlerClientMode": "",
-  "appVersion": "2"
+  "appVersion": "1"
 }
