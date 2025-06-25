@@ -583,6 +583,128 @@
     margin-bottom: 10px;
 }
     
+@keyframes bounceInUp {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 100%);
+    }
+    60% {
+        opacity: 1;
+        transform: translate(-50%, -10%);
+    }
+    80% {
+        transform: translate(-50%, 5%);
+    }
+    100% {
+        transform: translate(-50%, 0%);
+    }
+}
+
+.view-cart-btn {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #007aff;
+    color: #fff;
+    padding: 12px 40px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    display: none;
+    min-width: 180px;
+    text-align: center;
+    z-index: 100;
+}
+
+.view-cart-btn.show {
+    display: block;
+    animation: bounceInUp 0.45s ease;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -12px;
+    background: #ff3b30;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+#modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(20, 20, 20, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 9;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+#modal-backdrop.show {
+    display: block;
+    opacity: 1;
+}
+.options-panel.dragging {
+    transition: none !important;
+    will-change: transform;
+}
+
+.options-panel.animate-back {
+    transition: transform 0.3s ease;
+}
+#modal-drag-handle {
+    width: 40px;
+    height: 5px;
+    background: #888;
+    border-radius: 5px;
+    margin: 0 auto 14px;
+    opacity: 0.4;
+}
+.back-button {
+    position: absolute;
+    top: 18px;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    z-index: 20;
+    transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.back-button svg {
+    width: 22px;
+    height: 22px;
+    stroke: #fff;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(1.05);
+}
+
+.back-button:active {
+    transform: scale(0.96);
+    background: rgba(255, 255, 255, 0.18);
+}
+
     
     </style>
     <script defer src="https://unpkg.com/feather-icons"></script>
@@ -590,11 +712,12 @@
 <body>
     <div class="restaurant-header">
         <img id="restaurant-image" loading="lazy">
-        <button class="back-arrow" onclick="history.back()">
-            <svg width="25" height="30" viewBox="0 0 24 24" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-        </button>
+        <a href="javascript:history.back()" class="back-button">
+    <svg viewBox="0 0 24 24" stroke-width="2.5" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6" />
+    </svg>
+</a>
+
         <div class="restaurant-info">
             <h1 id="restaurant-name"></h1>
             <p id="restaurant-info"></p>
@@ -607,6 +730,7 @@
         <span>This restaurant is currently closed. Please check back later!</span>
     </div>
     <div id="options-panel" class="options-panel">
+        <div id="modal-drag-handle"></div>
         <h5 id="options-title"></h5>
         <button class="close-btn" id="close-panel">×</button>
         <div id="size-group" class="option-group">
@@ -622,10 +746,15 @@
         <div class="total-price" id="total-price">Total: GH₵0.00</div>
         <button id="confirm-add" class="confirm-btn">Add to Cart</button>
     </div>
+    <div id="modal-backdrop" style="display: none;"></div>
+
     <div id="toast" class="toast-container">
         <span id="toast-message"></span>
     </div>
-    <a href="cart.html" class="view-cart-btn" id="view-cart-btn">View Cart - GH₵0.00</a>
+<a href="cart.html" class="view-cart-btn" id="view-cart-btn">
+    View Cart - GH₵0.00
+    <span id="cart-badge" class="cart-badge" style="display:none;">0</span>
+</a>
    <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
@@ -665,7 +794,8 @@ const elements = {
     toastMessage: document.getElementById("toast-message"),
     viewCartBtn: document.getElementById("view-cart-btn"),
     closedMessage: document.getElementById("closed-message"),
-    totalPrice: document.getElementById("total-price")
+    totalPrice: document.getElementById("total-price"),
+    modalBackdrop: document.getElementById("modal-backdrop")
 };
 
 // ✅ Login check using your localStorage logic
@@ -917,6 +1047,10 @@ const showOptionsPanel = (item) => {
     elements.optionsTitle.textContent = item.name;
     elements.optionsPanel.classList.add("show");
 
+elements.viewCartBtn.classList.remove("show");
+elements.modalBackdrop.classList.add("show");
+
+
     // Sizes logic
     if (item.sizes && item.sizes.length > 0) {
         elements.sizeGroup.style.display = "block";
@@ -989,14 +1123,25 @@ const updateModalTotal = () => {
 
 const updateCartButton = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const cartBtn = elements.viewCartBtn;
+    const cartBadge = document.getElementById("cart-badge");
+
     if (cart.length > 0) {
-        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        elements.viewCartBtn.textContent = `View Cart - GH₵${total.toFixed(2)}`;
-        elements.viewCartBtn.classList.add("show");
+        const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+        cartBtn.textContent = `View Cart - GH₵${totalPrice.toFixed(2)}`;
+        cartBtn.appendChild(cartBadge);
+        cartBtn.classList.add("show");
+
+        cartBadge.textContent = itemCount;
+        cartBadge.style.display = "inline-block";
     } else {
-        elements.viewCartBtn.classList.remove("show");
+        cartBtn.classList.remove("show");
+        cartBadge.style.display = "none";
     }
 };
+
 
 document.getElementById("confirm-add").addEventListener("click", () => {
     if (!currentItem || !isLoggedIn()) {
@@ -1042,7 +1187,11 @@ document.getElementById("confirm-add").addEventListener("click", () => {
 
 document.getElementById("close-panel").addEventListener("click", () => {
     elements.optionsPanel.classList.remove("show");
+    elements.modalBackdrop.classList.remove("show");
+    updateCartButton();
 });
+
+
 
 // Tap outside to close
 document.addEventListener("click", function(e) {
@@ -1051,24 +1200,70 @@ document.addEventListener("click", function(e) {
         const isButton = e.target.closest(".menu-item, .add-to-cart");
         if (!isInside && !isButton) {
             elements.optionsPanel.classList.remove("show");
+            elements.modalBackdrop.classList.remove("show");
+            updateCartButton();
         }
     }
 });
 
-// Swipe down to close
 let startY = null;
-elements.optionsPanel.addEventListener("touchstart", e => {
+let currentY = null;
+let translateY = 0;
+let isDragging = false;
+
+const panel = elements.optionsPanel;
+
+panel.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 1) return;
     startY = e.touches[0].clientY;
-});
-elements.optionsPanel.addEventListener("touchmove", e => {
-    if (startY === null) return;
-    const currentY = e.touches[0].clientY;
-    if (currentY - startY > 70) {
-        elements.optionsPanel.classList.remove("show");
-        startY = null;
-    }
+    currentY = startY;
+    translateY = 0;
+    isDragging = true;
+
+    panel.style.transition = "none";
+    panel.classList.add("dragging");
 });
 
+panel.addEventListener("touchmove", (e) => {
+    if (!isDragging) return;
+    currentY = e.touches[0].clientY;
+    translateY = Math.max(0, currentY - startY);
+    panel.style.transform = `translateY(${translateY}px)`;
+});
+
+panel.addEventListener("touchend", () => {
+    if (!isDragging) return;
+
+    panel.classList.remove("dragging");
+    panel.style.transition = "transform 0.35s ease";
+
+    const velocity = translateY; // crude but works
+    const threshold = 80;
+
+    if (velocity > threshold) {
+        // Dismiss modal smoothly
+        panel.style.transform = `translateY(100%)`;
+        setTimeout(() => {
+            panel.classList.remove("show");
+            panel.style.transform = "";
+            panel.style.transition = "";
+            elements.modalBackdrop.classList.remove("show");
+            updateCartButton();
+        }, 300);
+    } else {
+        // Snap back to top
+        panel.style.transform = `translateY(0)`;
+        setTimeout(() => {
+            panel.style.transition = "";
+            panel.style.transform = "";
+        }, 350);
+    }
+
+    isDragging = false;
+    startY = null;
+    currentY = null;
+    translateY = 0;
+});
 
 
 const loadMenuLive = async () => {
@@ -1122,8 +1317,12 @@ const visibleItems = items.filter(item => item.visible && categoryVisibilityMap[
 };
 
 // Load restaurant and menu
-loadRestaurant();
-loadMenuLive();
+(async () => {
+    await loadRestaurant();
+    await loadMenuLive();
+    updateCartButton();
+})();
+
 </script>
 
 
