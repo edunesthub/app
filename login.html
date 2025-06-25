@@ -29,7 +29,313 @@
 </script>
 
 
-<link rel="stylesheet" href="css/login.css">
+    <style>
+html, body {
+    touch-action: pan-x pan-y;
+    -webkit-user-scalable: no;
+    -ms-user-scalable: no;
+    user-scalable: no;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+        body {
+    background: #2c2c2c;
+    color: #ffffff;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    background: #2c2c2c;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    margin: 1.5rem auto;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.login-header h2 {
+    font-size: clamp(2rem, 5vw, 2.5rem);
+    font-weight: 700;
+    color: #007aff;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 122, 255, 0.2);
+}
+
+.login-header p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 0.75rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    width: 100%;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #007aff;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 6px rgba(0, 122, 255, 0.3);
+}
+
+.form-group input:invalid {
+    border-color: rgba(220, 53, 69, 0.5);
+}
+
+.form-group input:valid {
+    border-color: rgba(52, 199, 89, 0.5);
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-30%) translateY(8px);
+    background: none;
+    border: none;
+    color: #007aff;
+    cursor: pointer;
+    padding: 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 1rem;
+    background: #007aff;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.btn-primary:hover {
+    background: #0062cc;
+    transform: scale(1.02);
+}
+
+.btn-primary.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    display: none;
+}
+
+.btn-primary.loading .spinner {
+    display: block;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.text-center {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+}
+
+.text-center a {
+    color: #007aff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.text-center a:hover {
+    color: #34c759;
+}
+
+.notification-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.notification {
+    background: #007aff;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transform: translateY(-100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+    max-width: 90%;
+    text-align: center;
+}
+
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.notification.error {
+    background: #dc3545;
+}
+
+.notification.success {
+    background: #28a745;
+}
+
+.notification.warning {
+    background: #ffc107;
+    color: #333;
+}
+
+.notification i {
+    font-size: 1rem;
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 1.5rem;
+        margin: 1rem auto;
+        max-width: 95%;
+    }
+
+    .login-header h2 {
+        font-size: 2rem;
+    }
+
+    .login-header p {
+        font-size: 0.9rem;
+    }
+
+    .form-group input {
+        padding: 0.9rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-primary {
+        padding: 0.9rem;
+        font-size: 1rem;
+    }
+
+    .password-toggle {
+        right: 0.75rem;
+        padding: 0.3rem;
+    }
+
+    .notification {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .login-container {
+        padding: 1.25rem;
+    }
+
+    .login-header h2 {
+        font-size: 1.75rem;
+    }
+
+    .form-group label {
+        font-size: 0.85rem;
+    }
+
+    .form-group input {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        padding: 0.8rem;
+        font-size: 0.95rem;
+    }
+}
+
+html, body {
+    touch-action: pan-x pan-y;
+    -webkit-user-scalable: no;
+    -ms-user-scalable: no;
+    user-scalable: no;
+}
+    </style>
+
+
 </head>
 <body>
     <div class="login-container">
@@ -65,7 +371,155 @@
         </div>
     </div>
 
-    <script type="module" src="js/login.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+    authDomain: "von600-7982d.firebaseapp.com",
+    projectId: "von600-7982d",
+    storageBucket: "von600-7982d.appspot.com",
+    messagingSenderId: "164591218045",
+    appId: "1:164591218045:web:afe17512e16573e7903014",
+    measurementId: "G-E69DMPLXBK"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const loginForm = document.getElementById("login-form");
+const notification = document.getElementById("notification");
+const notificationMessage = document.getElementById("notification-message");
+const submitButton = loginForm.querySelector("button[type='submit']");
+const buttonText = submitButton.querySelector(".button-text");
+const togglePassword = document.getElementById("toggle-password");
+const passwordInput = document.getElementById("password");
+
+// Check auth state immediately to prevent logged-in users from accessing login page
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // Redirect to index.html if user is already logged in
+        if (!window.location.pathname.includes("index.html")) {
+            window.location.href = "index.html";
+        }
+    }
+});
+
+// Password visibility toggle
+togglePassword.addEventListener("click", () => {
+    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+    passwordInput.setAttribute("type", type);
+    togglePassword.innerHTML = type === "password" ? '<i class="feather-eye"></i>' : '<i class="feather-eye-off"></i>';
+});
+
+function showNotification(message, type = "success") {
+    // Remove any existing notifications first
+    notification.classList.remove("show", "error", "success", "warning");
+    
+    // Update notification content and style
+    notificationMessage.textContent = message;
+    notification.className = `notification ${type}`;
+    
+    // Add appropriate icon
+    const icon = type === "error" ? "alert-circle" : 
+                type === "warning" ? "alert-triangle" : "check-circle";
+    notification.innerHTML = `<i class="feather-${icon}"></i><span id="notification-message">${message}</span>`;
+    
+    // Force a reflow
+    notification.offsetHeight;
+    
+    // Show notification
+    notification.classList.add("show");
+    
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+        notification.classList.remove("show");
+    }, 3000);
+}
+
+function setLoading(isLoading) {
+    submitButton.classList.toggle("loading", isLoading);
+    buttonText.textContent = isLoading ? "Logging in..." : "Login";
+}
+
+// Validate email format
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    // Validate inputs
+    if (!email || !password) {
+        showNotification("Please fill in all fields", "error");
+        return;
+    }
+
+    if (!isValidEmail(email)) {
+        showNotification("Please enter a valid email address", "error");
+        return;
+    }
+
+    if (password.length < 6) {
+        showNotification("Password must be at least 6 characters", "error");
+        return;
+    }
+
+    setLoading(true);
+
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        showNotification("Login successful! Redirecting...", "success");
+        
+        // Store login state
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("userEmail", email);
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 1000);
+    } catch (error) {
+        setLoading(false);
+        let errorMessage = "An error occurred during login";
+        
+        switch (error.code) {
+            case "auth/user-not-found":
+                errorMessage = "No account found with this email";
+                break;
+            case "auth/wrong-password":
+                errorMessage = "Incorrect password";
+                break;
+            case "auth/too-many-requests":
+                errorMessage = "Too many failed attempts. Please try again later";
+                break;
+            case "auth/network-request-failed":
+                errorMessage = "Network error. Please check your connection";
+                break;
+            case "auth/invalid-email":
+                errorMessage = "Invalid email address";
+                break;
+            case "auth/invalid-credential":
+                errorMessage = "Invalid email or password";
+                break;
+        }
+        
+        showNotification(errorMessage, "error");
+        
+        // Clear password field on error
+        passwordInput.value = "";
+        passwordInput.focus();
+    }
+});
+
+// Auto-focus email input on page load
+document.getElementById("email").focus();
+        </script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92b4927e5ab3bd11',t:'MTc0MzgwOTIwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 
   <script src="/update-check.js"></script>
