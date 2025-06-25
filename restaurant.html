@@ -758,6 +758,35 @@
     opacity: 1;
     pointer-events: auto;
 }
+.modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    transition: background 0.25s ease, transform 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(1.05);
+}
+
+.modal-close-btn:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.18);
+}
 
 
     
@@ -789,7 +818,13 @@
     <div id="options-panel" class="options-panel">
         <div id="modal-drag-handle"></div>
         <h5 id="options-title"></h5>
-        <button class="close-btn" id="close-panel">×</button>
+       <button id="close-panel" class="modal-close-btn" aria-label="Close">
+  <svg viewBox="0 0 24 24" width="22" height="22" stroke-width="2.2" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+</button>
+
         <div id="size-group" class="option-group">
             <h6>Choose a Size</h6>
             <div class="instructions">Pick one size that fits your appetite.</div>
