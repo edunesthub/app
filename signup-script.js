@@ -21,10 +21,7 @@
         const notification = document.getElementById("notification");
         const notificationMessage = document.getElementById("notification-message");
         const submitButton = signupForm.querySelector("button[type='submit']");
-        const buttonText = submitButton.querySelector(".button-text");
-        const togglePassword = document.getElementById("toggle-password");
-        const toggleConfirmPassword = document.getElementById("toggle-confirm-password");
-        const passwordInput = document.getElementById("password");
+        const buttonText = submitButton.querySelector(".button-text");        const passwordInput = document.getElementById("password");
         const confirmPasswordInput = document.getElementById("confirm-password");
         const nextButton = document.getElementById("next-button");
         const step1 = document.getElementById("step-1");
@@ -32,11 +29,7 @@
 
       
 
-        toggleConfirmPassword.addEventListener("click", () => {
-            const type = confirmPasswordInput.getAttribute("type") === "password" ? "text" : "password";
-            confirmPasswordInput.setAttribute("type", type);
-            toggleConfirmPassword.innerHTML = type === "password" ? '<i class="feather-eye"></i>' : '<i class="feather-eye-off"></i>';
-        });
+     
 
         function showNotification(message, type = "success") {
             notification.classList.remove("show", "error", "success", "warning");

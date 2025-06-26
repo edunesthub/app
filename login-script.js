@@ -20,7 +20,6 @@ const notification = document.getElementById("notification");
 const notificationMessage = document.getElementById("notification-message");
 const submitButton = loginForm.querySelector("button[type='submit']");
 const buttonText = submitButton.querySelector(".button-text");
-const togglePassword = document.getElementById("toggle-password");
 const passwordInput = document.getElementById("password");
 
 // Check auth state immediately to prevent logged-in users from accessing login page
