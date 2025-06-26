@@ -30,12 +30,7 @@
         const step1 = document.getElementById("step-1");
         const step2 = document.getElementById("step-2");
 
-        // Password visibility toggles
-        togglePassword.addEventListener("click", () => {
-            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-            passwordInput.setAttribute("type", type);
-            togglePassword.innerHTML = type === "password" ? '<i class="feather-eye"></i>' : '<i class="feather-eye-off"></i>';
-        });
+      
 
         toggleConfirmPassword.addEventListener("click", () => {
             const type = confirmPasswordInput.getAttribute("type") === "password" ? "text" : "password";
