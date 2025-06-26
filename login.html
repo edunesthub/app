@@ -50,6 +50,14 @@
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
     }
 
+    .login-heading {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: white;
+    }
+
     .back-button {
       position: fixed;
       top: 1rem;
@@ -95,14 +103,13 @@
 
     .password-toggle {
       position: absolute;
-      top: 50%;
+      top: 65%;
       right: 1rem;
       transform: translateY(-50%);
       background: none;
       border: none;
-      color: var(--primary);
       font-size: 1.2rem;
-      cursor: pointer;
+      color: var(--primary);
     }
 
     .btn-primary {
@@ -139,9 +146,7 @@
     }
 
     @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+      to { transform: rotate(360deg); }
     }
 
     .text-center {
@@ -196,13 +201,11 @@
 </head>
 <body>
 
-  <!-- BACK BUTTON with Feather Icon -->
-  <button class="back-button" id="back-btn" type="button">
-<i data-feather="chevron-left"></i>
-  </button>
+  <button class="back-button" id="back-btn"><i data-feather="chevron-left"></i></button>
 
   <div class="login-wrapper">
     <div class="login-container">
+      <div class="login-heading">Login to your account</div>
       <form id="login-form">
         <div class="form-group">
           <label for="email">Email</label>
@@ -211,7 +214,9 @@
         <div class="form-group">
           <label for="password">Password</label>
           <input id="password" type="password" placeholder="••••••••" required />
-          <button type="button" class="password-toggle" id="toggle-password">👁</button>
+          <button type="button" class="password-toggle" id="toggle-password">
+            <i data-feather="eye"></i>
+          </button>
         </div>
         <button type="submit" class="btn-primary">
           <span class="button-text">Login</span>
@@ -228,20 +233,31 @@
     </div>
   </div>
 
-  <!-- Your Firebase login logic -->
-  <script type="module" src="login-script.js"></script>
-
-  <!-- Feather icons + back button logic -->
   <script src="https://unpkg.com/feather-icons"></script>
   <script>
-    feather.replace();
-    const backBtn = document.getElementById("back-btn");
-    backBtn?.addEventListener("click", () => {
-      if (document.referrer && !document.referrer.includes(location.href)) {
-        history.back();
-      } else {
-        window.location.href = "/welcome.html";
-      }
+    document.addEventListener("DOMContentLoaded", () => {
+      feather.replace();
+
+      const backBtn = document.getElementById("back-btn");
+      const passwordInput = document.getElementById("password");
+      const togglePassword = document.getElementById("toggle-password");
+
+      backBtn?.addEventListener("click", () => {
+        if (document.referrer && !document.referrer.includes(location.href)) {
+          history.back();
+        } else {
+          window.location.href = "/welcome.html";
+        }
+      });
+
+      togglePassword?.addEventListener("click", () => {
+        const isHidden = passwordInput.type === "password";
+        passwordInput.type = isHidden ? "text" : "password";
+        togglePassword.innerHTML = isHidden
+          ? '<i data-feather="eye-off"></i>'
+          : '<i data-feather="eye"></i>';
+        feather.replace();
+      });
     });
   </script>
 </body>
