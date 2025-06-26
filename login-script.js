@@ -33,12 +33,7 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// Password visibility toggle
-togglePassword.addEventListener("click", () => {
-    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-    passwordInput.setAttribute("type", type);
-    togglePassword.innerHTML = type === "password" ? '<i class="feather-eye"></i>' : '<i class="feather-eye-off"></i>';
-});
+
 
 function showNotification(message, type = "success") {
     // Remove any existing notifications first
