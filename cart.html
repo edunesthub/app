@@ -491,7 +491,20 @@ window.location.href = "successful.html";
     .footer-item:hover {
         background: rgba(255, 255, 255, 0.1);
     }
-    </style>
+    
+    @media (max-width: 600px) {
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .cart-item .controls {
+    width: 100%;
+    flex-direction: row !important;
+    justify-content: space-between;
+  }
+}
+</style>
 </head>
 <body class="fixed-bottom-bar">
     <div class="cart-header">
@@ -674,7 +687,10 @@ const fetchDiscountCode = async (code) => {
         let subtotal = 0;
         const groupedCart = new Map();
         cart.forEach(item => {
-    const key = `${item.name}-${item.price}-${item.restaurantId || 'unknown'}`;
+    const extrasKey = item.extras ? item.extras.map(e => `${e.name}:${e.quantity}`).join("|") : "";
+    const sizeKey = item.size || "";
+    const key = `${item.name}-${item.price}-${item.restaurantId || 'unknown'}-${sizeKey}-${extrasKey}`;
+    
     if (groupedCart.has(key)) {
         const existing = groupedCart.get(key);
         existing.quantity += item.quantity;
@@ -684,20 +700,41 @@ const fetchDiscountCode = async (code) => {
     }
 });
 
-        const itemsHTML = Array.from(groupedCart.values()).map(item => {
-            const itemTotal = item.price * item.quantity;
-            subtotal += itemTotal;
-            return `<div class="cart-item" data-key="${item.name}-${item.price}">
-                <div><p class="item-name">${item.name}</p><p class="item-price">GH₵${item.price.toFixed(2)} each</p></div>
-                <div class="controls">
-                    <button class="btn-sm btn decrease"><i class="feather-minus"></i></button>
-                    <span class="quantity">${item.quantity}</span>
-                    <button class="btn-sm btn increase"><i class="feather-plus"></i></button>
-                    <p class="item-total">GH₵${itemTotal.toFixed(2)}</p>
-                    <button class="btn-sm btn-danger remove"><i class="feather-trash-2"></i></button>
-                </div>
-            </div>`;
-        }).join("");
+
+  const itemsHTML = Array.from(groupedCart.values()).map(item => {
+    const itemTotal = item.price * item.quantity;
+    subtotal += itemTotal;
+
+    const extrasHTML = item.extras && item.extras.length > 0
+        ? `<div style="font-size: 0.8rem; color: #ccc; margin-top: 4px;">
+              <strong>Extras:</strong> ${item.extras.map(e => `${e.name} ×${e.quantity}`).join(", ")}
+           </div>`
+        : "";
+
+    const sizeHTML = item.size
+        ? `<div style="font-size: 0.8rem; color: #aaa;"><strong>Size:</strong> ${item.size}</div>`
+        : "";
+
+    return `
+    <div class="cart-item" data-key="${item.name}-${item.price}">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+            <p class="item-name" style="margin: 0;">${item.name}</p>
+            <p class="item-price" style="font-size: 0.85rem; opacity: 0.7; margin: 0;">GH₵${item.price.toFixed(2)} each</p>
+            ${sizeHTML}
+            ${extrasHTML}
+        </div>
+        <div class="controls" style="flex-direction: column; align-items: flex-end;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                <button class="btn-sm btn decrease"><i class="feather-minus"></i></button>
+                <span class="quantity">${item.quantity}</span>
+                <button class="btn-sm btn increase"><i class="feather-plus"></i></button>
+            </div>
+            <p class="item-total" style="font-size: 0.95rem; margin-bottom: 4px;">GH₵${itemTotal.toFixed(2)}</p>
+            <button class="btn-sm btn-danger remove"><i class="feather-trash-2"></i></button>
+        </div>
+    </div>`;
+}).join("");
+
         const deliveryFee = getDeliveryFee(persistentDetails.hostel);
        let discountAmount = 0;
 if (window.appliedDiscount && typeof window.appliedDiscount === "object" && window.appliedDiscount.appliesTo) {

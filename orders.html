@@ -165,15 +165,20 @@
     }
 
     const groupCartItems = (cart) => {
-      const grouped = {};
-      cart.forEach(item => {
-        if (!grouped[item.name]) {
-          grouped[item.name] = { ...item, quantity: 0 };
-        }
-        grouped[item.name].quantity += item.quantity;
-      });
-      return Object.values(grouped);
-    };
+  const grouped = {};
+  cart.forEach(item => {
+    const extrasKey = item.extras ? item.extras.map(e => `${e.name}:${e.quantity}`).join("|") : "";
+    const sizeKey = item.size || "";
+    const key = `${item.name}-${item.price}-${sizeKey}-${extrasKey}`;
+
+    if (!grouped[key]) {
+      grouped[key] = { ...item, quantity: 0 };
+    }
+    grouped[key].quantity += item.quantity;
+  });
+  return Object.values(grouped);
+};
+
 
     const fragment = document.createDocumentFragment();
     validOrders
@@ -186,9 +191,25 @@
 
         const itemsListSummary = groupedCart.map(item => `${item.quantity}x ${item.name}`).join(", ");
         const itemsListFull = groupedCart.map(item => {
-          const itemTotal = typeof item.total === "number" ? item.total.toFixed(2) : (item.price * item.quantity).toFixed(2);
-          return `<li class="text-white small">${item.quantity}x ${item.name} - GH₵${itemTotal}</li>`;
-        }).join("");
+  const itemTotal = typeof item.total === "number" ? item.total.toFixed(2) : (item.price * item.quantity).toFixed(2);
+
+  const sizeInfo = item.size
+    ? `<div style="font-size: 0.8rem; color: #aaa;"><strong>Size:</strong> ${item.size}</div>`
+    : "";
+
+  const extrasInfo = item.extras && item.extras.length > 0
+    ? `<div style="font-size: 0.8rem; color: #ccc;"><strong>Extras:</strong> ${item.extras.map(e => `${e.name} ×${e.quantity}`).join(", ")}</div>`
+    : "";
+
+  return `
+    <li class="text-white small mb-2">
+      <div><strong>${item.quantity}x ${item.name}</strong> - GH₵${itemTotal}</div>
+      ${sizeInfo}
+      ${extrasInfo}
+    </li>
+  `;
+}).join("");
+
 
         const subtotal = groupedCart.reduce((sum, item) => {
           const itemTotal = typeof item.total === "number" ? item.total : item.price * item.quantity;
