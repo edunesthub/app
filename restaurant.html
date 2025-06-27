@@ -1108,34 +1108,40 @@ const setupAddToCartButtons = () => {
 
         
         button.addEventListener("click", e => {
-            e.stopPropagation();
+    e.stopPropagation();
 
-            
-            if (!isRestaurantOpen) return;
+    if (!isRestaurantOpen) return;
 
-            // ✅ Block unauthenticated users
-            if (!isLoggedIn()) {
-                promptLogin();
-                return;
-            }
+    if (!isLoggedIn()) {
+        promptLogin();
+        return;
+    }
 
-            if (item.sizes.length > 0 || item.extras.length > 0) {
-                showOptionsPanel(item); // Button and container will now behave same
-            } else {
-                const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-                cart.push({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    quantity: 1,
-                    restaurantId: restaurantId
-                });
+    if (item.sizes.length > 0 || item.extras.length > 0) {
+        showOptionsPanel(item);
+    } else {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-                localStorage.setItem("cart", JSON.stringify(cart));
-                showToast(`${item.name} added to cart!`);
-                updateCartButton();
-            }
+        // 🛑 BLOCK IF DIFFERENT RESTAURANT
+        if (cart.length > 0 && cart[0].restaurantId !== restaurantId) {
+            showToast("Oops! You can only order from one restaurant at a time. Please clear your cart to continue.", "error");
+            return;
+        }
+
+        cart.push({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: 1,
+            restaurantId: restaurantId
         });
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        showToast(`${item.name} added to cart!`);
+        updateCartButton();
+    }
+});
+
     });
 };
 
@@ -1240,7 +1246,6 @@ const updateCartButton = () => {
     }
 };
 
-
 document.getElementById("confirm-add").addEventListener("click", () => {
     if (!currentItem || !isLoggedIn()) {
         promptLogin();
@@ -1264,8 +1269,14 @@ document.getElementById("confirm-add").addEventListener("click", () => {
     });
 
     const totalPrice = sizePrice + extrasTotal;
-
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    // 🛑 BLOCK IF DIFFERENT RESTAURANT
+    if (cart.length > 0 && cart[0].restaurantId !== restaurantId) {
+        showToast("Oops! You can only order from one restaurant at a time. Please clear your cart to continue.", "error");
+        return;
+    }
+
     cart.push({
         id: currentItem.id,
         name: currentItem.name,
@@ -1277,14 +1288,14 @@ document.getElementById("confirm-add").addEventListener("click", () => {
     });
 
     localStorage.setItem("cart", JSON.stringify(cart));
-        elements.optionsPanel.classList.remove("show");
+    elements.optionsPanel.classList.remove("show");
     elements.modalBackdrop.classList.remove("show");
     document.getElementById("blur-backdrop")?.classList.remove("show");
 
     showToast(`${currentItem.name} added to cart!`, "success");
     updateCartButton();
-
 });
+
 
 
 document.getElementById("close-panel").addEventListener("click", () => {
