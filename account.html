@@ -275,7 +275,7 @@ html, body {
                     await deleteDoc(userDocRef);
                     await deleteUser(user);
                     localStorage.removeItem(`${CACHE_KEY}-${user.uid}`);
-                    window.location.href = "login.html";
+                    window.location.href = "welcome.html";
                 } catch (error) {
                     console.error("Error deleting account:", error);
                     alert(`Error: ${error.message}. You may need to re-authenticate to delete your account.`);
@@ -291,7 +291,7 @@ html, body {
             } else {
                 onAuthStateChanged(auth, (user) => {
                     if (user) loadAccountData(user);
-                    else window.location.href = "login.html";
+                    else window.location.href = "welcome.html";
                 });
             }
         });
