@@ -565,34 +565,37 @@ window.location.href = "successful.html";
         </div>
     </div>
    <script type="module" defer>
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-    import { doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging.js";
- 
-    const firebaseConfig = {
-        apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
-        authDomain: "von600-7982d.firebaseapp.com",
-        projectId: "von600-7982d",
-        storageBucket: "von600-7982d.appspot.com",
-        messagingSenderId: "164591218045",
-        appId: "1:164591218045:web:afe17512e16573e7903014",
-        measurementId: "G-E69DMPLXBK"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    window.db = db;
-window.firebaseExports = {
-  collection,
-  doc,
-  addDoc,
-  updateDoc,
-  increment
+
+const firebaseConfig = {
+  apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+  authDomain: "von600-7982d.firebaseapp.com",
+  projectId: "von600-7982d",
+  storageBucket: "von600-7982d.appspot.com",
+  messagingSenderId: "164591218045",
+  appId: "1:164591218045:web:afe17512e16573e7903014",
+  measurementId: "G-E69DMPLXBK"
 };
 
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+window.db = db;
+window.firebaseExports = { collection, doc, addDoc, updateDoc, increment };
 
 const messaging = getMessaging();
-getToken(messaging, { vapidKey: 'BDN5OP5zbD5oeO9Dw1iqr_Bl9t0GGk-Bm0rnh14gzLDU3frlOMGxLzXAXb82A3VrqI3REnmkdTTu1OkcYCeg9Rk' })
+
+// ✅ Register service worker before getting token
+navigator.serviceWorker.register('/firebase-messaging-sw.js')
+  .then((registration) => {
+    console.log('Service Worker registered with scope:', registration.scope);
+
+    return getToken(messaging, {
+      vapidKey: 'BDN5OP5zbD5oeO9Dw1iqr_Bl9t0GGk-Bm0rnh14gzLDU3frlOMGxLzXAXb82A3VrqI3REnmkdTTu1OkcYCeg9Rk',
+      serviceWorkerRegistration: registration // 🔥 specify the SW registration here
+    });
+  })
   .then((currentToken) => {
     if (currentToken) {
       console.log("FCM Device Token:", currentToken);
@@ -604,7 +607,6 @@ getToken(messaging, { vapidKey: 'BDN5OP5zbD5oeO9Dw1iqr_Bl9t0GGk-Bm0rnh14gzLDU3fr
   .catch((err) => {
     console.log('An error occurred while retrieving token. ', err);
   });
-
 
     const elements = {
         cartContainer: document.getElementById("cart-container"),
