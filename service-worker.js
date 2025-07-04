@@ -14,14 +14,16 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(function(payload) {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  console.log('[service-worker.js] Received background message ', payload);
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
-    body: payload.notification.body
+    body: payload.notification.body,
+    icon: '/img/icon-192x192.png',
   };
 
   return self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
 
 
 const CACHE_NAME = 'Chawp-cache-v64';
