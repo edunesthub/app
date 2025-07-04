@@ -587,7 +587,7 @@ window.firebaseExports = { collection, doc, addDoc, updateDoc, increment };
 const messaging = getMessaging();
 
 // ✅ Register service worker before getting token
-navigator.serviceWorker.register('/firebase-messaging-sw.js')
+navigator.serviceWorker.register('/service-worker.js')
   .then((registration) => {
     console.log('Service Worker registered with scope:', registration.scope);
 
