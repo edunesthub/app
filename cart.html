@@ -42,6 +42,8 @@ if (window.appliedDiscount?.appliesTo) {
 
 const totalAmount = baseAmount - discountAmount;
 
+const customerToken = localStorage.getItem("customerToken");
+
 await addDoc(collection(db, "orders"), {
   cart: sanitizedCart,
   deliveryDetails: persistentDetails,
@@ -52,8 +54,10 @@ await addDoc(collection(db, "orders"), {
   timestamp: new Date(),
   discount: window.appliedDiscount?.code || null,
   restaurantId: sanitizedCart[0]?.restaurantId || "unknown",
-  deviceId
+  deviceId,
+  customerToken // 🔥 Added here
 });
+
 
 
         localStorage.removeItem("cart");
@@ -564,7 +568,8 @@ window.location.href = "successful.html";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
     import { doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-
+import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging.js";
+ 
     const firebaseConfig = {
         apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
         authDomain: "von600-7982d.firebaseapp.com",
@@ -584,6 +589,21 @@ window.firebaseExports = {
   updateDoc,
   increment
 };
+
+
+const messaging = getMessaging();
+getToken(messaging, { vapidKey: 'BDN5OP5zbD5oeO9Dw1iqr_Bl9t0GGk-Bm0rnh14gzLDU3frlOMGxLzXAXb82A3VrqI3REnmkdTTu1OkcYCeg9Rk' })
+  .then((currentToken) => {
+    if (currentToken) {
+      console.log("FCM Device Token:", currentToken);
+      localStorage.setItem("customerToken", currentToken);
+    } else {
+      console.log('No registration token available. Request permission to generate one.');
+    }
+  })
+  .catch((err) => {
+    console.log('An error occurred while retrieving token. ', err);
+  });
 
 
     const elements = {
