@@ -969,6 +969,7 @@ const totalAmount = baseAmount - discountAmount;
         const handler = PaystackPop.setup({
             key: "pk_test_93dd3909dd59a3ae47c5a531d8370b49052465ec",
             email: "customer@chawp.com",
+            
             amount: Math.round(totalAmount * 100),
             currency: "GHS",
             ref: "ORDER_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9),
