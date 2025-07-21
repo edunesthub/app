@@ -9,86 +9,6 @@
     <title>Chawp - Your Cart</title>
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="vendor/icons/feather.css" rel="stylesheet" type="text/css">
-   <script>
-  window.handlePaymentCallback = async function(response) {
-    const checkoutBtn = document.getElementById("checkout-btn");
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const persistentDetails = JSON.parse(localStorage.getItem("deliveryDetails") || "{}");
-    const sanitizedCart = cart.filter(item => item.name && typeof item.price === "number");
-
-    const db = window.db;
-    const { collection, doc, updateDoc, addDoc, increment } = window.firebaseExports;
-
-    if (response.status === "success") {
-      try {
-        if (window.appliedDiscount?.code) {
-          const discountRef = doc(db, "discountCodes", window.appliedDiscount.code);
-          await updateDoc(discountRef, { uses: increment(1) });
-        }
-
-        const deviceId = localStorage.getItem("deviceId");
-
-const deliveryFee = getDeliveryFee(persistentDetails.hostel || "Hostel A");
-const subtotal = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-const baseAmount = subtotal + 2 + deliveryFee;
-
-let discountAmount = 0;
-if (window.appliedDiscount?.appliesTo) {
-  const applyBase = window.appliedDiscount.appliesTo === "delivery" ? deliveryFee : subtotal + 2;
-  discountAmount = window.appliedDiscount.type === "percent"
-    ? (window.appliedDiscount.value / 100) * applyBase
-    : Math.min(window.appliedDiscount.value, applyBase);
-}
-
-const totalAmount = baseAmount - discountAmount;
-
-await addDoc(collection(db, "orders"), {
-  cart: sanitizedCart,
-  deliveryDetails: persistentDetails,
-  deliveryFee: deliveryFee,
-  processingFee: 2.00,
-  totalAmount: totalAmount,
-  status: "pending",
-  timestamp: new Date(),
-  discount: window.appliedDiscount?.code || null,
-  restaurantId: sanitizedCart[0]?.restaurantId || "unknown",
-  deviceId,
-  customerToken: localStorage.getItem("customerToken") // ✅ NEW LINE HERE
-});
-
-try {
-  const notifResponse = await fetch("https://chawp-notifs.up.railway.app/send-notification", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      token: localStorage.getItem("customerToken"),
-      title: "Order Confirmed",
-      body: "Your order has been received successfully and is being processed."
-    })
-  });
-
-  const notifData = await notifResponse.json();
-  console.log("✅ Notification sent response:", notifData);
-} catch (notifErr) {
-  console.error("❌ Failed to send notification:", notifErr);
-}
-
-
-        localStorage.removeItem("cart");
-localStorage.removeItem("deliveryDetails");
-window.location.href = "successful.html";
-
-      } catch (err) {
-        console.error("Order failed", err);
-        alert("Failed to place order.");
-      }
-    } else {
-      alert("Payment not completed");
-      checkoutBtn.disabled = false;
-    }
-  };
-</script>
-
     <script src="https://js.paystack.co/v1/inline.js" async></script>
     <script src="https://unpkg.com/feather-icons"></script>
 
@@ -578,19 +498,21 @@ window.location.href = "successful.html";
             </div>
         </div>
     </div>
+
+
    <script type="module" defer>
-   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, getDocs, doc, updateDoc, increment, query, where
+} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
   authDomain: "von600-7982d.firebaseapp.com",
   projectId: "von600-7982d",
   storageBucket: "von600-7982d.appspot.com",
-  messagingSenderId: "164591218045",
   appId: "1:164591218045:web:afe17512e16573e7903014",
-  measurementId: "G-E69DMPLXBK"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -605,42 +527,17 @@ window.firebaseExports = {
   increment
 };
 
-const messaging = getMessaging();
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    .then(registration => {
-      console.log('✅ Firebase Messaging Service Worker registered with scope:', registration.scope);
-
-      // 🔥 Request permission AFTER SW registration
-      Notification.requestPermission().then((permission) => {
-        if (permission === 'granted') {
-          getToken(messaging, {
-            vapidKey: 'BDN5OP5zbD5oeO9Dw1iqr_Bl9t0GGk-Bm0rnh14gzLDU3frlOMGxLzXAXb82A3VrqI3REnmkdTTu1OkcYCeg9Rk',
-            serviceWorkerRegistration: registration // ✅ pass the registered SW here
-          })
-            .then((currentToken) => {
-              if (currentToken) {
-                console.log("✅ FCM Device Token:", currentToken);
-                localStorage.setItem("customerToken", currentToken);
-              } else {
-                console.log('❌ No registration token available.');
-              }
-            })
-            .catch((err) => {
-              console.log('❌ Error retrieving token:', err);
-            });
-        } else {
-          console.log('❌ Notification permission denied');
-        }
-      });
-
-    })
-    .catch(error => {
-      console.error('❌ Failed to register Firebase Messaging Service Worker:', error);
-    });
+// ✅ Define global utility function to get vendor email
+async function getVendorEmailFromRestaurantId(restaurantId) {
+  const vendorMappingsRef = collection(db, "vendorMappings");
+  const q = query(vendorMappingsRef, where("restaurantId", "==", restaurantId));
+  const snapshot = await getDocs(q);
+  if (!snapshot.empty) {
+    const doc = snapshot.docs[0];
+    return doc.id;
+  }
+  return null;
 }
-
 
 
     const elements = {
@@ -947,6 +844,16 @@ window.appliedDiscount = discount;
             resetCheckoutButton();
             return;
         }
+
+        const restaurantId = sanitizedCart[0]?.restaurantId || "unknown";
+const vendorEmail = await getVendorEmailFromRestaurantId(restaurantId);
+
+
+if (!vendorEmail) {
+  console.error("Cannot place order: No vendor email found for restaurant.");
+  return;
+}
+
         const deliveryFee = getDeliveryFee(persistentDetails.hostel || "Hostel A");
 const subtotal = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 const baseAmount = subtotal + 2 + deliveryFee;
@@ -1004,7 +911,97 @@ callback: response => window.handlePaymentCallback(response),
             });
         });
     };
-    document.addEventListener("DOMContentLoaded", () => {
+    
+    window.addEventListener("online", renderCart);
+    window.addEventListener("offline", () => showNotification("You're offline! Some features may be limited.", "error"));
+
+    
+  window.handlePaymentCallback = async function(response) {
+    const checkoutBtn = document.getElementById("checkout-btn");
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const persistentDetails = JSON.parse(localStorage.getItem("deliveryDetails") || "{}");
+    const sanitizedCart = cart.filter(item => item.name && typeof item.price === "number");
+
+
+    const { collection, doc, updateDoc, addDoc, increment } = window.firebaseExports;
+
+    if (response.status === "success") {
+      try {
+        if (window.appliedDiscount?.code) {
+          const discountRef = doc(db, "discountCodes", window.appliedDiscount.code);
+          await updateDoc(discountRef, { uses: increment(1) });
+        }
+
+        const deviceId = localStorage.getItem("deviceId");
+
+const deliveryFee = getDeliveryFee(persistentDetails.hostel || "Hostel A");
+const subtotal = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+const baseAmount = subtotal + 2 + deliveryFee;
+
+let discountAmount = 0;
+if (window.appliedDiscount?.appliesTo) {
+  const applyBase = window.appliedDiscount.appliesTo === "delivery" ? deliveryFee : subtotal + 2;
+  discountAmount = window.appliedDiscount.type === "percent"
+    ? (window.appliedDiscount.value / 100) * applyBase
+    : Math.min(window.appliedDiscount.value, applyBase);
+}
+
+const totalAmount = baseAmount - discountAmount;
+const restaurantId = sanitizedCart[0]?.restaurantId || "unknown";
+const vendorEmail = await getVendorEmailFromRestaurantId(restaurantId);
+if (!vendorEmail) {
+  alert("Vendor email not found. Order cannot be processed.");
+  return;
+}
+
+await addDoc(collection(db, "orders"), {
+  cart: sanitizedCart,
+  deliveryDetails: persistentDetails,
+  deliveryFee: deliveryFee,
+  processingFee: 2.00,
+  totalAmount: totalAmount,
+  status: "pending",
+  timestamp: new Date(),
+  discount: window.appliedDiscount?.code || null,
+  restaurantId: sanitizedCart[0]?.restaurantId || "unknown",
+  vendorEmail,
+  deviceId,
+  customerToken: localStorage.getItem("customerToken") // ✅ NEW LINE HERE
+});
+
+try {
+  const notifResponse = await fetch("https://chawp-notifs.up.railway.app/send-notification", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      token: localStorage.getItem("customerToken"),
+      title: "Order Confirmed",
+      body: "Your order has been received successfully and is being processed."
+    })
+  });
+
+  const notifData = await notifResponse.json();
+  console.log("✅ Notification sent response:", notifData);
+} catch (notifErr) {
+  console.error("❌ Failed to send notification:", notifErr);
+}
+
+
+        localStorage.removeItem("cart");
+localStorage.removeItem("deliveryDetails");
+window.location.href = "successful.html";
+
+      } catch (err) {
+        console.error("Order failed", err);
+        alert("Failed to place order.");
+      }
+    } else {
+      alert("Payment not completed");
+      checkoutBtn.disabled = false;
+    }
+  };
+
+document.addEventListener("DOMContentLoaded", () => {
         renderCart();
         initFooter();
         const featherObserver = new IntersectionObserver((entries) => {
@@ -1015,8 +1012,6 @@ callback: response => window.handlePaymentCallback(response),
         }, { root: null, threshold: 0.1 });
         featherObserver.observe(document.body);
     });
-    window.addEventListener("online", renderCart);
-    window.addEventListener("offline", () => showNotification("You're offline! Some features may be limited.", "error"));
 </script>
 
 
