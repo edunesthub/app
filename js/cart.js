@@ -236,12 +236,15 @@ const finalTotal = subtotal + 2 + deliveryFee - discountAmount;
                 <input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number" maxlength="10" pattern="\d{10}" inputmode="numeric" required><br><br>
                 <label for="delivery-note">Note to Restaurant (Optional)</label>
                 <textarea id="delivery-note" placeholder="Add note for restaurant" rows="2">${persistentDetails.note || ""}</textarea>
-                <label for="discount-code">Discount Code</label>
+               <label for="discount-code">Discount Code</label>
+<div class="discount-input-wrapper">
   <input type="text" id="discount-code" placeholder="Enter promo code">
-<button class="btn w-100 mt-2" id="apply-discount-btn" style="background: #007aff; color: white;">
-  Apply
-</button>
-  <p id="discount-feedback" style="margin-top: 5px; font-size: 0.9rem;"></p>
+  <button id="apply-discount">
+    <i class="feather-check"></i>
+  </button>
+</div>
+<p id="discount-feedback" style="margin-top: 8px; font-size: 0.9rem;"></p>
+
                 </div>
            <div class="order-summary">
   <p>Subtotal <span class="float-end">GH₵${subtotal.toFixed(2)}</span></p>
