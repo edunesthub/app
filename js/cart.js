@@ -360,7 +360,7 @@ document.querySelectorAll(".payment-card").forEach((card) => {
     card.addEventListener("click", (e) => {
       e.stopPropagation();
       const msg = document.getElementById("pay-feedback");
-      msg.textContent = "Pay Now isn’t available at the moment — please use Pay After Delivery ";
+msg.textContent = "Online payment is temporarily unavailable. Please use Pay After Delivery.";
       msg.style.color = "orange";
       setTimeout(() => (msg.textContent = ""), 5000);
     });
