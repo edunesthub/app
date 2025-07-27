@@ -596,50 +596,7 @@ body {
     flex-direction: row;
   }
 }
-.payment-selector {
-  margin: 20px 0;
-  padding: 15px;
-  border-radius: 16px;
-  background: #1f1f1f;
-  color: white;
-}
 
-.payment-selector h6 {
-  margin-bottom: 10px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #eee;
-}
-
-.payment-option-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.payment-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 14px;
-  border-radius: 12px;
-  background-color: #2a2a2a;
-  color: white;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: 0.3s ease all;
-}
-
-.payment-card i {
-  font-size: 24px;
-  margin-bottom: 6px;
-  color: #ccc;
-}
-
-.payment-card.selected {
-  border-color: #00c896;
-  background-color: #1d1d1d;
-}
 
 .big-checkout-btn {
   padding: 16px;
