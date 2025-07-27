@@ -25,6 +25,21 @@ window.firebaseExports = {
   increment
 };
 
+let isRestaurantOpen = true;
+
+async function checkRestaurantStatus(restaurantId) {
+  const docRef = doc(db, "restaurant", restaurantId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    isRestaurantOpen = data.isOpen !== false;
+    if (!isRestaurantOpen) {
+      showToast("This restaurant is currently closed. You can't place an order.", "error");
+    }
+  }
+}
+
+
 // ✅ Define global utility function to get vendor email
 async function getVendorEmailFromRestaurantId(restaurantId) {
   const vendorMappingsRef = collection(db, "vendorMappings");
@@ -289,7 +304,7 @@ const finalTotal = subtotal + 2 + deliveryFee - discountAmount;
 
 
         `;
-        document.getElementById("apply-discount-btn").onclick = async () => {
+document.getElementById("apply-discount").onclick = async () => {
   const codeInput = document.getElementById("discount-code").value.trim();
   const feedback = document.getElementById("discount-feedback");
   if (!codeInput) {
@@ -441,9 +456,13 @@ checkoutBtn.querySelector(".processing-text").style.display = "inline";
         }
 
         const restaurantId = sanitizedCart[0]?.restaurantId || "unknown";
-const vendorEmail = await getVendorEmailFromRestaurantId(restaurantId);
+await checkRestaurantStatus(restaurantId);
+if (!isRestaurantOpen) {
+  resetCheckoutButton();
+  return;
+}
 
-
+ const vendorEmail = await getVendorEmailFromRestaurantId(restaurantId);
 if (!vendorEmail) {
   console.error("Cannot place order: No vendor email found for restaurant.");
   return;
@@ -616,3 +635,12 @@ document.addEventListener("DOMContentLoaded", () => {
   featherObserver.observe(document.body);
 });
 
+function showToast(message, type = "error") {
+  const toast = document.getElementById("notification");
+  const msg = document.getElementById("notification-message");
+  msg.textContent = message;
+
+  toast.className = `notification ${type}`;
+  toast.style.opacity = "1";
+  setTimeout(() => toast.style.opacity = "0", 4000);
+}
