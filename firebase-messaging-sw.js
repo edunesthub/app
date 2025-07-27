@@ -4,11 +4,11 @@ importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging-comp
 firebase.initializeApp({
    apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
         authDomain: "von600-7982d.firebaseapp.com",
-        projectId: "von600-7982d",
+       projectId: "von600-7982d",
         storageBucket: "von600-7982d.appspot.com",
-        messagingSenderId: "164591218045",
+         messagingSenderId: "164591218045",
         appId: "1:164591218045:web:afe17512e16573e7903014",
-        measurementId: "G-E69DMPLXBK"
+       measurementId: "G-E69DMPLXBK"
 });
 
 const messaging = firebase.messaging();

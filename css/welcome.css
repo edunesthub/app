@@ -1,0 +1,168 @@
+
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: #2c2c2c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    .image-container {
+      width: 100%;
+      height: 260px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+      margin-bottom: 2rem;
+      transform: scale(1);
+      transition: transform 0.3s ease;
+    }
+
+    .image-container:active {
+      transform: scale(0.98);
+    }
+
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .tagline {
+      font-size: 1.25rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #eeeeee;
+      line-height: 1.5;
+      min-height: 3.5rem;
+      animation: taglineIn 0.6s ease forwards;
+    }
+
+    .tagline.out {
+      animation: taglineOut 0.4s ease forwards;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .btn {
+      padding: 1rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      transform: scale(1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn.login {
+      background-color: #00c8ff;
+      color: #000;
+    }
+
+    .btn.signup {
+      background: transparent;
+      border: 2px solid #fff;
+      color: #fff;
+    }
+
+    .btn.loading {
+      pointer-events: none;
+      opacity: 0.85;
+      color: transparent !important;
+    }
+
+    .btn.loading .dots {
+      display: inline-flex;
+      gap: 0.25rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn.loading .dots span {
+      display: block;
+      width: 6px;
+      height: 6px;
+      background: #fff;
+      border-radius: 50%;
+      animation: blink 1s infinite ease-in-out;
+    }
+
+    .btn.loading .dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .btn.loading .dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(1); }
+      40% { opacity: 1; transform: scale(1.4); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes taglineOut {
+      from { opacity: 1; transform: translateY(0); }
+      to   { opacity: 0; transform: translateY(20px); }
+    }
+
+    @keyframes taglineIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (min-width: 600px) {
+      .wrapper {
+        padding: 0 1rem;
+      }
+
+      .image-container {
+        height: 260px;
+      }
+    }
+  

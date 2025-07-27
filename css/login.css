@@ -1,0 +1,190 @@
+
+    :root {
+      --primary: #007aff;
+      --bg: #1e1e1e;
+      --card: rgba(255, 255, 255, 0.08);
+      --blur: blur(16px);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .login-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      padding: 1.5rem 1rem;
+    }
+
+    .login-container {
+      width: 100%;
+      background: var(--card);
+      backdrop-filter: var(--blur);
+      padding: 2rem 1.25rem;
+      border-radius: var(--radius);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .login-heading {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: white;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 0.6rem;
+      z-index: 99999;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+    }
+
+    .form-group label {
+      margin-bottom: 0.5rem;
+      display: block;
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .password-toggle {
+      position: absolute;
+      top: 65%;
+      right: 1rem;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--primary);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      border: none;
+      padding: 1rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      transition: 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #005fcc;
+    }
+
+    .btn-primary .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+
+    .btn-primary.loading .spinner {
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .text-center {
+      margin-top: 1.5rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+    }
+
+    .text-center a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .notification-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .notification {
+      padding: 0.75rem 1.2rem;
+      background-color: var(--primary);
+      border-radius: 12px;
+      font-size: 14px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      transform: translateY(-100%);
+      transition: 0.3s ease;
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .notification.success { background: #28a745; }
+    .notification.error { background: #dc3545; }
+    .notification.warning {
+      background: #ffc107;
+      color: #333;
+    }
+  

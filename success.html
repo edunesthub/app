@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Payment Successful</title>
+  <link href="https://unpkg.com/feather-icons" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #0a84ff;
+      --primary-glow: rgba(10, 132, 255, 0.2);
+--background: #2c2c2c;
+      --text: #ffffff;
+      --muted: #cccccc;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: var(--background);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      color: var(--text);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      text-align: center;
+      padding: 4vh 4vw;
+      width: 100%;
+      max-width: 600px;
+      animation: fadeUp 0.7s ease;
+    }
+
+    .icon-wrap {
+      width: 120px;
+      height: 120px;
+      background: #0887dca1;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 2.5rem;
+      box-shadow: 0 10px 30px rgba(10, 132, 255, 0.15) inset, 0 4px 20px rgba(10, 132, 255, 0.1);
+    }
+
+    .icon-wrap i {
+      font-size: 3.6rem;
+      color: #119eff; /* Brighter than the base primary for pop */
+      stroke-width: 1.8;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+
+    p {
+      font-size: 1.15rem;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 3rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px var(--primary-glow);
+      transition: transform 0.2s ease, background 0.3s ease;
+      cursor: pointer;
+      text-decoration: none; /* Removes underline */
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+      background-color: #0077e6;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      p {
+        font-size: 1rem;
+        padding: 0 1rem;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon-wrap">
+      <i data-feather="check-circle"></i>
+    </div>
+    <h1>Order Successful!</h1>
+    <p>
+      Your order is confirmed. Sit back and relax — you’ll hear a knock soon.<br>Soft life, chale.
+    </p>
+    <a href="orders.html" class="btn">View My Orders</a>
+  </div>
+
+  <script src="https://unpkg.com/feather-icons" onload="feather.replace()"></script>
+  <script src="/update-check.js" defer></script>
+</body>
+</html>
