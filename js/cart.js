@@ -114,9 +114,20 @@ deliveryFees.sort((a, b) => customOrder.indexOf(a.name) - customOrder.indexOf(b.
         return deliveryFees;
     }
 };
-  const getDeliveryFee = (hostelName) => {
-    const hostel = deliveryFees.find(h => h.name === hostelName) || deliveryFees[0];
-    return hostel.fee;
+const getDeliveryFee = (hostelName, cart = []) => {
+  const hostel = deliveryFees.find(h => h.name === hostelName) || deliveryFees[0];
+  const baseFee = hostel.fee;
+
+  // Count total quantity of all meals
+  let totalMeals = 0;
+  cart.forEach(item => {
+    totalMeals += item.quantity || 1;
+  });
+
+  const extraMeals = Math.max(totalMeals - 1, 0);
+  const extraFee = extraMeals * 2; // 2 GHS per extra meal
+
+  return baseFee + extraFee;
 };
 window.getDeliveryFee = getDeliveryFee;
 
@@ -221,7 +232,7 @@ if (cart.length && cart[0].restaurantId) {
     </div>`;
 }).join("");
 
-        const deliveryFee = getDeliveryFee(persistentDetails.hostel);
+const deliveryFee = getDeliveryFee(persistentDetails.hostel, cart);
        let discountAmount = 0;
 if (window.appliedDiscount && typeof window.appliedDiscount === "object" && window.appliedDiscount.appliesTo) {
   const applyBase = window.appliedDiscount.appliesTo === "delivery" ? deliveryFee : subtotal + 2;
@@ -468,7 +479,7 @@ if (!vendorEmail) {
   return;
 }
 
-        const deliveryFee = getDeliveryFee(persistentDetails.hostel || "Hostel A");
+const deliveryFee = getDeliveryFee(persistentDetails.hostel || "Hostel A", sanitizedCart);
 const subtotal = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 const baseAmount = subtotal + 2 + deliveryFee;
 let discountAmount = 0;
@@ -572,7 +583,7 @@ checkoutBtn.querySelector(".processing-text").style.display = "none";
 
         const deviceId = localStorage.getItem("deviceId");
 
-const deliveryFee = getDeliveryFee(persistentDetails.hostel || "Hostel A");
+const deliveryFee = getDeliveryFee(persistentDetails.hostel || "Hostel A", sanitizedCart);
 const subtotal = sanitizedCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 const baseAmount = subtotal + 2 + deliveryFee;
 
