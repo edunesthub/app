@@ -254,11 +254,11 @@ const finalTotal = subtotal + 2 + deliveryFee - discountAmount;
             <div class="cart-items">${itemsHTML}</div>
             <div class="delivery-details">
                 <h6>Delivery Details</h6><br>
-                <label for="delivery-hostel">Hostel</label>
+                <label for="delivery-hostel">Hostel (required)</label>
                 <select id="delivery-hostel" required>${hostelOptions}</select><br><br>
-                <label for="delivery-location">Room</label>
+                <label for="delivery-location">Room (required)</label>
                 <input type="tel" id="delivery-location" value="${persistentDetails.location}" placeholder="Enter room number (e.g., 555)" maxlength="3" pattern="\d{3}" inputmode="numeric" required><br><br>
-                <label for="delivery-contact">Active Contact Number</label>
+                <label for="delivery-contact">Active Contact Number (required)</label>
                 <input type="tel" id="delivery-contact" value="${persistentDetails.contactNumber}" placeholder="Enter your phone number" maxlength="10" pattern="\d{10}" inputmode="numeric" required><br><br>
                 <label for="delivery-note">Note to Restaurant (Optional)</label>
                 <textarea id="delivery-note" placeholder="Add note for restaurant" rows="2">${persistentDetails.note || ""}</textarea>
