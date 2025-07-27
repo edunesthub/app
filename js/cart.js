@@ -283,15 +283,17 @@ const finalTotal = subtotal + 2 + deliveryFee - discountAmount;
             <p class="refund-note"><i class="feather-info"></i> By proceeding with checkout, you agree to our <a href="refund.html">refund policy</a>.</p>
             <div class="payment-selector">
   <h6>Select Payment Method</h6>
+<div id="pay-feedback" style="font-size: 0.9rem; margin-top: 6px; margin-bottom: 8px;"></div>
+
   <div class="payment-option-grid">
-    <div class="payment-card selected" data-method="pay-now">
+    <div class="payment-card" data-method="pay-now">
       <i class="feather-credit-card"></i>
       <div>
         <strong>Pay Now</strong>
         <p>Instant online payment</p>
       </div>
     </div>
-    <div class="payment-card" data-method="pay-after-delivery">
+    <div class="payment-card selected" data-method="pay-after-delivery">
       <i class="feather-clock"></i>
       <div>
         <strong>Pay After Delivery</strong>
@@ -348,15 +350,29 @@ window.appliedDiscount = discount;
         document.getElementById("delivery-note").onchange = saveDeliveryInputs;
         document.getElementById("checkout-btn").onclick = proceedToCheckout;
         // ✅ Fix toggle logic for payment method
-document.querySelectorAll(".payment-card").forEach(card => {
-  card.addEventListener("click", () => {
-    document.querySelectorAll(".payment-card").forEach(c => c.classList.remove("selected"));
-    card.classList.add("selected");
-    selectedPaymentMethod = card.dataset.method; // ✅ update global
-  });
-});
+document.querySelectorAll(".payment-card").forEach((card) => {
+  const method = card.getAttribute("data-method");
 
-    };
+  if (method === "pay-now") {
+    card.style.opacity = "0.6";
+    card.style.cursor = "not-allowed";
+
+    card.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const msg = document.getElementById("pay-feedback");
+      msg.textContent = "Pay Now isn’t available at the moment — please use Pay After Delivery ";
+      msg.style.color = "orange";
+      setTimeout(() => (msg.textContent = ""), 5000);
+    });
+  } else {
+    card.addEventListener("click", () => {
+      document.querySelectorAll(".payment-card").forEach((c) => c.classList.remove("selected"));
+      card.classList.add("selected");
+      selectedPaymentMethod = method;
+    });
+  }
+});
+   };
     const updateItemQuantity = (key, delta) => {
         const cart = getCart();
         cart.filter(item => `${item.name}-${item.price}` === key).forEach(item => item.quantity = Math.max(1, item.quantity + delta));
@@ -379,7 +395,7 @@ document.querySelectorAll(".payment-card").forEach(card => {
         savePersistentDeliveryDetails(hostel, location, contactNumber, note);
         renderCart();
     };
-    let selectedPaymentMethod = "pay-now";
+    let selectedPaymentMethod = "pay-after-delivery"; // Default to pay-after-delivery
 
     let isProcessing = false;
 
