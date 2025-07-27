@@ -285,9 +285,6 @@ const finalTotal = subtotal + 2 + deliveryFee - discountAmount;
   <span class="spinner pulse-ring"></span>
 </button>
 
-
-  <button id="remove-all-btn" class="btn btn-outline-danger mt-3 w-100">Clear Cart</button>
-
 </div>
 
 
@@ -324,7 +321,6 @@ window.appliedDiscount = discount;
         document.getElementById("delivery-contact").onchange = saveDeliveryInputs;
         document.getElementById("delivery-note").onchange = saveDeliveryInputs;
         document.getElementById("checkout-btn").onclick = proceedToCheckout;
-        document.getElementById("remove-all-btn").onclick = removeAllItems;
         // ✅ Fix toggle logic for payment method
 document.querySelectorAll(".payment-card").forEach(card => {
   card.addEventListener("click", () => {
@@ -348,11 +344,7 @@ document.querySelectorAll(".payment-card").forEach(card => {
         renderCart();
         showNotification(`${firstItem.name} removed from cart`);
     };
-    const removeAllItems = () => {
-        saveCart([]);
-        renderCart();
-        showNotification("All items removed from cart");
-    };
+
     const saveDeliveryInputs = () => {
         const hostel = document.getElementById("delivery-hostel").value || "Hostel A";
         const location = document.getElementById("delivery-location").value.trim();
