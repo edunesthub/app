@@ -1,7 +1,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, getDocs, doc, updateDoc, increment, query, where
+  getFirestore, collection, getDoc, addDoc, getDocs, doc, updateDoc, increment, query, where
 } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 
@@ -130,6 +130,25 @@ const fetchDiscountCode = async (code) => {
 
     const renderCart = async () => {
         const cart = getCart();
+        const restaurantTitle = document.getElementById("restaurant-title");
+if (cart.length && cart[0].restaurantId) {
+  try {
+    const docRef = doc(db, "restaurant", cart[0].restaurantId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      restaurantTitle.textContent = data.name || "Your Restaurant";
+    } else {
+      restaurantTitle.textContent = "Your Restaurant";
+    }
+  } catch (err) {
+    console.error("Failed to fetch restaurant name:", err);
+    restaurantTitle.textContent = "Your Restaurant";
+  }
+} else {
+  restaurantTitle.textContent = "";
+}
+
         if (!cart.length) {
             elements.cartContainer.innerHTML = `<div class="empty-cart"><h2>Your Cart is Empty</h2><p>Looks like you haven't added anything yet.<br>Explore the shops and treat yourself🍔</p><a href="index.html" class="btn btn-primary">Start Shopping</a></div>`;
             return;

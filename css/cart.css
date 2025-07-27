@@ -1,6 +1,6 @@
 
          html, body {
-        height: 100vh;
+        height: 100%;
         margin: 0;
         padding: 0;
         overflow-y: auto;
@@ -13,6 +13,9 @@
         overscroll-behavior-y: none;
         -webkit-text-size-adjust: none;
         -webkit-overflow-scrolling: touch;
+        background-color: #0d0d0d;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
     }
     body::-webkit-scrollbar {
         display: none;
@@ -26,66 +29,8 @@
         flex-direction: column;
         padding-bottom: 140px; /* Matches footer height to prevent overlap */
     }
-        .cart-header {
-            background: #2c2c2c;
-            padding: 15px 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .cart-header h4 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin: 0;
-            flex-grow: 1;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        .cart-header .back-btn {
-            background: none;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: absolute;
-            left: 10px;
-            top: 15px;
-            transition: transform 0.2s ease, opacity 0.2s ease;
-        }
-        .cart-header .back-btn i {
-            width: 40px;
-            height: 40px;
-            stroke-width: 3;
-            color: white;
-            transition: transform 0.2s ease;
-        }
-        .cart-header .back-btn:hover {
-            opacity: 0.8;
-            transform: scale(1.1);
-        }
-        .cart-header .feather-shopping-cart {
-            width: 20px;
-            height: 20px;
-            color: #ffffff;
-        }
-        .cart-container {
-        padding: 30px 15px;
-        max-width: 700px;
-        margin: 0 auto;
-        opacity: 0;
-        animation: fadeIn 0.5s ease forwards;
-        flex: 1 0 auto;
-        padding-bottom: env(safe-area-inset-bottom);
-    }
+    
+
         .empty-cart {
             text-align: center;
             padding: 80px 15px;
@@ -496,11 +441,6 @@
     flex-direction: row;
   }
 }
-/* ------------------------------- */
-/* 🌟 LUXURY DARK THEME REFINEMENT */
-/* ------------------------------- */
-
-/* Background gradient (subtle, not flashy) */
 body {
   background: linear-gradient(to bottom right, #1a1a1a, #0d0d0d);
   color: #f2f2f2;
@@ -508,11 +448,14 @@ body {
 
 /* Cart container gets premium depth */
 .cart-container {
-  padding: 30px 20px;
+  padding: 20px 20px 30px 20px; /* ⬅️ added top padding */
   max-width: 700px;
   margin: 0 auto;
   animation: fadeIn 0.5s ease forwards;
+  flex: 1 0 auto;
+  padding-bottom: env(safe-area-inset-bottom);
 }
+
 
 /* Cart item – matte card style */
 .cart-item {
@@ -750,4 +693,13 @@ body {
 
 .big-checkout-btn.loading .spinner {
   display: inline-block;
+}
+.restaurant-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-align: left;
+  color: white;
+margin: 15px 40px 0 40px;
+  line-height: 1.2;
+  font-family: 'Segoe UI', sans-serif;
 }
