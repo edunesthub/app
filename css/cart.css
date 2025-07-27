@@ -450,7 +450,7 @@ body {
 .cart-container {
   padding: 20px 20px 30px 20px; /* ⬅️ added top padding */
   max-width: 700px;
-  margin: 0 auto;
+  margin: 0 ;
   animation: fadeIn 0.5s ease forwards;
   flex: 1 0 auto;
   padding-bottom: env(safe-area-inset-bottom);
