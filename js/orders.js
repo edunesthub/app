@@ -124,8 +124,10 @@
         }, 0);
 
         const processingFee = order.processingFee || 2.00;
-        const deliveryFee = order.deliveryFee || 3.00;
-        const total = order.totalAmount || (subtotal + processingFee + deliveryFee);
+const baseDeliveryFee = order.deliveryFee || 3.00;
+const totalMealCount = groupedCart.reduce((sum, item) => sum + item.quantity, 0);
+const finalDeliveryFee = baseDeliveryFee + Math.max(0, (totalMealCount - 1) * 2);
+const total = order.totalAmount || (subtotal + processingFee + finalDeliveryFee);
         const statusText = getStatusText(order.status || "pending");
         const statusClass = `status-badge status-${order.status || "pending"}`;
 
@@ -148,7 +150,7 @@
             <hr class="bg-light">
             <p class="text-white small">Subtotal: GH₵${subtotal.toFixed(2)}</p>
             <p class="text-white small">Processing Fee: GH₵${processingFee.toFixed(2)}</p>
-            <p class="text-white small">Delivery Fee: GH₵${deliveryFee.toFixed(2)}</p>
+<p class="text-white small">Delivery Fee: GH₵${finalDeliveryFee.toFixed(2)}</p>
             <p class="text-white small">Location: ${order.deliveryDetails.hostel}, Room ${order.deliveryDetails.location}</p>
             <hr class="bg-light">
             <p class="order-total text-white fw-bold">Total: GH₵${total.toFixed(2)}</p>
