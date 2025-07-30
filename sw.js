@@ -6,6 +6,7 @@ workbox.precaching.precacheAndRoute([
   { url: '/home.html', revision: '1' },
   { url: '/profile.html', revision: '1' },
   { url: '/cart.html', revision: '1' },
+  { url: '/restaurant.html', revision: '1' },
   { url: '/orders.html', revision: '1' },
   { url: '/css/style.css', revision: '1' },
   { url: '/css/index.css', revision: '1' },
