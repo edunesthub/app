@@ -1,6 +1,5 @@
-// register-sw.js
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
-    .then(reg => console.log('✅ SW registered:', reg.scope))
+    .then(() => console.log('✅ SW registered'))
     .catch(err => console.error('❌ SW registration failed:', err));
 }
