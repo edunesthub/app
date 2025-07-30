@@ -20,11 +20,32 @@
       text-align: center;
     }
 
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: backgroundFloat 30s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes backgroundFloat {
+      0% { background-position: 0 0; }
+      100% { background-position: 40px 40px; }
+    }
+
+    body > * {
+      position: relative;
+      z-index: 1;
+    }
+
     .logo {
-      width: 120px;
-      height: 120px;
+      width: 200px;
+      height: 200px;
       border-radius: 24px;
-      margin-bottom: 32px;
+      margin-bottom: 52px;
       animation: fadeIn 0.6s ease-out forwards;
       box-shadow: 0 0 16px rgba(0, 123, 255, 0.4);
       object-fit: cover;
@@ -34,6 +55,12 @@
       font-size: 22px;
       font-weight: 500;
       margin-bottom: 16px;
+      animation: pulseText 2.5s infinite ease-in-out;
+    }
+
+    #dots {
+      font-weight: 700;
+      display: inline-block;
     }
 
     .progress-container {
@@ -53,6 +80,7 @@
       background: #007bff;
       border-radius: 5px 0 0 5px;
       transition: width 0.25s ease;
+      animation: glow 2.5s ease-in-out infinite;
     }
 
     .note {
@@ -61,155 +89,246 @@
       margin-top: 20px;
     }
 
-    #installPrompt {
-      margin-top: 24px;
-      padding: 10px 20px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      font-weight: 600;
-      cursor: pointer;
-      display: none;
-    }
+#installPrompt {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: #007aff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  display: inline-block;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
 
     @keyframes fadeIn {
       0% { transform: scale(0.8); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes gentleShake {
+      0% { transform: translateY(0); }
+      25% { transform: translateY(-2px); }
+      50% { transform: translateY(1px); }
+      75% { transform: translateY(-1px); }
+      100% { transform: translateY(0); }
+    }
+
+    @keyframes pulseText {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.02); opacity: 0.85; }
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 10px rgba(0,123,255,0.3); }
+      50% { box-shadow: 0 0 20px rgba(0,123,255,0.6); }
+      100% { box-shadow: 0 0 10px rgba(0,123,255,0.3); }
+    }
+
+    /* iOS Install Modal */
+    #installModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #installModalContent {
+      background: #1c1c1e;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 90%;
+      text-align: center;
+      color: #fff;
+    }
+
+    #installModalContent h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    #installModalContent p {
+      font-size: 15px;
+      color: #bbb;
+    }
+
+    #installModalContent button {
+      margin-top: 16px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 30px;
+      background: #0a84ff;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
   <img class="logo" src="/img/icon-512x512.png" alt="App Logo" />
-  <div class="message">Hang tight — we're updating your app</div>
+  <div class="message"><span id="dynamicText">Updating</span><span id="dots">...</span></div>
   <div class="progress-container">
     <div class="progress-bar" id="progressBar"></div>
   </div>
   <div class="note" id="statusNote">This ensures you have the latest, fastest version.</div>
-  <button id="installPrompt">Install App</button>
 
-  <script>
-    (async () => {
-      const REDIRECT_URL = '/index.html';
-      const progressBar = document.getElementById('progressBar');
-      const statusNote = document.getElementById('statusNote');
-      const installBtn = document.getElementById('installPrompt');
+<div class="note" id="installNotice" style="display: none; font-size: 14px; margin-top: 20px;">
+  If you haven’t installed the Chawp app yet, tap 
+  <button id="installPrompt" style="margin: 0 4px; padding: 6px 12px; font-size: 14px; border-radius: 20px; background: #007aff; color: white; border: none; cursor: pointer;">Install</button> 
+  to add it to your home screen.
+</div>
 
-      let deferredPrompt;
+  <!-- iOS Modal -->
+  <div id="installModal">
+    <div id="installModalContent">
+      <h2>📲 Add to Home Screen</h2>
+      <p>Tap the <strong>Share</strong> button <span style="font-size: 18px;">🔗</span><br>then <strong>“Add to Home Screen”</strong>.</p>
+      <button onclick="document.getElementById('installModal').style.display='none'">Got it</button>
+    </div>
+  </div>
 
-      // Detect if user is in browser vs standalone mode
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+<script>
+(async () => {
+  const REDIRECT_URL = '/index.html';
+  const progressBar = document.getElementById('progressBar');
+  const statusNote = document.getElementById('statusNote');
+  const dynamicText = document.getElementById('dynamicText');
+  const installBtn = document.getElementById('installPrompt');
+  const dots = document.getElementById('dots');
+  const installModal = document.getElementById('installModal');
+  let deferredPrompt;
 
-      // Watch for install prompt trigger
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installBtn.style.display = 'inline-block';
-      });
+  // 🔹 DYNAMIC DOTS LOOP
+  let dotState = 0;
+  const dotInterval = setInterval(() => {
+    dotState = (dotState + 1) % 4;
+    dots.textContent = '.'.repeat(dotState);
+  }, 700);
 
-      installBtn.addEventListener('click', async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          if (outcome === 'accepted') {
-            installBtn.style.display = 'none';
-            statusNote.textContent = 'App installed! 🎉';
-          }
-          deferredPrompt = null;
-        }
-      });
+  // 🔹 STANDALONE CHECK
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-      function setProgress(percent) {
-        progressBar.style.width = percent + '%';
+  // 🔹 INSTALL PROMPT HOOK
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        installBtn.style.display = 'none';
+        statusNote.textContent = 'App installed! 🎉';
       }
-
-      function delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      }
-
-      async function runSmoothProgress() {
-        let current = 0;
-        while (current < 90) {
-          current += Math.random() * 7;
-          if (current > 90) current = 90;
-          setProgress(current);
-          await delay(180 + Math.random() * 70);
-        }
-      }
-
-      async function performUpdate() {
-        const fakeProgress = runSmoothProgress();
-
-        try {
-          // 1. Unregister all SWs
-          if ('serviceWorker' in navigator) {
-            const regs = await navigator.serviceWorker.getRegistrations();
-            for (let reg of regs) await reg.unregister();
-          }
-
-          // 2. Clear all caches
-          if ('caches' in window) {
-            const keys = await caches.keys();
-            for (let key of keys) await caches.delete(key);
-          }
-
-          // 3. Preload assets
-          const assets = [
-            '/',
-            '/index.html',
-            '/home.html',
-            '/profile.html',
-            '/css/style.css',
-            '/js/index.js',
-            '/js/home.js',
-            '/manifest.json',
-            '/img/icon-192x192.png',
-            '/img/icon-512x512.png',
-            '/sw.js'
-          ];
-
-          if ('caches' in window) {
-            const cache = await caches.open('app-cache-v1');
-for (const url of assets) {
-  try {
-    const response = await fetch(url);
-    if (response.ok) {
-      await cache.put(url, response);
+      deferredPrompt = null;
     } else {
-      console.warn(`⚠️ Skipped: ${url} (status ${response.status})`);
+      // 🔹 Trigger modal manually on button click
+      installModal.style.display = 'flex';
     }
-  } catch (err) {
-    console.warn(`❌ Failed to cache ${url}:`, err.message);
+  });
+
+  function setProgress(percent) {
+    progressBar.style.width = percent + '%';
   }
-}
+
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function runSmoothProgress() {
+    let current = 0;
+    while (current < 90) {
+      current += Math.random() * 7;
+      if (current > 90) current = 90;
+      setProgress(current);
+      await delay(180 + Math.random() * 70);
+    }
+  }
+
+  async function performUpdate() {
+    const fakeProgress = runSmoothProgress();
+
+    try {
+      // 🔹 UNREGISTER SW
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (let reg of regs) await reg.unregister();
+      }
+
+      // 🔹 CLEAR CACHES
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        for (let key of keys) await caches.delete(key);
+      }
+
+      // 🔹 PRELOAD ASSETS
+      const assets = [
+        '/', '/index.html', '/home.html', '/profile.html',
+        '/css/style.css', '/js/index.js', '/js/home.js',
+        '/manifest.json', '/img/icon-192x192.png', '/img/icon-512x512.png', '/sw.js'
+      ];
+
+      if ('caches' in window) {
+        const cache = await caches.open('app-cache-v1');
+        for (const url of assets) {
+          try {
+            const response = await fetch(url);
+            if (response.ok) {
+              await cache.put(url, response);
+            } else {
+              console.warn(`⚠️ Skipped: ${url} (status ${response.status})`);
+            }
+          } catch (err) {
+            console.warn(`❌ Failed to cache ${url}:`, err.message);
           }
-
-          // 4. Re-register service worker
-          if ('serviceWorker' in navigator) {
-            await navigator.serviceWorker.register('/sw.js');
-          }
-
-          // Finish progress
-          await fakeProgress;
-          setProgress(100);
-          await delay(500);
-
-          if (isStandalone) {
-            window.location.href = REDIRECT_URL;
-          } else {
-            statusNote.textContent = 'Update complete! You can now install or open the app from your home screen.';
-            installBtn.style.display = deferredPrompt ? 'inline-block' : 'none';
-          }
-
-        } catch (e) {
-          console.error('Update failed:', e);
-          statusNote.textContent = 'Update failed. Try again later.';
         }
       }
 
-      performUpdate();
-    })();
-  </script>
+      // 🔹 RE-REGISTER SW
+      if ('serviceWorker' in navigator) {
+        await navigator.serviceWorker.register('/sw.js');
+      }
+
+      // 🔹 COMPLETE PROGRESS
+      await fakeProgress;
+      setProgress(100);
+      clearInterval(dotInterval); // 🔹 Stop the dot animation
+      dots.style.display = 'none'; // 🔹 Hide the dots
+      await delay(500);
+
+      if (isStandalone) {
+        window.location.href = REDIRECT_URL;
+      } else {
+        dynamicText.textContent = '✅ Update complete!';
+        statusNote.textContent = '✅ You can now open the app from your home screen.';
+document.getElementById('installNotice').style.display = 'block';
+
+setTimeout(() => {
+  installBtn.style.animation = 'gentleShake 1s ease-in-out infinite';
+}, 3000);
+
+      }
+
+    } catch (e) {
+      console.error('Update failed:', e);
+      statusNote.textContent = 'Update failed. Try again later.';
+    }
+  }
+
+  performUpdate();
+})();
+</script>
+
+
 </body>
 </html>
