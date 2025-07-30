@@ -3,6 +3,8 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox
 // 📦 Precache ALL critical files
 workbox.precaching.precacheAndRoute([
   { url: '/index.html', revision: '1' },
+    { url: '/loading.html', revision: '1' },
+  { url: '/welcome.html', revision: '1' },
   { url: '/home.html', revision: '1' },
   { url: '/profile.html', revision: '1' },
   { url: '/cart.html', revision: '1' },
