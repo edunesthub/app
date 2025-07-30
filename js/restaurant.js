@@ -521,8 +521,19 @@ const visibleItems = items.filter(item => item.visible && categoryVisibilityMap[
 
 // Load restaurant and menu
 (async () => {
-    await loadRestaurant();
-    await loadMenuLive();
-    updateCartButton();
+  // ⬇️ Show skeleton loader
+  document.getElementById("restaurant-loader").style.display = "block";
+  elements.menuSection.style.display = "none";
+  elements.restaurantImage.style.display = "none";
+
+  await loadRestaurant();
+  await loadMenuLive();
+  updateCartButton();
+
+  // ⬇️ Hide loader, show real content
+  document.getElementById("restaurant-loader").style.display = "none";
+  elements.menuSection.style.display = "block";
+  elements.restaurantImage.style.display = "block";
 })();
+
 
