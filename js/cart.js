@@ -178,10 +178,19 @@ if (cart.length && cart[0].restaurantId) {
   restaurantTitle.textContent = "";
 }
 
-        if (!cart.length) {
-            elements.cartContainer.innerHTML = `<div class="empty-cart"><h2>Your Cart is Empty</h2><p>Looks like you haven't added anything yet.<br>Explore the shops and treat yourself🍔</p><a href="index.html" class="btn btn-primary">Start Shopping</a></div>`;
-            return;
-        }
+       if (!cart.length) {
+  document.getElementById("cart-loader").style.display = "none";
+  elements.cartContainer.style.display = "block";
+
+  elements.cartContainer.innerHTML = `
+    <div class="empty-cart">
+      <h2>Your Cart is Empty</h2>
+      <p>Looks like you haven't added anything yet.<br>Explore the shops and treat yourself 🍔</p>
+      <a href="index.html" class="btn btn-primary">Start Shopping</a>
+    </div>`;
+  return;
+}
+
         await fetchDeliveryFees();
         const persistentDetails = getPersistentDeliveryDetails();
         let subtotal = 0;
