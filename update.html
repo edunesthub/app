@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Updating...</title>
+  <style>
+    body {
+      background: #2c2c2c;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      border-radius: 24px;
+      margin-bottom: 32px;
+      animation: fadeIn 0.6s ease-out forwards;
+      box-shadow: 0 0 16px rgba(0, 123, 255, 0.4);
+      object-fit: cover;
+    }
+
+    .message {
+      font-size: 22px;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .progress-container {
+      width: 90%;
+      max-width: 320px;
+      height: 10px;
+      background: #444;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 20px;
+      box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.05);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #007bff;
+      border-radius: 5px 0 0 5px;
+      transition: width 0.25s ease;
+    }
+
+    .note {
+      font-size: 14px;
+      color: #aaa;
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <img class="logo" src="/img/icon-512x512.png" alt="App Logo" />
+  <div class="message">Hang tight — we're updating your app</div>
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="note">This ensures you have the latest, fastest version.</div>
+
+  <script>
+    (async () => {
+      const progressBar = document.getElementById('progressBar');
+      const REDIRECT_URL = '/index.html'; // change if needed
+
+      function setProgress(percent) {
+        progressBar.style.width = percent + '%';
+      }
+
+      function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      async function runSmoothProgress() {
+        let current = 0;
+        while (current < 90) {
+          current += Math.random() * 7;
+          if (current > 90) current = 90;
+          setProgress(current);
+          await delay(180 + Math.random() * 70);
+        }
+      }
+
+      async function performUpdate() {
+        const fakeProgress = runSmoothProgress();
+
+        try {
+          // 1. Unregister all service workers
+          if ('serviceWorker' in navigator) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            for (let reg of regs) await reg.unregister();
+          }
+
+          // 2. Clear all caches
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            for (let key of keys) await caches.delete(key);
+          }
+
+          // 3. Preload new assets
+          const assetsToCache = [
+            '/',
+            '/index.html',
+            '/main.js',
+            '/style.css',
+            '/logo.png',
+            '/sw.js',
+          ];
+
+          if ('caches' in window) {
+            const cache = await caches.open('app-cache-v1'); // name it clearly
+            await cache.addAll(assetsToCache);
+          }
+
+          // 4. Re-register the SW
+          if ('serviceWorker' in navigator) {
+            await navigator.serviceWorker.register('/sw.js');
+          }
+        } catch (err) {
+          console.error('Update failed:', err);
+        }
+
+        // 5. Finish up
+        await fakeProgress;
+        setProgress(100);
+        await delay(600);
+        window.location.href = REDIRECT_URL;
+      }
+
+      performUpdate();
+    })();
+  </script>
+</body>
+</html>

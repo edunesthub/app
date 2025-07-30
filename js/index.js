@@ -348,12 +348,6 @@ async function updateWelcomeMessage() {
                 fetchTrendingRestaurants();
             }
     
-            if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("service-worker.js?ver=1.0.1", { updateViaCache: "none" })
-                    .then(registration => {
-                        registration.update();
-                    })
-                    .catch(error => console.error("PWA Error:", error));
-            }
+           
         });
     

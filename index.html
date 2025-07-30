@@ -219,75 +219,6 @@
 
     <script type="module" src="js/index.js"></script>
 
-    <script>
-if ('serviceWorker' in navigator) {
-  let refreshing = false;
-
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js').then(reg => {
-      console.log('✅ Service Worker registered:', reg);
-
-      reg.onupdatefound = () => {
-        const newWorker = reg.installing;
-        newWorker.onstatechange = () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            // New update available
-            showUpdateToast(newWorker);
-          }
-        };
-      };
-    }).catch(err => console.error('❌ SW registration failed:', err));
-  });
-
-  // Reload when the new service worker takes control
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!refreshing) {
-      window.location.reload();
-      refreshing = true;
-    }
-  });
-}
-
-function showUpdateToast(worker) {
-  const toast = document.createElement('div');
-  toast.textContent = '🔄 New version available. Tap to refresh.';
-  toast.style = `
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1f2937;
-    color: #f9fafb;
-    padding: 14px 24px;
-    border-radius: 9999px;
-    font-size: 15px;
-    font-weight: 500;
-    z-index: 10000;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    transform: translate(-50%, 20px);
-    transition: all 0.3s ease-in-out;
-  `;
-
-  document.body.appendChild(toast);
-
-  // Animate in
-  setTimeout(() => {
-    toast.style.opacity = '1';
-    toast.style.transform = 'translate(-50%, 0)';
-  }, 100);
-
-  toast.onclick = () => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translate(-50%, 20px)';
-    worker.postMessage({ action: 'skipWaiting' });
-  };
-}
-
-  document.body.appendChild(toast);
-
-</script>
 
 
     <script>
@@ -362,6 +293,7 @@ setTimeout(() => {
 
 
 
-  <script src="/update-check.js"></script>
+  <script src="/register-sw.js"></script>
+
 </body>
 </html>
