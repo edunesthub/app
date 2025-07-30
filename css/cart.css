@@ -710,3 +710,30 @@ margin: 15px 40px 0 40px;
   background-color: #0056b3; /* Slightly deeper tone */
   transform: translateY(-1px); /* Soft lift */
 }
+/* Skeleton Loader */
+.skeleton-block,
+.skeleton-input,
+.skeleton-title,
+.skeleton-button,
+.skeleton-item {
+  background-color: #2e2e2e;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150px;
+  width: 150px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -150px; }
+  100% { left: 100%; }
+}

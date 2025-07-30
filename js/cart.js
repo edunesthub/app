@@ -155,6 +155,9 @@ const fetchDiscountCode = async (code) => {
 
 
     const renderCart = async () => {
+      document.getElementById("cart-loader").style.display = "block";
+  elements.cartContainer.style.display = "none";
+
         const cart = getCart();
         const restaurantTitle = document.getElementById("restaurant-title");
 if (cart.length && cart[0].restaurantId) {
@@ -372,7 +375,10 @@ msg.textContent = "Online payment is temporarily unavailable. Please use Pay Aft
     });
   }
 });
-   };
+
+document.getElementById("cart-loader").style.display = "none";
+  elements.cartContainer.style.display = "block";
+};
     const updateItemQuantity = (key, delta) => {
         const cart = getCart();
         cart.filter(item => `${item.name}-${item.price}` === key).forEach(item => item.quantity = Math.max(1, item.quantity + delta));

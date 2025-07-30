@@ -171,4 +171,56 @@ html {
             pointer-events: none;
         }
 
-    
+    .skeleton-card {
+    background: #565656;
+    border-radius: 10px;
+    overflow: hidden;
+    opacity: 1;
+    height: 170px; /* Matches list-card height */
+}
+.skeleton-image {
+    height: 110px;
+    background: #4a4a4a;
+    position: relative;
+    overflow: hidden;
+}
+.skeleton-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 1.5s infinite;
+}
+.skeleton-body {
+    padding: 8px;
+    height: 60px;
+}
+.skeleton-text {
+    background: #4a4a4a;
+    height: 16px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    position: relative;
+    overflow: hidden;
+}
+.skeleton-text::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 1.5s infinite;
+}
+.skeleton-text.short {
+    width: 60%;
+    height: 12px;
+}
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
