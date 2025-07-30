@@ -19,6 +19,14 @@
       overflow: hidden;
       text-align: center;
     }
+    .share-icon {
+            display: inline-block;
+            background: #2c2c2e;
+            padding: 1px 3px;
+            border-radius: 6px;
+            vertical-align: middle;
+            margin: 0 4px;
+        }
 
     body::before {
       content: '';
@@ -189,8 +197,13 @@
   <!-- iOS Modal -->
   <div id="installModal">
     <div id="installModalContent">
-      <h2>📲 Add to Home Screen</h2>
-      <p>Tap the <strong>Share</strong> button <span style="font-size: 18px;">🔗</span><br>then <strong>“Add to Home Screen”</strong>.</p>
+      <h2>📲 Install Chawp</h2>
+      <p>Tap the <strong>Share</strong> button <span class="share-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="14" viewBox="0 0 25 27" width="14">
+                            <path d="M0 0h24v24H0V0z" fill="none"/>
+                            <path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .89 2 2z" fill="white"/>
+                        </svg>
+                    </span><br>then <strong>“Add to Home Screen”</strong>.</p>
       <button onclick="document.getElementById('installModal').style.display='none'">Got it</button>
     </div>
   </div>
