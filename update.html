@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Updating...</title>
+  <title>Updating App...</title>
   <style>
     body {
       background: #2c2c2c;
@@ -17,6 +17,7 @@
       padding: 20px;
       color: #fff;
       overflow: hidden;
+      text-align: center;
     }
 
     .logo {
@@ -32,7 +33,6 @@
     .message {
       font-size: 22px;
       font-weight: 500;
-      text-align: center;
       margin-bottom: 16px;
     }
 
@@ -58,8 +58,19 @@
     .note {
       font-size: 14px;
       color: #aaa;
-      margin-top: 30px;
-      text-align: center;
+      margin-top: 20px;
+    }
+
+    #installPrompt {
+      margin-top: 24px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      display: none;
     }
 
     @keyframes fadeIn {
@@ -75,12 +86,39 @@
   <div class="progress-container">
     <div class="progress-bar" id="progressBar"></div>
   </div>
-  <div class="note">This ensures you have the latest, fastest version.</div>
+  <div class="note" id="statusNote">This ensures you have the latest, fastest version.</div>
+  <button id="installPrompt">Install App</button>
 
   <script>
     (async () => {
+      const REDIRECT_URL = '/index.html';
       const progressBar = document.getElementById('progressBar');
-      const REDIRECT_URL = '/index.html'; // change if needed
+      const statusNote = document.getElementById('statusNote');
+      const installBtn = document.getElementById('installPrompt');
+
+      let deferredPrompt;
+
+      // Detect if user is in browser vs standalone mode
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+      // Watch for install prompt trigger
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'inline-block';
+      });
+
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') {
+            installBtn.style.display = 'none';
+            statusNote.textContent = 'App installed! 🎉';
+          }
+          deferredPrompt = null;
+        }
+      });
 
       function setProgress(percent) {
         progressBar.style.width = percent + '%';
@@ -104,7 +142,7 @@
         const fakeProgress = runSmoothProgress();
 
         try {
-          // 1. Unregister all service workers
+          // 1. Unregister all SWs
           if ('serviceWorker' in navigator) {
             const regs = await navigator.serviceWorker.getRegistrations();
             for (let reg of regs) await reg.unregister();
@@ -116,34 +154,58 @@
             for (let key of keys) await caches.delete(key);
           }
 
-          // 3. Preload new assets
-          const assetsToCache = [
+          // 3. Preload assets
+          const assets = [
             '/',
             '/index.html',
-            '/main.js',
-            '/style.css',
-            '/logo.png',
-            '/sw.js',
+            '/home.html',
+            '/profile.html',
+            '/css/style.css',
+            '/js/index.js',
+            '/js/home.js',
+            '/manifest.json',
+            '/img/icon-192x192.png',
+            '/img/icon-512x512.png',
+            '/sw.js'
           ];
 
           if ('caches' in window) {
-            const cache = await caches.open('app-cache-v1'); // name it clearly
-            await cache.addAll(assetsToCache);
+            const cache = await caches.open('app-cache-v1');
+for (const url of assets) {
+  try {
+    const response = await fetch(url);
+    if (response.ok) {
+      await cache.put(url, response);
+    } else {
+      console.warn(`⚠️ Skipped: ${url} (status ${response.status})`);
+    }
+  } catch (err) {
+    console.warn(`❌ Failed to cache ${url}:`, err.message);
+  }
+}
           }
 
-          // 4. Re-register the SW
+          // 4. Re-register service worker
           if ('serviceWorker' in navigator) {
             await navigator.serviceWorker.register('/sw.js');
           }
-        } catch (err) {
-          console.error('Update failed:', err);
-        }
 
-        // 5. Finish up
-        await fakeProgress;
-        setProgress(100);
-        await delay(600);
-        window.location.href = REDIRECT_URL;
+          // Finish progress
+          await fakeProgress;
+          setProgress(100);
+          await delay(500);
+
+          if (isStandalone) {
+            window.location.href = REDIRECT_URL;
+          } else {
+            statusNote.textContent = 'Update complete! You can now install or open the app from your home screen.';
+            installBtn.style.display = deferredPrompt ? 'inline-block' : 'none';
+          }
+
+        } catch (e) {
+          console.error('Update failed:', e);
+          statusNote.textContent = 'Update failed. Try again later.';
+        }
       }
 
       performUpdate();
