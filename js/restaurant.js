@@ -14,6 +14,19 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+let markupPrice = 0;
+
+const fetchMarkupPrice = async () => {
+  try {
+    const markupDoc = await getDoc(doc(db, "settings", "markup"));
+    if (markupDoc.exists()) {
+      markupPrice = parseFloat(markupDoc.data().amount) || 0;
+    }
+  } catch (e) {
+    console.warn("Failed to fetch markup price:", e);
+  }
+};
+
 
 const urlParams = new URLSearchParams(window.location.search);
 const restaurantId = urlParams.get("id");
@@ -210,15 +223,19 @@ const renderMenu = grouped => {
         // Sort items within category by orderNumber
         items.sort((a, b) => (a.orderNumber ?? 9999) - (b.orderNumber ?? 9999));
 
-        menuHTML += items.map(item => `
-            <div class="menu-item" data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
-                <p class="menu-item-name">${item.name}</p>
-                <div class="menu-item-right">
-<p class="menu-item-price">GH₵${item.price.toFixed(2)}</p>
-                    <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
-                </div>
-            </div>
-        `).join("");
+       menuHTML += items.map(item => {
+  const finalPrice = (item.price + markupPrice).toFixed(2);
+  return `
+    <div class="menu-item" data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
+      <p class="menu-item-name">${item.name}</p>
+      <div class="menu-item-right">
+        <p class="menu-item-price">GH₵${finalPrice}</p>
+        <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
+      </div>
+    </div>
+  `;
+}).join("");
+
 
         menuHTML += `</div>`;
     }
@@ -379,7 +396,7 @@ const updateCartButton = () => {
     const cartBtn = elements.viewCartBtn;
 
     if (cart.length > 0) {
-        const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const totalPrice = cart.reduce((sum, item) => sum + markupPrice + item.price * item.quantity, 0);
         const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
         cartBtn.innerHTML = `Checkout - GH₵${totalPrice.toFixed(2)} <span class="cart-badge">${itemCount}</span>`;
@@ -521,19 +538,19 @@ const visibleItems = items.filter(item => item.visible && categoryVisibilityMap[
 
 // Load restaurant and menu
 (async () => {
-  // ⬇️ Show skeleton loader
   document.getElementById("restaurant-loader").style.display = "block";
   elements.menuSection.style.display = "none";
   elements.restaurantImage.style.display = "none";
 
   await loadRestaurant();
+  await fetchMarkupPrice(); // ⬅️ Fetch markup from Firestore
   await loadMenuLive();
   updateCartButton();
 
-  // ⬇️ Hide loader, show real content
   document.getElementById("restaurant-loader").style.display = "none";
   elements.menuSection.style.display = "block";
   elements.restaurantImage.style.display = "block";
 })();
+
 
 

@@ -25,6 +25,8 @@ window.firebaseExports = {
   increment
 };
 
+let markupPrice = 0; // Will hold your admin-defined markup
+
 let isRestaurantOpen = true;
 
 async function checkRestaurantStatus(restaurantId) {
@@ -36,6 +38,18 @@ async function checkRestaurantStatus(restaurantId) {
     if (!isRestaurantOpen) {
       showToast("This restaurant is currently closed. You can't place an order.", "error");
     }
+  }
+}
+
+async function fetchMarkupPrice() {
+  try {
+    const markupDoc = await getDoc(doc(db, "settings", "markup"));
+    if (markupDoc.exists()) {
+      markupPrice = parseFloat(markupDoc.data().amount) || 0;
+      console.log("Markup price loaded:", markupPrice);
+    }
+  } catch (e) {
+    console.warn("Failed to fetch markup price:", e);
   }
 }
 
@@ -211,8 +225,9 @@ if (cart.length && cart[0].restaurantId) {
 
 
   const itemsHTML = Array.from(groupedCart.values()).map(item => {
-    const itemTotal = item.price * item.quantity;
-    subtotal += itemTotal;
+   const itemTotal = (item.price + markupPrice) * item.quantity;
+subtotal += itemTotal;
+
 
     const extrasHTML = item.extras && item.extras.length > 0
         ? `<div style="font-size: 0.8rem; color: #ccc; margin-top: 4px;">
@@ -228,7 +243,7 @@ if (cart.length && cart[0].restaurantId) {
     <div class="cart-item" data-key="${item.name}-${item.price}">
         <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
             <p class="item-name" style="margin: 0;">${item.name}</p>
-            <p class="item-price" style="font-size: 0.85rem; opacity: 0.7; margin: 0;">GH₵${item.price.toFixed(2)} each</p>
+            <p class="item-price" style="font-size: 0.85rem; opacity: 0.7; margin: 0;">GH₵${(item.price + markupPrice).toFixed(2)} each</p>
             ${sizeHTML}
             ${extrasHTML}
         </div>
@@ -664,9 +679,11 @@ window.location.href = "successful.html";
     }
   };
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderCart();
+document.addEventListener("DOMContentLoaded", async () => {
+  await fetchMarkupPrice();        // ⬅️ fetch markup first
+  renderCart();                    // ⬅️ now prices will reflect it
   initFooter();
+
 
   const featherObserver = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {

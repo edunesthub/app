@@ -1,6 +1,6 @@
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { getFirestore, collection, query, getDoc, doc, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
         const firebaseConfig = {
     apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
@@ -14,6 +14,21 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+let markupPrice = 0;
+
+async function fetchMarkupPrice() {
+  try {
+    const markupDoc = await getDoc(doc(db, "settings", "markup"));
+    if (markupDoc.exists()) {
+      markupPrice = parseFloat(markupDoc.data().amount) || 0;
+      console.log("Markup price:", markupPrice);
+    }
+  } catch (err) {
+    console.warn("Failed to fetch markup price", err);
+  }
+}
+
+
         const ordersList = document.getElementById("orders-list");
 
         const getDeviceId = (() => {
@@ -98,7 +113,7 @@
 
         const itemsListSummary = groupedCart.map(item => `${item.quantity}x ${item.name}`).join(", ");
         const itemsListFull = groupedCart.map(item => {
-  const itemTotal = typeof item.total === "number" ? item.total.toFixed(2) : (item.price * item.quantity).toFixed(2);
+  const itemTotal = typeof item.total === "number" ? item.total.toFixed(2) : ((item.price + markupPrice) * item.quantity).toFixed(2);
 
   const sizeInfo = item.size
     ? `<div style="font-size: 0.8rem; color: #aaa;"><strong>Size:</strong> ${item.size}</div>`
@@ -119,7 +134,7 @@
 
 
         const subtotal = groupedCart.reduce((sum, item) => {
-          const itemTotal = typeof item.total === "number" ? item.total : item.price * item.quantity;
+          const itemTotal = typeof item.total === "number" ? item.total : (item.price + markupPrice) * item.quantity;
           return sum + itemTotal;
         }, 0);
 
@@ -127,7 +142,7 @@
 const baseDeliveryFee = order.deliveryFee || 3.00;
 const totalMealCount = groupedCart.reduce((sum, item) => sum + item.quantity, 0);
 const finalDeliveryFee = baseDeliveryFee + Math.max(0, (totalMealCount - 1) * 2);
-const total = order.totalAmount || (subtotal + processingFee + finalDeliveryFee);
+const total = (subtotal + processingFee + finalDeliveryFee);
         const statusText = getStatusText(order.status || "pending");
         const statusClass = `status-badge status-${order.status || "pending"}`;
 
@@ -167,6 +182,6 @@ const total = order.totalAmount || (subtotal + processingFee + finalDeliveryFee)
   });
 };
 
-        loadOrders();
+fetchMarkupPrice().then(() => loadOrders());
         feather.replace();
     
