@@ -119,3 +119,10 @@ self.addEventListener('activate', async (event) => {
 // 🚀 Instant control on install
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', () => self.clients.claim());
+// 🔄 Listen for skip waiting command from client
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('🛎️ SW received SKIP_WAITING');
+    self.skipWaiting();
+  }
+});
