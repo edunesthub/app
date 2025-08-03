@@ -201,7 +201,7 @@ const loadRestaurant = async () => {
     }
 };
 
-const renderMenu = grouped => {
+const renderMenu = (grouped, categoryMetaMap) => {
     if (!grouped || Object.keys(grouped).length === 0) {
         elements.menuSection.innerHTML = `<div class="error-message">No menu available.</div>`;
         return;
@@ -217,8 +217,21 @@ const renderMenu = grouped => {
     });
 
     for (const [category, items] of sortedCategories) {
-        menuHTML += `<h3 style="margin: 15px 0 10px; color: #ccc; font-weight: 700; padding-left: 10px; padding-top: 15px;">${category}</h3>`;
-        menuHTML += `<div class="menu-container">`;
+        const isCollapsible = categoryMetaMap[category]?.collapsible === true;
+
+if (isCollapsible) {
+  menuHTML += `
+    <details class="category-group">
+      <summary class="category-title" style="margin: 15px 0 10px; color: #ccc; font-weight: 700; padding-left: 10px; padding-top: 15px;">${category}</summary>
+      <div class="menu-container">
+  `;
+} else {
+  menuHTML += `
+    <h3 class="category-title" style="margin: 15px 0 10px; color: #ccc; font-weight: 700; padding-left: 10px; padding-top: 15px;">${category}</h3>
+    <div class="menu-container">
+  `;
+}
+
 
         // Sort items within category by orderNumber
         items.sort((a, b) => (a.orderNumber ?? 9999) - (b.orderNumber ?? 9999));
@@ -238,6 +251,8 @@ const renderMenu = grouped => {
 
 
         menuHTML += `</div>`;
+if (isCollapsible) menuHTML += `</details>`;
+
     }
 
 elements.menuSection.innerHTML = menuHTML;
@@ -501,12 +516,16 @@ const loadMenuLive = async () => {
         categoryOrderMap[data.name] = data.sortOrder ?? 9999;
     });
 
-    const categoryVisibilityMap = {};
+    const categoryMetaMap = {};
 catSnap.forEach(doc => {
     const data = doc.data();
-    categoryOrderMap[data.name] = data.sortOrder ?? 9999;
-    categoryVisibilityMap[data.name] = data.visible !== false; // Default to true
+    categoryMetaMap[data.name] = {
+        visible: data.visible !== false,
+        order: data.sortOrder ?? 9999,
+        collapsible: data.collapsible === true
+    };
 });
+
 
     const items = menuSnap.docs.map(doc => {
     const data = doc.data();
@@ -523,7 +542,7 @@ catSnap.forEach(doc => {
     };
 });
 
-const visibleItems = items.filter(item => item.visible && categoryVisibilityMap[item.category] !== false);
+const visibleItems = items.filter(item => item.visible && categoryMetaMap[item.category]?.visible !== false);
 
 
     const grouped = {};
@@ -533,7 +552,7 @@ const visibleItems = items.filter(item => item.visible && categoryVisibilityMap[
         grouped[category].push(item);
     });
 
-    renderMenu(grouped);
+renderMenu(grouped, categoryMetaMap);
 };
 
 // Load restaurant and menu
