@@ -140,60 +140,65 @@ if (querySnapshot.empty) {
             });
     
             // Create or update cards
-            const fragment = document.createDocumentFragment();
-            restaurants.forEach((data, index) => {
-                const restaurantId = data.id;
-                const deliveryTime = data.delivery_time || "N/A";
-                const isOpen = data.isOpen !== false;
-    
-                let card = existingCards.find(c => c.dataset.id === restaurantId);
-                if (card) {
-                    // Update existing card if data has changed
-                    const img = card.querySelector(".list-card-image img");
-                    const nameLink = card.querySelector(".list-card-body h6 a");
-                    const timeSpan = card.querySelector(".list-card-body .time span");
-                    const closedBadge = card.querySelector(".closed-badge");
-    
-                    const newImgSrc = data.image || 'img/placeholder.png';
-                    const newName = data.name || 'Unknown Restaurant';
-                    const newTimeText = `<i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins`;
-                    const needsClosedBadge = !isOpen;
-    
-                    if (img.src !== newImgSrc) img.src = newImgSrc;
-                    if (nameLink.textContent !== newName) nameLink.textContent = newName;
-                    if (timeSpan.innerHTML !== newTimeText) timeSpan.innerHTML = newTimeText;
-                    if (needsClosedBadge && !closedBadge) {
-                        const badge = document.createElement("span");
-                        badge.className = "closed-badge";
-                        badge.textContent = "Closed 🔒";
-                        card.querySelector(".list-card-image a").appendChild(badge);
-                    } else if (!needsClosedBadge && closedBadge) {
-                        closedBadge.remove();
-                    }
-                } else {
-                    // Create new card
-                    card = document.createElement("div");
-                    card.className = "list-card";
-                    card.dataset.id = restaurantId;
-    
-                    card.innerHTML = `
-                        <div class="list-card-image">
-                            <a href="restaurant.html?id=${restaurantId}">
-                                <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
-                                ${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
-                            </a>
-                        </div>
-                        <div class="list-card-body">
-                            <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
-                            <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
-                        </div>
-                    `;
-    
-                    fragment.appendChild(card);
-                }
-            });
-    
-            trendingList.appendChild(fragment);
+const fragment = document.createDocumentFragment();
+restaurants.forEach((data, index) => {
+    const restaurantId = data.id;
+    const deliveryTime = data.delivery_time || "N/A";
+    const isOpen = data.isOpen !== false;
+
+    let card = existingCards.find(c => c.dataset.id === restaurantId);
+    if (card) {
+        // Update existing card if data has changed
+        const img = card.querySelector(".list-card-image img");
+        const nameLink = card.querySelector(".list-card-body h6 a");
+        const timeSpan = card.querySelector(".list-card-body .time span");
+        const imageLink = card.querySelector(".list-card-image a");
+
+        const newImgSrc = data.image || 'img/placeholder.png';
+        const newName = data.name || 'Unknown Restaurant';
+        const newTimeText = `<i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins`;
+
+        if (img.src !== newImgSrc) img.src = newImgSrc;
+        if (nameLink.textContent !== newName) nameLink.textContent = newName;
+        if (timeSpan.innerHTML !== newTimeText) timeSpan.innerHTML = newTimeText;
+
+        // Remove existing badge
+        const existingBadge = card.querySelector(".status-badge");
+        if (existingBadge) existingBadge.remove();
+
+        // Add new badge
+        const badge = document.createElement("span");
+        badge.className = `status-badge ${isOpen ? 'open-badge' : 'closed-badge'}`;
+        badge.textContent = isOpen ? 'Opened ✅' : 'Closed 🔒';
+        imageLink.appendChild(badge);
+
+    } else {
+        // Create new card
+        card = document.createElement("div");
+        card.className = "list-card";
+        card.dataset.id = restaurantId;
+
+        card.innerHTML = `
+            <div class="list-card-image">
+                <a href="restaurant.html?id=${restaurantId}">
+                    <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
+                    <span class="status-badge ${isOpen ? 'open-badge' : 'closed-badge'}">
+                        ${isOpen ? 'Opened ✅' : 'Closed 🔒'}
+                    </span>
+                </a>
+            </div>
+            <div class="list-card-body">
+                <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
+                <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
+            </div>
+        `;
+
+        fragment.appendChild(card);
+    }
+});
+
+trendingList.appendChild(fragment);
+
     
             // Apply 'loaded' class to new cards with staggered animation
             setTimeout(() => {

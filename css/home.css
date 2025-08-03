@@ -157,19 +157,6 @@ html {
     border-radius: 12px;
     font-size: 0.75rem;
 }
-.closed-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            color: #fff;
-            font-size: 0.7rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            background: #ff3b30;
-            padding: 2px 6px;
-            border-radius: 4px;
-            pointer-events: none;
-        }
 
     .skeleton-card {
     background: #565656;
@@ -223,4 +210,35 @@ html {
 @keyframes shimmer {
     0% { left: -100%; }
     100% { left: 100%; }
+}
+   /* Ensure the badge container has position: relative */
+.list-card-image {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Badge styles */
+.status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    left: auto;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+    z-index: 5;
+    white-space: nowrap;
+}
+
+/* Color styles */
+.open-badge {
+    background-color: #28a745; /* green */
+    color: white;
+}
+
+.closed-badge {
+    background-color: #dc3545; /* red */
+    color: white;
 }

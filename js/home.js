@@ -51,7 +51,9 @@
     <div class="list-card-image">
         <a href="restaurant.html?id=${restaurantId}">
             <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
-            ${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
+            <span class="status-badge ${isOpen ? 'open-badge' : 'closed-badge'}">
+                ${isOpen ? 'Opened ✅' : 'Closed 🔒'}
+            </span>
         </a>
     </div>
     <div class="list-card-body">
@@ -59,6 +61,7 @@
         <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
     </div>
 </div>`;
+
 
                 });
     
