@@ -247,7 +247,6 @@
       }
       deferredPrompt = null;
     } else {
-      // 🔹 Trigger modal manually on button click
       installModal.style.display = 'flex';
     }
   });
@@ -280,13 +279,13 @@
         for (let reg of regs) await reg.unregister();
       }
 
-      // 🔹 CLEAR CACHES
+      // 🔹 CLEAR ONLY CACHES (DO NOT clear localStorage/sessionStorage)
       if ('caches' in window) {
         const keys = await caches.keys();
         for (let key of keys) await caches.delete(key);
       }
 
-      // 🔹 PRELOAD ASSETS
+      // 🔹 PRELOAD ASSETS (optional for speed)
       const assets = [
         '/', '/index.html', '/home.html', '/profile.html',
         '/css/style.css', '/js/index.js', '/js/home.js',
@@ -317,29 +316,20 @@
       // 🔹 COMPLETE PROGRESS
       await fakeProgress;
       setProgress(100);
-      clearInterval(dotInterval); // 🔹 Stop the dot animation
-      dots.style.display = 'none'; // 🔹 Hide the dots
+      clearInterval(dotInterval);
+      dots.style.display = 'none';
       await delay(500);
 
+      // 🔹 Broadcast reload
       const reloadChannel = new BroadcastChannel('chawp-update');
-reloadChannel.postMessage({ type: 'force-reload' });
-reloadChannel.close(); // Close the channel
-localStorage.setItem('chawp-reload', Date.now()); // Safari fallback
+      reloadChannel.postMessage({ type: 'force-reload' });
+      reloadChannel.close();
 
+      // 🔹 Safari fallback: mark reload timestamp (but don’t clear storage!)
+      localStorage.setItem('chawp-reload', Date.now());
 
-      if (isStandalone) {
-        window.location.href = REDIRECT_URL;
-      } else {
-        dynamicText.textContent = '✅ Update complete!';
-        statusNote.textContent = '✅ You can now open the app from your home screen.';
-document.getElementById('installNotice').style.display = 'block';
-
-setTimeout(() => {
-  installBtn.style.animation = 'gentleShake 1s ease-in-out infinite';
-}, 3000);
-
-      }
-
+      // 🔹 Reload now (simulate Ctrl+Shift+R)
+      window.location.href = REDIRECT_URL;
     } catch (e) {
       console.error('Update failed:', e);
       statusNote.textContent = 'Update failed. Try again later.';
@@ -348,16 +338,8 @@ setTimeout(() => {
 
   performUpdate();
 })();
-// Clear localStorage, sessionStorage, and IndexedDB
-sessionStorage.clear();
-
-if (indexedDB) {
-  indexedDB.databases && indexedDB.databases().then((dbs) => {
-    dbs.forEach(db => indexedDB.deleteDatabase(db.name));
-  });
-}
-
 </script>
+
 
 
 </body>
