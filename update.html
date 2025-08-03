@@ -321,6 +321,12 @@
       dots.style.display = 'none'; // 🔹 Hide the dots
       await delay(500);
 
+      const reloadChannel = new BroadcastChannel('chawp-update');
+reloadChannel.postMessage({ type: 'force-reload' });
+reloadChannel.close(); // Close the channel
+localStorage.setItem('chawp-reload', Date.now()); // Safari fallback
+
+
       if (isStandalone) {
         window.location.href = REDIRECT_URL;
       } else {
@@ -342,6 +348,16 @@ setTimeout(() => {
 
   performUpdate();
 })();
+// Clear localStorage, sessionStorage, and IndexedDB
+localStorage.clear();
+sessionStorage.clear();
+
+if (indexedDB) {
+  indexedDB.databases && indexedDB.databases().then((dbs) => {
+    dbs.forEach(db => indexedDB.deleteDatabase(db.name));
+  });
+}
+
 </script>
 
 
