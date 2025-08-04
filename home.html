@@ -194,15 +194,28 @@
                 }
     
                 allRestaurants = [];
-                let output = "";
-                querySnapshot.forEach(doc => {
-                    const data = doc.data();
-                    const restaurantId = doc.id;
-                    const deliveryTime = data.delivery_time || "N/A";
-                   
-                    const isOpen = data.isOpen !== false; // Default to true if isOpen is undefined
-                    allRestaurants.push({ id: restaurantId, ...data });
-                  output += `<div class="list-card" data-id="${restaurantId}">
+               const rawRestaurants = [];
+querySnapshot.forEach(doc => {
+  rawRestaurants.push({ id: doc.id, ...doc.data() });
+});
+
+// Sort so that opened restaurants come first
+rawRestaurants.sort((a, b) => {
+  const aOpen = a.isOpen !== false ? 1 : 0;
+  const bOpen = b.isOpen !== false ? 1 : 0;
+  return bOpen - aOpen; // Opened (1) before Closed (0)
+});
+
+allRestaurants = [];
+let output = "";
+
+rawRestaurants.forEach(data => {
+  const restaurantId = data.id;
+  const deliveryTime = data.delivery_time || "N/A";
+  const isOpen = data.isOpen !== false;
+  allRestaurants.push(data);
+
+  output += `<div class="list-card" data-id="${restaurantId}">
     <div class="list-card-image">
         <a href="restaurant.html?id=${restaurantId}">
             <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
@@ -215,11 +228,9 @@
         <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
         <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
     </div>
-</div>`;
+  </div>`;
+});
 
-
-                });
-    
                 requestAnimationFrame(() => {
                     restaurantList.innerHTML = output;
                     document.querySelectorAll(".list-card-image img").forEach(img => {
