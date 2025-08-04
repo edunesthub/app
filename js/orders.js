@@ -49,16 +49,21 @@ async function fetchMarkupPrice() {
   );
 };
 
+function getStatusDetails(status) {
+  const statusMap = {
+    pending:         { text: "🕐 Pending", class: "status-gray" },
+    accepted:        { text: "✅ Accepted", class: "status-blue" },
+    preparing:       { text: "🍳 Preparing", class: "status-orange" },
+    "ready-for-pickup": { text: "📦 Ready for Pickup", class: "status-green" },
+    being_delivered: { text: "🚚 Being Delivered", class: "status-purple" },
+    delivered:       { text: "✅ Delivered", class: "status-green" },
+    not_delivered:   { text: "❌ Not Delivered", class: "status-red" },
+    cancelled:       { text: "❌ Cancelled", class: "status-darkred" },
+  };
 
-        const getStatusText = (status) => {
-            switch (status) {
-                case "pending": return "Order Confirmed";
-                case "being_delivered": return "In Transit";
-                case "delivered": return "Delivered!";
-                case "not_delivered": return "Delivery Failed";
-                default: return "Unknown";
-            }
-        };
+  return statusMap[status] || { text: status, class: "status-gray" };
+}
+
 
         const loadOrders = () => {
   const deviceId = getDeviceId();
@@ -143,8 +148,7 @@ const baseDeliveryFee = order.deliveryFee || 3.00;
 const totalMealCount = groupedCart.reduce((sum, item) => sum + item.quantity, 0);
 const finalDeliveryFee = baseDeliveryFee + Math.max(0, (totalMealCount - 1) * 2);
 const total = (subtotal + processingFee + finalDeliveryFee);
-        const statusText = getStatusText(order.status || "pending");
-        const statusClass = `status-badge status-${order.status || "pending"}`;
+        const { text: statusText, class: statusClass } = getStatusDetails(order.status || "pending");
 
         const orderDiv = document.createElement("div");
         orderDiv.className = "order-box bg-darkish p-3 mb-3 rounded";

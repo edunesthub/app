@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Track Order</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="vendor/icons/feather.css" rel="stylesheet">
+  <style>
+    body {
+  background: #1a1a1a;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  color: #fff;
+  font-weight: 700;
+}
+
+.timeline {
+  position: relative;
+  max-width: 500px;
+  margin: 0 auto;
+  padding-left: 40px;
+  border-left: 3px solid #444;
+}
+
+.step {
+  position: relative;
+  padding: 20px 0 20px 30px;
+  color: #aaa;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.step-icon {
+  width: 24px;
+  height: 24px;
+  background: #444;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #999;
+  font-size: 14px;
+  transition: background 0.3s ease, transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.step.active .step-icon {
+  background: #00c6ff;
+  color: #000;
+  transform: scale(1.2);
+  box-shadow: 0 0 10px #00c6ff80;
+}
+
+.step.active {
+  color: #fff;
+}
+
+#status-text {
+  color: #ccc;
+  font-size: 15px;
+}
+
+@media (max-width: 600px) {
+  .timeline {
+    padding-left: 30px;
+  }
+
+  .step {
+    font-size: 14px;
+  }
+}
+@keyframes pop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.4); }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulse-glow {
+  0%   { box-shadow: 0 0 0px rgba(0,255,150,0.6); }
+  50%  { box-shadow: 0 0 15px rgba(0,255,150,0.8); }
+  100% { box-shadow: 0 0 0px rgba(0,255,150,0.6); }
+}
+
+.delivered-animation .step-icon {
+  background: #00ff94 !important;
+  color: #000 !important;
+  animation: pop 0.4s ease, pulse-glow 1.5s ease infinite;
+}
+
+#delivered-message {
+  margin-top: 30px;
+  padding: 15px;
+  text-align: center;
+  font-size: 18px;
+  color: #00ff94;
+  font-weight: 600;
+  animation: pop 0.4s ease;
+}
+/* Vertical progress line */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #444;
+  border-radius: 2px;
+}
+
+/* Delivered animation */
+@keyframes pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.4); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 rgba(0,255,150,0.4); }
+  50% { box-shadow: 0 0 15px rgba(0,255,150,0.8); }
+  100% { box-shadow: 0 0 0 rgba(0,255,150,0.4); }
+}
+
+.delivered-animation .step-icon {
+  background: #00ff94 !important;
+  color: #000 !important;
+  animation: pop 0.4s ease, pulse-glow 1.5s ease infinite;
+}
+
+/* Success message */
+#delivered-message {
+  margin-top: 30px;
+  padding: 15px;
+  text-align: center;
+  font-size: 18px;
+  color: #00ff94;
+  font-weight: 600;
+  animation: pop 0.4s ease;
+}
+
+/* Control buttons */
+#track-controls {
+  margin-top: 40px;
+  text-align: center;
+}
+
+#track-controls button {
+  background: #333;
+  border: none;
+  padding: 10px 20px;
+  color: #fff;
+  font-weight: 600;
+  margin: 5px;
+  border-radius: 8px;
+  transition: 0.3s ease;
+}
+
+#track-controls button:hover {
+  background: #555;
+}
+.container {
+  padding: 1.5rem 1rem;
+  max-width: 100%;
+}
+
+.timeline {
+  padding-left: 30px;
+  border-left: 2px solid #555;
+}
+
+.step {
+  padding: 15px 0 15px 25px;
+  font-size: 15px;
+}
+
+.step-icon {
+  width: 28px;
+  height: 28px;
+  font-size: 15px;
+}
+
+#order-id-display {
+  font-size: 13px;
+  color: #00c6ff;
+  word-break: break-all;
+}
+
+#status-text {
+  color: #eee;
+  font-size: 14px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #222;
+  border-radius: 8px;
+  display: inline-block;
+  max-width: 100%;
+  text-align: center;
+}
+
+
+  </style>
+</head>
+<body class="bg-dark text-white">
+  <div class="container py-5">
+<h2 class="text-center mb-2"><i class="feather-map-pin"></i> Order Tracking</h2>
+<p class="text-center text-info mb-4 small" id="order-id-display">Order ID: ...</p>
+    <div id="tracking-container" class="timeline"></div>
+    <p class="text-center mt-5" id="status-text">Loading status...</p>
+  </div>
+
+  <script type="module" >
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import {
+  getFirestore, doc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+// 🔐 Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+  authDomain: "von600-7982d.firebaseapp.com",
+  projectId: "von600-7982d",
+  storageBucket: "von600-7982d.appspot.com",
+  messagingSenderId: "164591218045",
+  appId: "1:164591218045:web:afe17512e16573e7903014"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 📦 Get order ID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const orderId = urlParams.get("id");
+// Show order ID on page
+document.getElementById("order-id-display").textContent = `Order ID: ${orderId}`;
+
+if (!orderId) {
+  document.getElementById("status-text").textContent = "Invalid order link.";
+  throw new Error("Missing order ID");
+}
+
+// 🚚 Status stages and icons
+const steps = [
+  "pending",
+  "accepted",
+  "preparing",
+  "ready-for-pickup",
+  "being_delivered",
+  "delivered",
+  "not_delivered",
+  "cancelled"
+];
+
+const labels = {
+  pending: "Order Placed",
+  accepted: "Order Accepted",
+  preparing: "Being Prepared",
+  "ready-for-pickup": "Ready for Pickup",
+  being_delivered: "Out for Delivery",
+  delivered: "Delivered",
+  not_delivered: "Delivery Failed",
+  cancelled: "Cancelled"
+};
+
+const icons = {
+  pending: "clock",
+  accepted: "check-circle",
+  preparing: "loader",
+  "ready-for-pickup": "package",
+  being_delivered: "truck",
+  delivered: "check",
+  not_delivered: "x-circle",
+  cancelled: "x-octagon"
+};
+
+// 🎯 Build the timeline
+const container = document.getElementById("tracking-container");
+
+steps.forEach(status => {
+  const div = document.createElement("div");
+  div.className = `step step-${status}`;
+  div.dataset.status = status;
+
+  const icon = document.createElement("div");
+  icon.className = "step-icon";
+  icon.innerHTML = `<i data-feather="${icons[status] || 'circle'}"></i>`;
+
+  const label = document.createElement("span");
+  label.textContent = labels[status];
+
+  div.appendChild(icon);
+  div.appendChild(label);
+  container.appendChild(div);
+});
+
+feather.replace();
+
+// 🔁 Live update tracking
+onSnapshot(doc(db, "orders", orderId), (docSnap) => {
+  if (!docSnap.exists()) {
+    document.getElementById("status-text").textContent = "Order not found.";
+    return;
+  }
+
+  const currentStatus = docSnap.data().status;
+  document.getElementById("status-text").textContent = `Current Status: ${labels[currentStatus] || currentStatus}`;
+
+  document.querySelectorAll(".step").forEach(el => {
+    const isActive = steps.indexOf(el.dataset.status) <= steps.indexOf(currentStatus);
+    el.classList.toggle("active", isActive);
+
+    // 🎉 Deliver animation
+    if (el.dataset.status === "delivered") {
+      if (currentStatus === "delivered") {
+        el.classList.add("delivered-animation");
+      } else {
+        el.classList.remove("delivered-animation");
+      }
+    }
+  });
+
+  // 👏 Show delivered success message
+  const existing = document.getElementById("delivered-message");
+  if (currentStatus === "delivered" && !existing) {
+    triggerConfetti();
+    const msg = document.createElement("div");
+    msg.id = "delivered-message";
+    msg.textContent = "🎉 Your order has been delivered!";
+    document.querySelector(".container").appendChild(msg);
+  } else if (existing && currentStatus !== "delivered") {
+    existing.remove();
+  }
+});
+// 🔄 Refresh & Back
+const controls = document.createElement("div");
+controls.id = "track-controls";
+controls.innerHTML = `
+  <button onclick="location.reload()">🔄 Refresh</button>
+  <button onclick="location.href='orders.html'">⬅️ Back to Orders</button>
+`;
+document.querySelector(".container").appendChild(controls);
+
+// 🎉 Confetti (once)
+let confettiTriggered = false;
+function triggerConfetti() {
+  if (confettiTriggered) return;
+  confettiTriggered = true;
+
+  const script = document.createElement("script");
+  script.src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js";
+  script.onload = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
+  document.body.appendChild(script);
+}
+
+  </script>
+  <script src="https://unpkg.com/feather-icons"></script>
+</body>
+</html>
