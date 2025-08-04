@@ -312,22 +312,44 @@ onSnapshot(doc(db, "orders", orderId), (docSnap) => {
     return;
   }
 
-  const currentStatus = docSnap.data().status;
-  document.getElementById("status-text").textContent = `Current Status: ${labels[currentStatus] || currentStatus}`;
+  const data = docSnap.data();
+  const currentStatus = data.status;
+  const timestamps = data.statusTimestamps || {};
 
+  // Hide failed/cancelled unless current
   document.querySelectorAll(".step").forEach(el => {
-    const isActive = steps.indexOf(el.dataset.status) <= steps.indexOf(currentStatus);
+    const stepStatus = el.dataset.status;
+    const isSpecial = stepStatus === "not_delivered" || stepStatus === "cancelled";
+    if (isSpecial && stepStatus !== currentStatus) {
+      el.style.display = "none";
+      return;
+    } else {
+      el.style.display = "flex";
+    }
+
+    const isActive = steps.indexOf(stepStatus) <= steps.indexOf(currentStatus);
     el.classList.toggle("active", isActive);
 
+    // Timestamp formatting
+    const existingTime = el.querySelector(".step-time");
+    if (existingTime) existingTime.remove();
+
+    if (timestamps[stepStatus]) {
+      const ts = timestamps[stepStatus].toDate().toLocaleString();
+      const timeEl = document.createElement("div");
+      timeEl.className = "step-time text-muted small";
+      timeEl.textContent = ts;
+      el.appendChild(timeEl);
+    }
+
     // 🎉 Deliver animation
-    if (el.dataset.status === "delivered") {
-      if (currentStatus === "delivered") {
-        el.classList.add("delivered-animation");
-      } else {
-        el.classList.remove("delivered-animation");
-      }
+    if (stepStatus === "delivered") {
+      el.classList.toggle("delivered-animation", currentStatus === "delivered");
     }
   });
+
+  // Current status label
+  document.getElementById("status-text").textContent = `Current Status: ${labels[currentStatus] || currentStatus}`;
 
   // 👏 Show delivered success message
   const existing = document.getElementById("delivered-message");
@@ -341,6 +363,7 @@ onSnapshot(doc(db, "orders", orderId), (docSnap) => {
     existing.remove();
   }
 });
+
 // 🔄 Refresh & Back
 const controls = document.createElement("div");
 controls.id = "track-controls";
