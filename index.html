@@ -81,28 +81,28 @@
             </div>
             <div class="col">
                 <div class="footer-item">
-                    <a href="home.html" class="text-white small fw-bold text-decoration-none">
+                    <a href="home.html" class="footer-tab text-white small fw-bold text-decoration-none">
                         <p class="h4 m-0"><i class="feather-home text-white"></i></p>Home
                     </a>
                 </div>
             </div>
             <div class="col">
                 <div class="footer-item">
-                    <a href="cart.html" class="text-white small fw-bold text-decoration-none">
+                    <a href="cart.html" class="footer-tab text-white small fw-bold text-decoration-none">
                         <p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart
                     </a>
                 </div>
             </div>
             <div class="col">
                 <div class="footer-item">
-                    <a href="orders.html" class="text-white small fw-bold text-decoration-none">
+                    <a href="orders.html" class="footer-tab text-white small fw-bold text-decoration-none">
                         <p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders
                     </a>
                 </div>
             </div>
             <div class="col">
                 <div class="footer-item">
-                    <a href="profile.html" class="text-white small fw-bold text-decoration-none">
+                    <a href="profile.html" class="footer-tab text-white small fw-bold text-decoration-none">
                         <p class="h4 m-0"><i class="feather-user"></i></p>Profile
                     </a>
                 </div>
@@ -226,28 +226,28 @@
             </div>
             <div class="col">
                 <div class="footer-item">
-                    <a href="home.html" class="text-white small fw-bold text-decoration-none">
+                    <a href="home.html" class="footer-tab text-white small fw-bold text-decoration-none">
                         <p class="h4 m-0"><i class="feather-home text-white"></i></p>Home
                     </a>
                 </div>
             </div>
             <div class="col">
                 <div class="footer-item">
-                    <a href="cart.html" class="text-white small fw-bold text-decoration-none">
+                    <a href="cart.html" class="footer-tab text-white small fw-bold text-decoration-none">
                         <p class="h4 m-0"><i class="feather-shopping-cart"></i></p>Cart
                     </a>
                 </div>
             </div>
             <div class="col">
                 <div class="footer-item">
-                    <a href="orders.html" class="text-white small fw-bold text-decoration-none">
+                    <a href="orders.html" class="footer-tab text-white small fw-bold text-decoration-none">
                         <p class="h4 m-0"><i class="feather-shopping-bag"></i></p>Orders
                     </a>
                 </div>
             </div>
             <div class="col">
                 <div class="footer-item">
-                    <a href="profile.html" class="text-white small fw-bold text-decoration-none">
+                    <a href="profile.html" class="footer-tab text-white small fw-bold text-decoration-none">
                         <p class="h4 m-0"><i class="feather-user"></i></p>Profile
                     </a>
                 </div>
@@ -914,6 +914,17 @@ setTimeout(() => {
   <script type="module" src="/register-sw.js"></script>
 <script type="module" src="/update-prompt.js"></script>
 
+
+<script>
+  document.querySelectorAll('a.footer-tab').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const baseUrl = link.getAttribute('href').split('?')[0];
+      const timestamp = Date.now();
+      window.location.href = `${baseUrl}?refresh=${timestamp}`;
+    });
+  });
+</script>
 
 </body>
 </html>

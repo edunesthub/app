@@ -132,5 +132,16 @@
 
   <script src="https://unpkg.com/feather-icons" onload="feather.replace()"></script>
   <script src="/update-check.js" defer></script>
+<script>
+  document.querySelectorAll('a.footer-tab').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const baseUrl = link.getAttribute('href').split('?')[0];
+      const timestamp = Date.now();
+      window.location.href = `${baseUrl}?refresh=${timestamp}`;
+    });
+  });
+</script>
+
 </body>
 </html>

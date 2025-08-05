@@ -525,5 +525,16 @@ document.getElementById("email").focus();
   <script type="module" src="/register-sw.js"></script>
 
 
+<script>
+  document.querySelectorAll('a.footer-tab').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const baseUrl = link.getAttribute('href').split('?')[0];
+      const timestamp = Date.now();
+      window.location.href = `${baseUrl}?refresh=${timestamp}`;
+    });
+  });
+</script>
+
 </body>
 </html>
