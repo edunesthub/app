@@ -411,6 +411,18 @@ rawRestaurants.forEach(data => {
             }
             document.body.classList.add("offline");
         };
+
+    
+  window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem("chawp-update-pending") === "true") {
+    // persist the flag if user doesn’t click update
+    setTimeout(() => {
+      notifyUpdateAvailable();
+    }, 1000);
+  }
+});
+
+
     
     </script>
 

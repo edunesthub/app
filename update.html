@@ -277,25 +277,37 @@
       }
 
       // When new SW takes control, reload
-      navigator.serviceWorker.addEventListener('controllerchange', async () => {
-        console.log('🔄 Controller changed — finishing update...');
-        clearInterval(dotInterval);
-        dots.style.display = 'none';
-        await fakeProgress;
-        setProgress(100);
-        await delay(500);
+navigator.serviceWorker.addEventListener('controllerchange', async () => {
+  console.log('🔄 Controller changed — finishing update...');
+  clearInterval(dotInterval);
+  dots.style.display = 'none';
+  await fakeProgress;
+  setProgress(100);
+  await delay(500);
 
-        // Broadcast reload for all tabs
-        const reloadChannel = new BroadcastChannel('chawp-update');
-        reloadChannel.postMessage({ type: 'force-reload' });
-        reloadChannel.close();
+  // ✅ Store new version as installed
+  try {
+    const latestVersion = localStorage.getItem("chawp-version");
+    if (latestVersion) {
+      localStorage.setItem("chawp-installed-version", latestVersion);
+      localStorage.removeItem("chawp-update-pending");
+    }
+  } catch (e) {
+    console.warn("⚠️ Failed to store installed version", e);
+  }
 
-        // Fallback for Safari
-        localStorage.setItem('chawp-reload', Date.now());
+  // 📡 Broadcast reload to all tabs
+  const reloadChannel = new BroadcastChannel('chawp-update');
+  reloadChannel.postMessage({ type: 'force-reload' });
+  reloadChannel.close();
 
-        // Redirect to app
-        window.location.href = REDIRECT_URL;
-      });
+  // 🍏 Safari fallback
+  localStorage.setItem('chawp-reload', Date.now());
+
+  // ✅ Done — go home
+  window.location.href = REDIRECT_URL;
+});
+
 
       // ⏳ Fallback timeout if controllerchange never fires
       await delay(7000);
