@@ -64,7 +64,7 @@
                     
                 </div>
                  <div id="app-version-display" style="color: #999; font-size: 0.75rem; padding: 10px; text-align: center;">
-  Version: <span id="app-version-text">Loading...</span>
+  <span id="app-version-text">Loading...</span>
 </div>
             </div>
             </div>
@@ -832,7 +832,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const el = document.getElementById("app-version-text");
 
   if (el) {
-    el.textContent = `Installed: ${installed} | Latest: ${version}`;
+    el.textContent = `Installed: v${installed} | Latest: v${version}`;
   }
 });
 
