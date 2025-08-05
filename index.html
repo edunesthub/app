@@ -256,6 +256,28 @@
     </div>
 </div>
 
+<div id="full-update-overlay" style="display: none;">
+  <div style="
+    position: fixed;
+    inset: 0;
+    background: #2c2c2c;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    text-align: center;
+    font-family: 'Segoe UI', sans-serif;
+  ">
+    <img src="/img/icon-512x512.png" alt="App Icon" style="width: 120px; height: 120px; border-radius: 20px; margin-bottom: 24px;" />
+    <div style="font-size: 20px; font-weight: 500;">Updating<span id="update-dots">...</span></div>
+    <div style="margin-top: 20px; width: 80%; max-width: 300px; height: 10px; background: #444; border-radius: 5px; overflow: hidden;">
+      <div id="update-progress-bar" style="height: 100%; width: 0%; background: #007bff; transition: width 0.25s;"></div>
+    </div>
+    <p style="font-size: 13px; margin-top: 16px; color: #bbb;">This ensures you have the latest version.</p>
+  </div>
+</div>
 
 
 
@@ -668,7 +690,7 @@ function showUpdatePrompt() {
       <div style="margin-top: 6px; font-size: 0.85rem; opacity: 0.7;">
         Current Version: ${currentVersion}
       </div>
-      <button style="
+      <button id="trigger-update-btn" style="
         margin-top: 16px;
         padding: 10px 20px;
         background: #007aff;
@@ -679,7 +701,7 @@ function showUpdatePrompt() {
         cursor: pointer;
         width: 100%;
         max-width: 200px;
-      " onclick="window.location.href='/update.html'">
+      " >
         Update Now
       </button>
     </div>
@@ -687,6 +709,74 @@ function showUpdatePrompt() {
 
   overlay.appendChild(toastBox);
   document.body.appendChild(overlay);
+
+  toastBox.querySelector('#trigger-update-btn').addEventListener('click', () => {
+    document.body.removeChild(overlay); // Optional: dismiss toast
+    showFullUpdateOverlay();
+  });
+}
+
+
+function markUpdateComplete() {
+  const latestVersion = localStorage.getItem("chawp-version");
+  if (latestVersion) {
+    localStorage.setItem("chawp-installed-version", latestVersion);
+    localStorage.removeItem("chawp-update-pending");
+  }
+}
+
+function showFullUpdateOverlay() {
+  const overlay = document.getElementById("full-update-overlay");
+  const dots = document.getElementById("update-dots");
+  const bar = document.getElementById("update-progress-bar");
+
+  if (!overlay || !dots || !bar) return;
+
+  overlay.style.display = "flex";
+
+  // Animate dots
+  let dotState = 0;
+  const dotInterval = setInterval(() => {
+    dotState = (dotState + 1) % 4;
+    dots.textContent = ".".repeat(dotState);
+  }, 700);
+
+  // Fake progress bar
+  let current = 0;
+  const runProgress = setInterval(() => {
+    current += Math.random() * 5;
+    if (current > 90) current = 90;
+    bar.style.width = current + "%";
+  }, 200);
+
+  // Listen for service worker takeover
+  navigator.serviceWorker.addEventListener("controllerchange", async () => {
+    clearInterval(dotInterval);
+    clearInterval(runProgress);
+    bar.style.width = "100%";
+    await new Promise((r) => setTimeout(r, 600));
+
+    markUpdateComplete();
+
+    const reloadChannel = new BroadcastChannel("chawp-update");
+    reloadChannel.postMessage({ type: "force-reload" });
+    reloadChannel.close();
+    localStorage.setItem("chawp-reload", Date.now());
+
+    location.reload();
+  });
+
+  // Send SKIP_WAITING
+  if (navigator.serviceWorker?.controller) {
+    navigator.serviceWorker.controller.postMessage({ type: "SKIP_WAITING" });
+    console.log("📩 Sent SKIP_WAITING to service worker");
+  }
+
+  // Fallback timeout if controllerchange fails
+  setTimeout(() => {
+    markUpdateComplete();
+    location.reload();
+  }, 7000);
 }
 
 onSnapshot(versionRef, (docSnap) => {
