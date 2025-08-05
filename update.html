@@ -211,6 +211,14 @@
   </div>
 
  <script>
+  function markUpdateComplete() {
+  const latestVersion = localStorage.getItem("chawp-version");
+  if (latestVersion) {
+    localStorage.setItem("chawp-installed-version", latestVersion);
+    localStorage.removeItem("chawp-update-pending");
+  }
+}
+
   (async () => {
     const REDIRECT_URL = '/index.html';
     const progressBar = document.getElementById('progressBar');
@@ -279,6 +287,7 @@
       // When new SW takes control, reload
 navigator.serviceWorker.addEventListener('controllerchange', async () => {
   console.log('🔄 Controller changed — finishing update...');
+    markUpdateComplete(); // ✅ update version info
   clearInterval(dotInterval);
   dots.style.display = 'none';
   await fakeProgress;
@@ -311,7 +320,9 @@ navigator.serviceWorker.addEventListener('controllerchange', async () => {
 
       // ⏳ Fallback timeout if controllerchange never fires
       await delay(7000);
-      window.location.href = REDIRECT_URL;
+markUpdateComplete(); // ✅ ensure version is stored even if controllerchange fails
+window.location.href = REDIRECT_URL;
+
     }
 
     performUpdate();
