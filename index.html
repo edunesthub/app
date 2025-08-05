@@ -34,10 +34,11 @@
             <p>Abi you dey hung?</p>
         </div>
         
-<div class="promo-banner" onclick="location.href='home.html'">
-    <h3>Swift Delivery, At Your Door!</h3>
-    <p>Order now and enjoy delicious food in minutes.</p>
-</div> 
+<div class="promo-banner" onclick="refreshRedirect('home.html')">
+  <h3>Swift Delivery, At Your Door!</h3>
+  <p>Order now and enjoy delicious food in minutes.</p>
+</div>
+
 
 <!-- Banner removed for now
 <div class="promo-banner" onclick="location.href='home.html'">
@@ -913,6 +914,13 @@ setTimeout(() => {
 
   <script type="module" src="/register-sw.js"></script>
 <script type="module" src="/update-prompt.js"></script>
+
+<script>
+  function refreshRedirect(path) {
+    const timestamp = Date.now();
+    window.location.href = `${path}?refresh=${timestamp}`;
+  }
+</script>
 
 
 <script>
