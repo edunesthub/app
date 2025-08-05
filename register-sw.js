@@ -55,8 +55,25 @@ function notifyUpdateAvailable() {
 
   banner.addEventListener('click', () => {
     banner.textContent = 'Updating... 🔁';
-    if (navigator.serviceWorker?.controller) {
-      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-    }
+    window.location.href = '/update.html'; // route to update screen
   });
 }
+
+// ✅ Firestore version checker
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+const db = getFirestore();
+
+const versionRef = doc(db, "config", "appVersion");
+
+onSnapshot(versionRef, (docSnap) => {
+  const latestVersion = docSnap.data()?.currentVersion;
+  const storedVersion = localStorage.getItem("chawp-version");
+
+  if (latestVersion && storedVersion !== latestVersion) {
+    console.log("🆕 New app version detected:", latestVersion);
+    localStorage.setItem("chawp-version", latestVersion);
+
+    // Trigger update UI
+    notifyUpdateAvailable?.();
+  }
+});

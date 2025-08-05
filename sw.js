@@ -1,9 +1,8 @@
-// sw.js
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
 
 // 🔁 Precache all critical files (edit paths if needed)
 workbox.precaching.precacheAndRoute([
-  // 🔸 HTML pages
+  // HTML
   { url: '/index.html', revision: '1aa' },
   { url: '/loading.html', revision: '1aa' },
   { url: '/welcome.html', revision: '1aa' },
@@ -20,37 +19,35 @@ workbox.precaching.precacheAndRoute([
   { url: '/orders.html', revision: '1aa' },
   { url: '/offline.html', revision: '1aa' },
 
-  // 🔸 CSS files
+  // CSS
   { url: '/css/style.css', revision: '1aa' },
   { url: '/css/index.css', revision: '1aa' },
   { url: '/css/home.css', revision: '1aa' },
   { url: '/css/profile.css', revision: '1aa' },
   { url: '/css/cart.css', revision: '1aa' },
   { url: '/css/orders.css', revision: '1aa' },
-    { url: '/css/login.css', revision: '1aa' },
-    { url: '/css/signup.css', revision: '1aa' },
-    { url: '/css/restaurant.css', revision: '1aa' },
+  { url: '/css/login.css', revision: '1aa' },
+  { url: '/css/signup.css', revision: '1aa' },
+  { url: '/css/restaurant.css', revision: '1aa' },
 
-  // 🔸 JS files
+  // JS
   { url: '/js/index.js', revision: '1aa' },
   { url: '/js/home.js', revision: '1aa' },
   { url: '/js/profile.js', revision: '1aa' },
   { url: '/js/cart.js', revision: '1aa' },
   { url: '/js/orders.js', revision: '1aa' },
   { url: '/register-sw.js', revision: '1aa' },
-    { url: '/js/login.js', revision: '1aa' },
-    { url: '/js/signup.js', revision: '1aa' },
-    { url: '/js/restaurant.js', revision: '1aa' },
+  { url: '/js/login.js', revision: '1aa' },
+  { url: '/js/signup.js', revision: '1aa' },
+  { url: '/js/restaurant.js', revision: '1aa' },
 
-  // 🔸 Manifest & Service Worker
+  // Manifest & Icons
   { url: '/manifest.json', revision: '1aa' },
-
-  // 🔸 Icons & Images
   { url: '/img/icon-192x192.png', revision: '1aa' },
   { url: '/img/icon-512x512.png', revision: '1aa' },
 ]);
 
-// ⚡ Cache-first for HTML pages (instant load, still updates when online)
+// 🔁 Cache-first for pages
 workbox.routing.registerRoute(
   ({ request }) => request.mode === 'navigate',
   new workbox.strategies.CacheFirst({
@@ -58,13 +55,13 @@ workbox.routing.registerRoute(
     plugins: [
       new workbox.expiration.ExpirationPlugin({
         maxEntries: 50,
-        maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+        maxAgeSeconds: 60 * 60 * 24 * 30,
       }),
     ],
   })
 );
 
-// ⚡ Stale-while-revalidate for CSS/JS (fast + updates silently)
+// 🔁 Stale-while-revalidate for CSS/JS
 workbox.routing.registerRoute(
   ({ request }) => ['script', 'style'].includes(request.destination),
   new workbox.strategies.StaleWhileRevalidate({
@@ -78,7 +75,7 @@ workbox.routing.registerRoute(
   })
 );
 
-// ⚡ Cache-first for images, fonts
+// 🔁 Cache-first for media
 workbox.routing.registerRoute(
   ({ request }) => ['image', 'font'].includes(request.destination),
   new workbox.strategies.CacheFirst({
@@ -92,7 +89,7 @@ workbox.routing.registerRoute(
   })
 );
 
-// 🛑 Offline fallback (only for pages)
+// 🛑 Offline fallback
 workbox.routing.setCatchHandler(async ({ event }) => {
   if (event.request.destination === 'document') {
     return caches.match('/offline.html');
@@ -100,7 +97,7 @@ workbox.routing.setCatchHandler(async ({ event }) => {
   return Response.error();
 });
 
-// 🧼 Cleanup old caches (optional but safe)
+// 🧼 Cleanup old caches
 self.addEventListener('activate', async (event) => {
   const expectedCaches = [
     'pages',
@@ -114,12 +111,21 @@ self.addEventListener('activate', async (event) => {
       .filter((name) => !expectedCaches.includes(name))
       .map((name) => caches.delete(name))
   );
+
+  // 🛰️ Broadcast update to all clients
+  const allClients = await self.clients.matchAll({ includeUncontrolled: true });
+  for (const client of allClients) {
+    client.postMessage({ type: 'update-available' });
+  }
 });
 
-// 🚀 Instant control on install
+// 🚀 Take control instantly
 self.addEventListener('install', () => self.skipWaiting());
+
+// 🚀 Claim all clients
 self.addEventListener('activate', () => self.clients.claim());
-// 🔄 Listen for skip waiting command from client
+
+// 🔄 Listen for manual skip waiting
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     console.log('🛎️ SW received SKIP_WAITING');

@@ -210,136 +210,101 @@
     </div>
   </div>
 
-<script>
-(async () => {
-  const REDIRECT_URL = '/index.html';
-  const progressBar = document.getElementById('progressBar');
-  const statusNote = document.getElementById('statusNote');
-  const dynamicText = document.getElementById('dynamicText');
-  const installBtn = document.getElementById('installPrompt');
-  const dots = document.getElementById('dots');
-  const installModal = document.getElementById('installModal');
-  let deferredPrompt;
+ <script>
+  (async () => {
+    const REDIRECT_URL = '/index.html';
+    const progressBar = document.getElementById('progressBar');
+    const statusNote = document.getElementById('statusNote');
+    const dynamicText = document.getElementById('dynamicText');
+    const installBtn = document.getElementById('installPrompt');
+    const dots = document.getElementById('dots');
+    const installModal = document.getElementById('installModal');
+    let deferredPrompt;
 
-  // 🔹 DYNAMIC DOTS LOOP
-  let dotState = 0;
-  const dotInterval = setInterval(() => {
-    dotState = (dotState + 1) % 4;
-    dots.textContent = '.'.repeat(dotState);
-  }, 700);
+    // ⏳ Animated dots
+    let dotState = 0;
+    const dotInterval = setInterval(() => {
+      dotState = (dotState + 1) % 4;
+      dots.textContent = '.'.repeat(dotState);
+    }, 700);
 
-  // 🔹 STANDALONE CHECK
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    // 💡 Install prompt logic
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
 
-  // 🔹 INSTALL PROMPT HOOK
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-  });
-
-  installBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        installBtn.style.display = 'none';
-        statusNote.textContent = 'App installed! 🎉';
-      }
-      deferredPrompt = null;
-    } else {
-      installModal.style.display = 'flex';
-    }
-  });
-
-  function setProgress(percent) {
-    progressBar.style.width = percent + '%';
-  }
-
-  function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  async function runSmoothProgress() {
-    let current = 0;
-    while (current < 90) {
-      current += Math.random() * 7;
-      if (current > 90) current = 90;
-      setProgress(current);
-      await delay(180 + Math.random() * 70);
-    }
-  }
-
-  async function performUpdate() {
-    const fakeProgress = runSmoothProgress();
-
-    try {
-      // 🔹 UNREGISTER SW
-      if ('serviceWorker' in navigator) {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        for (let reg of regs) await reg.unregister();
-      }
-
-      // 🔹 CLEAR ONLY CACHES (DO NOT clear localStorage/sessionStorage)
-      if ('caches' in window) {
-        const keys = await caches.keys();
-        for (let key of keys) await caches.delete(key);
-      }
-
-      // 🔹 PRELOAD ASSETS (optional for speed)
-      const assets = [
-        '/', '/index.html', '/home.html', '/profile.html',
-        '/css/style.css', '/js/index.js', '/js/home.js',
-        '/manifest.json', '/img/icon-192x192.png', '/img/icon-512x512.png', '/sw.js'
-      ];
-
-      if ('caches' in window) {
-        const cache = await caches.open('app-cache-v1');
-        for (const url of assets) {
-          try {
-            const response = await fetch(url);
-            if (response.ok) {
-              await cache.put(url, response);
-            } else {
-              console.warn(`⚠️ Skipped: ${url} (status ${response.status})`);
-            }
-          } catch (err) {
-            console.warn(`❌ Failed to cache ${url}:`, err.message);
-          }
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installBtn.style.display = 'none';
+          statusNote.textContent = 'App installed! 🎉';
         }
+        deferredPrompt = null;
+      } else {
+        installModal.style.display = 'flex';
       }
+    });
 
-      // 🔹 RE-REGISTER SW
-      if ('serviceWorker' in navigator) {
-        await navigator.serviceWorker.register('/sw.js');
-      }
-
-      // 🔹 COMPLETE PROGRESS
-      await fakeProgress;
-      setProgress(100);
-      clearInterval(dotInterval);
-      dots.style.display = 'none';
-      await delay(500);
-
-      // 🔹 Broadcast reload
-      const reloadChannel = new BroadcastChannel('chawp-update');
-      reloadChannel.postMessage({ type: 'force-reload' });
-      reloadChannel.close();
-
-      // 🔹 Safari fallback: mark reload timestamp (but don’t clear storage!)
-      localStorage.setItem('chawp-reload', Date.now());
-
-      // 🔹 Reload now (simulate Ctrl+Shift+R)
-      window.location.href = REDIRECT_URL;
-    } catch (e) {
-      console.error('Update failed:', e);
-      statusNote.textContent = 'Update failed. Try again later.';
+    function setProgress(percent) {
+      progressBar.style.width = percent + '%';
     }
-  }
 
-  performUpdate();
-})();
-</script>
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
+    async function runSmoothProgress() {
+      let current = 0;
+      while (current < 90) {
+        current += Math.random() * 7;
+        if (current > 90) current = 90;
+        setProgress(current);
+        await delay(180 + Math.random() * 70);
+      }
+    }
+
+    // ✅ NEW: Trigger existing waiting SW instead of unregistering
+    async function performUpdate() {
+      const fakeProgress = runSmoothProgress();
+
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+        console.log('📩 Sent SKIP_WAITING to service worker');
+      }
+
+      // When new SW takes control, reload
+      navigator.serviceWorker.addEventListener('controllerchange', async () => {
+        console.log('🔄 Controller changed — finishing update...');
+        clearInterval(dotInterval);
+        dots.style.display = 'none';
+        await fakeProgress;
+        setProgress(100);
+        await delay(500);
+
+        // Broadcast reload for all tabs
+        const reloadChannel = new BroadcastChannel('chawp-update');
+        reloadChannel.postMessage({ type: 'force-reload' });
+        reloadChannel.close();
+
+        // Fallback for Safari
+        localStorage.setItem('chawp-reload', Date.now());
+
+        // Redirect to app
+        window.location.href = REDIRECT_URL;
+      });
+
+      // ⏳ Fallback timeout if controllerchange never fires
+      await delay(7000);
+      window.location.href = REDIRECT_URL;
+    }
+
+    performUpdate();
+  })();
+  </script>
 
 
 </body>
