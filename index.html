@@ -763,7 +763,7 @@ function showFullUpdateOverlay() {
     reloadChannel.close();
     localStorage.setItem("chawp-reload", Date.now());
 
-    location.reload();
+window.location.replace(window.location.href.split('?')[0] + '?refresh=' + Date.now());
   });
 
   // Send SKIP_WAITING
@@ -775,7 +775,7 @@ function showFullUpdateOverlay() {
   // Fallback timeout if controllerchange fails
   setTimeout(() => {
     markUpdateComplete();
-    location.reload();
+window.location.replace(window.location.href.split('?')[0] + '?refresh=' + Date.now());
   }, 7000);
 }
 
@@ -810,7 +810,7 @@ if ('BroadcastChannel' in window) {
   const reloadChannel = new BroadcastChannel('chawp-update');
   reloadChannel.onmessage = (event) => {
     if (event.data?.type === 'force-reload') {
-      location.reload();
+window.location.replace(window.location.href.split('?')[0] + '?refresh=' + Date.now());
     } else if (event.data?.type === 'update-available') {
       localStorage.setItem("chawp-update-pending", "true");
       showUpdatePrompt();
@@ -820,7 +820,7 @@ if ('BroadcastChannel' in window) {
 
 window.addEventListener('storage', (e) => {
   if (e.key === 'chawp-reload') {
-    location.reload();
+window.location.replace(window.location.href.split('?')[0] + '?refresh=' + Date.now());
   }
 });
 
