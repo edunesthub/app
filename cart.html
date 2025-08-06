@@ -118,6 +118,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebas
 import {
   getFirestore, collection, getDoc, addDoc, getDocs, doc, updateDoc, increment, query, where
 } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
 
 const firebaseConfig = {
@@ -130,6 +134,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
 window.db = db;
 
 window.firebaseExports = {
@@ -555,21 +561,28 @@ async function placeOrderPayAfterDelivery(cart, deliveryDetails, totalAmount, di
       await updateDoc(discountRef, { uses: increment(1) });
     }
 
-    await addDoc(collection(db, "orders"), {
-      cart,
-      deliveryDetails,
-      deliveryFee: getDeliveryFee(deliveryDetails.hostel || "Hostel A"),
-      processingFee: 2.00,
-      totalAmount,
-      status: "pending",
-      paymentMethod: "pay-after-delivery",
-      timestamp: new Date(),
-      discount: discountCode || null,
-      restaurantId,
-      vendorEmail,
-      deviceId,
-      customerToken: localStorage.getItem("customerToken")
-    });
+const user = auth.currentUser;
+const restaurantSnap = await getDoc(doc(db, "restaurant", restaurantId));
+const restaurantData = restaurantSnap.exists() ? restaurantSnap.data() : {};
+
+await addDoc(collection(db, "orders"), {
+  cart,
+  deliveryDetails,
+  deliveryFee: getDeliveryFee(deliveryDetails.hostel || "Hostel A"),
+  processingFee: 2.00,
+  totalAmount,
+  status: "pending",
+  paymentMethod: "pay-after-delivery",
+  timestamp: new Date(),
+  discount: discountCode || null,
+  restaurantId,
+  restaurantName: restaurantData.name || "",
+  vendorEmail,
+  deviceId,
+  customerToken: localStorage.getItem("customerToken") || null,
+  userEmail: user?.email || null,
+});
+
 
     localStorage.removeItem("cart");
     localStorage.removeItem("deliveryDetails");
@@ -764,6 +777,10 @@ if (!vendorEmail) {
   return;
 }
 
+const user = auth.currentUser;
+const restaurantSnap = await getDoc(doc(db, "restaurant", restaurantId));
+const restaurantData = restaurantSnap.exists() ? restaurantSnap.data() : {};
+
 await addDoc(collection(db, "orders"), {
   cart: sanitizedCart,
   deliveryDetails: persistentDetails,
@@ -771,13 +788,17 @@ await addDoc(collection(db, "orders"), {
   processingFee: 2.00,
   totalAmount: totalAmount,
   status: "pending",
+  paymentMethod: "pay-now",
   timestamp: new Date(),
   discount: window.appliedDiscount?.code || null,
-  restaurantId: sanitizedCart[0]?.restaurantId || "unknown",
+  restaurantId,
+  restaurantName: restaurantData.name || "",
   vendorEmail,
   deviceId,
-  customerToken: localStorage.getItem("customerToken") // ✅ NEW LINE HERE
+  customerToken: localStorage.getItem("customerToken") || null,
+  userEmail: user?.email || null,
 });
+
 
 
         localStorage.removeItem("cart");
