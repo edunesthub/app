@@ -564,11 +564,17 @@ async function placeOrderPayAfterDelivery(cart, deliveryDetails, totalAmount, di
 const user = auth.currentUser;
 const restaurantSnap = await getDoc(doc(db, "restaurant", restaurantId));
 const restaurantData = restaurantSnap.exists() ? restaurantSnap.data() : {};
-
+const finalDeliveryFee = getDeliveryFee(deliveryDetails.hostel || "Hostel A", cart);
+const finalsubtotal = cart.reduce((sum, item) => sum + (item.price + markupPrice) * item.quantity, 0);
+const finalTotal = finalsubtotal + finalDeliveryFee + 2.00;
+    // Create order document
 await addDoc(collection(db, "orders"), {
   cart,
   deliveryDetails,
   deliveryFee: getDeliveryFee(deliveryDetails.hostel || "Hostel A"),
+  finalDeliveryFee,
+  finalsubtotal,
+  finalTotal,
   processingFee: 2.00,
   totalAmount,
   status: "pending",
