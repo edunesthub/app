@@ -143,7 +143,8 @@ window.firebaseExports = {
   doc,
   addDoc,
   updateDoc,
-  increment
+  increment,
+  getDoc
 };
 
 let markupPrice = 0; // Will hold your admin-defined markup
@@ -552,44 +553,58 @@ document.getElementById("cart-loader").style.display = "none";
 
 
 async function placeOrderPayAfterDelivery(cart, deliveryDetails, totalAmount, discountCode, restaurantId, vendorEmail) {
-  const { collection, doc, updateDoc, addDoc, increment } = window.firebaseExports;
+  const { collection, doc, updateDoc, addDoc, increment, getDoc } = window.firebaseExports;
   const deviceId = getDeviceId();
 
   try {
+    const user = auth.currentUser;
+
+    let userName = null;
+    let userEmail = user?.email || null;
+
+    // 🔄 Fetch user's name from Firestore
+    if (user) {
+      const userSnap = await getDoc(doc(db, "users", user.uid));
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        userName = userData.name || null;
+      }
+    }
+
     if (discountCode) {
       const discountRef = doc(db, "discountCodes", discountCode);
       await updateDoc(discountRef, { uses: increment(1) });
     }
 
-const user = auth.currentUser;
-const restaurantSnap = await getDoc(doc(db, "restaurant", restaurantId));
-const restaurantData = restaurantSnap.exists() ? restaurantSnap.data() : {};
-const finalDeliveryFee = getDeliveryFee(deliveryDetails.hostel || "Hostel A", cart);
-const finalsubtotal = cart.reduce((sum, item) => sum + (item.price + markupPrice) * item.quantity, 0);
-const finalTotal = finalsubtotal + finalDeliveryFee + 2.00;
-    // Create order document
-await addDoc(collection(db, "orders"), {
-  cart,
-  deliveryDetails,
-  deliveryFee: getDeliveryFee(deliveryDetails.hostel || "Hostel A"),
-  finalDeliveryFee,
-  finalsubtotal,
-  finalTotal,
-  processingFee: 2.00,
-  totalAmount,
-  status: "pending",
-  paymentMethod: "pay-after-delivery",
-  timestamp: new Date(),
-  discount: discountCode || null,
-  restaurantId,
-  restaurantName: restaurantData.name || "",
-  vendorEmail,
-  deviceId,
-  customerToken: localStorage.getItem("customerToken") || null,
-  userEmail: user?.email || null,
-  userName: user?.name || null
-});
+    const restaurantSnap = await getDoc(doc(db, "restaurant", restaurantId));
+    const restaurantData = restaurantSnap.exists() ? restaurantSnap.data() : {};
 
+    const finalDeliveryFee = getDeliveryFee(deliveryDetails.hostel || "Hostel A", cart);
+    const finalsubtotal = cart.reduce((sum, item) => sum + (item.price + markupPrice) * item.quantity, 0);
+    const finalTotal = finalsubtotal + finalDeliveryFee + 2.00;
+
+    // ✅ Create order document
+    await addDoc(collection(db, "orders"), {
+      cart,
+      deliveryDetails,
+      deliveryFee: getDeliveryFee(deliveryDetails.hostel || "Hostel A"),
+      finalDeliveryFee,
+      finalsubtotal,
+      finalTotal,
+      processingFee: 2.00,
+      totalAmount,
+      status: "pending",
+      paymentMethod: "pay-after-delivery",
+      timestamp: new Date(),
+      discount: discountCode || null,
+      restaurantId,
+      restaurantName: restaurantData.name || "",
+      vendorEmail,
+      deviceId,
+      customerToken: localStorage.getItem("customerToken") || null,
+      userEmail,
+      userName
+    });
 
     localStorage.removeItem("cart");
     localStorage.removeItem("deliveryDetails");
@@ -753,7 +768,7 @@ checkoutBtn.querySelector(".processing-text").style.display = "none";
     const sanitizedCart = cart.filter(item => item.name && typeof item.price === "number");
 
 
-    const { collection, doc, updateDoc, addDoc, increment } = window.firebaseExports;
+    const { collection, doc, updateDoc, addDoc, increment, getDoc } = window.firebaseExports;
 
     if (response.status === "success") {
       try {
@@ -785,8 +800,15 @@ if (!vendorEmail) {
 }
 
 const user = auth.currentUser;
-const restaurantSnap = await getDoc(doc(db, "restaurant", restaurantId));
-const restaurantData = restaurantSnap.exists() ? restaurantSnap.data() : {};
+let userEmail = user?.email || null;
+let userName = null;
+
+if (user) {
+  const userSnap = await getDoc(doc(db, "users", user.uid));
+  if (userSnap.exists()) {
+    userName = userSnap.data().name || null;
+  }
+}
 
 await addDoc(collection(db, "orders"), {
   cart: sanitizedCart,
@@ -803,9 +825,10 @@ await addDoc(collection(db, "orders"), {
   vendorEmail,
   deviceId,
   customerToken: localStorage.getItem("customerToken") || null,
-  userEmail: user?.email || null,
-  userName: user?.name
+  userEmail,
+  userName
 });
+
 
 
 
