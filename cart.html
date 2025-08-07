@@ -587,6 +587,7 @@ await addDoc(collection(db, "orders"), {
   deviceId,
   customerToken: localStorage.getItem("customerToken") || null,
   userEmail: user?.email || null,
+  userName: user?.name || null
 });
 
 
@@ -803,6 +804,7 @@ await addDoc(collection(db, "orders"), {
   deviceId,
   customerToken: localStorage.getItem("customerToken") || null,
   userEmail: user?.email || null,
+  userName: user?.name
 });
 
 
