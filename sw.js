@@ -1,35 +1,58 @@
-// sw.js — NO WORKBOX, NO PRECACHE
-
-// 🚀 Install & skip waiting
-self.addEventListener('install', (event) => {
-  self.skipWaiting();
-});
-
-// 🚀 Activate & delete ALL caches (like incognito reset)
+self.addEventListener('install', (event) => self.skipWaiting());
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    (async () => {
-      const cacheNames = await caches.keys();
-      await Promise.all(cacheNames.map((name) => caches.delete(name)));
-      await self.clients.claim();
-
-      // 🔁 Tell clients to reload
-      const allClients = await self.clients.matchAll({ includeUncontrolled: true });
-      for (const client of allClients) {
-        client.postMessage({ type: 'force-reload' });
-      }
-    })()
-  );
+  event.waitUntil((async () => {
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames.map(name => caches.delete(name)));
+    await self.clients.claim();
+  })());
 });
 
-// 🚫 Intercept ALL fetch requests: always go to network
+// 🚫 Never cache HTML — always fresh
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    fetch(event.request).catch(() => {
-      // Optional offline fallback if you want
-      return new Response('<h1>Offline</h1><p>You are not connected.</p>', {
-        headers: { 'Content-Type': 'text/html' },
-      });
-    })
-  );
+  const req = event.request;
+
+  if (req.mode === 'navigate') {
+    // Always network for pages
+    event.respondWith(fetch(req).catch(() =>
+      new Response('<h1>Offline</h1>', { headers: { 'Content-Type': 'text/html' } })
+    ));
+    return;
+  }
+
+  // ✅ Cache-first for images
+  if (req.destination === 'image') {
+    event.respondWith(
+      caches.open('images').then(async (cache) => {
+        const cached = await cache.match(req);
+        if (cached) return cached;
+        try {
+          const fresh = await fetch(req);
+          cache.put(req, fresh.clone());
+          return fresh;
+        } catch {
+          return cached; // fallback if offline
+        }
+      })
+    );
+    return;
+  }
+
+  // ✅ Stale-while-revalidate for CSS/JS
+  if (['style', 'script'].includes(req.destination)) {
+    event.respondWith(
+      caches.open('static').then(async (cache) => {
+        const cached = await cache.match(req);
+        const networkFetch = fetch(req).then((fresh) => {
+          cache.put(req, fresh.clone());
+          return fresh;
+        }).catch(() => cached);
+
+        return cached || networkFetch;
+      })
+    );
+    return;
+  }
+
+  // Default: network
+  event.respondWith(fetch(req));
 });
