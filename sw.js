@@ -3,63 +3,65 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox
 // 🔁 Precache all critical files (edit paths if needed)
 workbox.precaching.precacheAndRoute([
   // HTML
-  { url: '/index.html', revision: '1ba' },
-  { url: '/loading.html', revision: '1ba' },
-  { url: '/welcome.html', revision: '1ba' },
-  { url: '/home.html', revision: '1ba' },
-  { url: '/profile.html', revision: '1ba' },
-  { url: '/cart.html', revision: '1ba' },
-  { url: '/login.html', revision: '1ba' },
-  { url: '/signup.html', revision: '1ba' },
-  { url: '/refund.html', revision: '1ba' },
-  { url: '/restaurant.html', revision: '1ba' },
-  { url: '/contact-us.html', revision: '1ba' },
-  { url: '/privacy.html', revision: '1ba' },
-  { url: '/terms.html', revision: '1ba' },
-  { url: '/orders.html', revision: '1ba' },
-  { url: '/offline.html', revision: '1ba' },
+  { url: '/index.html', revision: '1bb' },
+  { url: '/loading.html', revision: '1bb' },
+  { url: '/welcome.html', revision: '1bb' },
+  { url: '/home.html', revision: '1bb' },
+  { url: '/profile.html', revision: '1bb' },
+  { url: '/cart.html', revision: '1bb' },
+  { url: '/login.html', revision: '1bb' },
+  { url: '/signup.html', revision: '1bb' },
+  { url: '/refund.html', revision: '1bb' },
+  { url: '/restaurant.html', revision: '1bb' },
+  { url: '/contact-us.html', revision: '1bb' },
+  { url: '/privacy.html', revision: '1bb' },
+  { url: '/terms.html', revision: '1bb' },
+  { url: '/orders.html', revision: '1bb' },
+  { url: '/offline.html', revision: '1bb' },
 
   // CSS
-  { url: '/css/style.css', revision: '1ba' },
-  { url: '/css/index.css', revision: '1ba' },
-  { url: '/css/home.css', revision: '1ba' },
-  { url: '/css/profile.css', revision: '1ba' },
-  { url: '/css/cart.css', revision: '1ba' },
-  { url: '/css/orders.css', revision: '1ba' },
-  { url: '/css/login.css', revision: '1ba' },
-  { url: '/css/signup.css', revision: '1ba' },
-  { url: '/css/restaurant.css', revision: '1ba' },
+  { url: '/css/style.css', revision: '1bb' },
+  { url: '/css/index.css', revision: '1bb' },
+  { url: '/css/home.css', revision: '1bb' },
+  { url: '/css/profile.css', revision: '1bb' },
+  { url: '/css/cart.css', revision: '1bb' },
+  { url: '/css/orders.css', revision: '1bb' },
+  { url: '/css/login.css', revision: '1bb' },
+  { url: '/css/signup.css', revision: '1bb' },
+  { url: '/css/restaurant.css', revision: '1bb' },
 
   // JS
-  { url: '/js/index.js', revision: '1ba' },
-  { url: '/js/home.js', revision: '1ba' },
-  { url: '/js/profile.js', revision: '1ba' },
-  { url: '/js/cart.js', revision: '1ba' },
-  { url: '/js/orders.js', revision: '1ba' },
-  { url: '/register-sw.js', revision: '1ba' },
-  { url: '/js/login.js', revision: '1ba' },
-  { url: '/js/signup.js', revision: '1ba' },
-  { url: '/js/restaurant.js', revision: '1ba' },
+  { url: '/js/index.js', revision: '1bb' },
+  { url: '/js/home.js', revision: '1bb' },
+  { url: '/js/profile.js', revision: '1bb' },
+  { url: '/js/cart.js', revision: '1bb' },
+  { url: '/js/orders.js', revision: '1bb' },
+  { url: '/register-sw.js', revision: '1bb' },
+  { url: '/js/login.js', revision: '1bb' },
+  { url: '/js/signup.js', revision: '1bb' },
+  { url: '/js/restaurant.js', revision: '1bb' },
 
   // Manifest & Icons
-  { url: '/manifest.json', revision: '1ba' },
-  { url: '/img/icon-192x192.png', revision: '1ba' },
-  { url: '/img/icon-512x512.png', revision: '1ba' },
+  { url: '/manifest.json', revision: '1bb' },
+  { url: '/img/icon-192x192.png', revision: '1bb' },
+  { url: '/img/icon-512x512.png', revision: '1bb' },
 ]);
 
-// 🔁 Cache-first for pages
+// 🔁 Network-first for pages (HTML always fresh)
 workbox.routing.registerRoute(
   ({ request }) => request.mode === 'navigate',
-  new workbox.strategies.CacheFirst({
+  new workbox.strategies.NetworkFirst({
     cacheName: 'pages',
+    networkTimeoutSeconds: 3, // fallback to cache if network is slow
     plugins: [
       new workbox.expiration.ExpirationPlugin({
         maxEntries: 50,
-        maxAgeSeconds: 60 * 60 * 24 * 30,
+        maxAgeSeconds: 60 * 60 * 24 * 7, // keep a week of history
       }),
     ],
   })
 );
+
 
 // 🔁 Stale-while-revalidate for CSS/JS
 workbox.routing.registerRoute(
