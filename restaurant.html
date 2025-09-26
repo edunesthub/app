@@ -425,15 +425,24 @@ const setupAddToCartButtons = () => {
             return;
         }
 
-const discountedPrice = parseFloat(itemElement.dataset.price);
+let cartPrice;
+
+// If discount active → use discounted price from dataset
+if (autoDiscountPercent > 0) {
+    cartPrice = parseFloat(itemElement.dataset.price);
+} else {
+    // Otherwise use raw Firestore price (without markup)
+    cartPrice = item.price;
+}
 
 cart.push({
     id: item.id,
     name: item.name,
-    price: discountedPrice,
+    price: cartPrice,
     quantity: 1,
     restaurantId: restaurantId
 });
+
 
 
         localStorage.setItem("cart", JSON.stringify(cart));
