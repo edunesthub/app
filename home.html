@@ -215,20 +215,24 @@ rawRestaurants.forEach(data => {
   const isOpen = data.isOpen !== false;
   allRestaurants.push(data);
 
-  output += `<div class="list-card" data-id="${restaurantId}">
-    <div class="list-card-image">
-        <a href="restaurant.html?id=${restaurantId}">
-            <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
-            <span class="status-badge ${isOpen ? 'open-badge' : 'closed-badge'}">
-                ${isOpen ? 'Opened ✅' : 'Closed 🔒'}
-            </span>
-        </a>
-    </div>
-    <div class="list-card-body">
-        <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
-        <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
-    </div>
-  </div>`;
+ output += `<div class="list-card" data-id="${restaurantId}">
+  <div class="list-card-image" style="position:relative;">
+      <a href="restaurant.html?id=${restaurantId}">
+          <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
+          
+          ${data.autoDiscountPercent > 0 ? `<span class="discount-badge">🔥 ${data.autoDiscountPercent}% OFF</span>` : ""}
+          
+          <span class="status-badge ${isOpen ? 'open-badge' : 'closed-badge'}">
+              ${isOpen ? 'Opened ✅' : 'Closed 🔒'}
+          </span>
+      </a>
+  </div>
+  <div class="list-card-body">
+      <h6 class="mb-1"><a href="restaurant.html?id=${restaurantId}" class="text-white">${data.name || 'Unknown Restaurant'}</a></h6>
+      <p class="time"><a href="restaurant.html?id=${restaurantId}"><span><i class="feather-clock me-1"></i>${Math.max(5, deliveryTime - 15)}-${deliveryTime} mins</span></a></p>
+  </div>
+</div>`;
+
 });
 
                 requestAnimationFrame(() => {
@@ -261,7 +265,8 @@ rawRestaurants.forEach(data => {
     <div class="list-card-image">
         <a href="restaurant.html?id=${data.id}">
             <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
-            ${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
+${data.autoDiscountPercent > 0 ? `<span class="discount-badge">${data.autoDiscountPercent}% OFF</span>` : ""}
+${isOpen ? '' : '<span class="closed-badge">Closed 🔒</span>'}
         </a>
     </div>
     <div class="list-card-body">

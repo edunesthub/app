@@ -242,3 +242,16 @@ html {
     background-color: #dc3545; /* red */
     color: white;
 }
+
+.discount-badge {
+    position: absolute;
+    bottom: 8px;   /* push it to the bottom */
+    right: 8px;    /* align to the right */
+    background: #00c8ff;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 6px;
+    z-index: 5;
+}
