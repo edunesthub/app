@@ -116,8 +116,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let markupPrice = 0;
-let autoDiscountPercent = 0;
-
 
 const fetchMarkupPrice = async () => {
   try {
@@ -298,16 +296,11 @@ const loadRestaurant = async () => {
         elements.restaurantImage.src = data.image || "img/placeholder.webp";
         isRestaurantOpen = data.isOpen !== false;
         elements.closedMessage.style.display = isRestaurantOpen ? 'none' : 'flex';
-
-        // ✅ save discount percent
-        autoDiscountPercent = data.autoDiscountPercent || 0;
-
     } catch (e) {
         console.error("Error loading restaurant:", e);
         showToast("Failed to load restaurant data.", "error");
     }
 };
-
 
 const renderMenu = (grouped, categoryMetaMap) => {
     if (!grouped || Object.keys(grouped).length === 0) {
@@ -344,32 +337,18 @@ if (isCollapsible) {
         // Sort items within category by orderNumber
         items.sort((a, b) => (a.orderNumber ?? 9999) - (b.orderNumber ?? 9999));
 
-menuHTML += items.map(item => {
-  const basePrice = item.price + markupPrice;
-  let discountedPrice = basePrice;
-
-  if (autoDiscountPercent > 0) {
-    discountedPrice = basePrice - (basePrice * autoDiscountPercent / 100);
-  }
-
-  const priceHTML = autoDiscountPercent > 0
-    ? `<span style="text-decoration: line-through; opacity:0.6; margin-right:6px;">GH₵${basePrice.toFixed(2)}</span>
-       <span style="color:#34c759; font-weight:600;">GH₵${discountedPrice.toFixed(2)}</span>`
-    : `GH₵${basePrice.toFixed(2)}`;
-
+       menuHTML += items.map(item => {
+  const finalPrice = (item.price + markupPrice).toFixed(2);
   return `
-    <div class="menu-item" 
-         data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'
-         data-price="${discountedPrice}">
+    <div class="menu-item" data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
       <p class="menu-item-name">${item.name}</p>
       <div class="menu-item-right">
-        <p class="menu-item-price">${priceHTML}</p>
+        <p class="menu-item-price">GH₵${finalPrice}</p>
         <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
       </div>
     </div>
   `;
 }).join("");
-
 
 
         menuHTML += `</div>`;
@@ -425,25 +404,13 @@ const setupAddToCartButtons = () => {
             return;
         }
 
-let cartPrice;
-
-// If discount active → use discounted price from dataset
-if (autoDiscountPercent > 0) {
-    cartPrice = parseFloat(itemElement.dataset.price);
-} else {
-    // Otherwise use raw Firestore price (without markup)
-    cartPrice = item.price;
-}
-
-cart.push({
-    id: item.id,
-    name: item.name,
-    price: cartPrice,
-    quantity: 1,
-    restaurantId: restaurantId
-});
-
-
+        cart.push({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: 1,
+            restaurantId: restaurantId
+        });
 
         localStorage.setItem("cart", JSON.stringify(cart));
         showToast(`${item.name} added to cart!`);
