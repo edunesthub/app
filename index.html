@@ -788,14 +788,18 @@ onSnapshot(versionRef, (docSnap) => {
   if (latestVersion) {
     localStorage.setItem("chawp-version", latestVersion);
 
-    if (installedVersion !== latestVersion) {
+    // 🟢 Only show update prompt if user already has a version installed
+    if (installedVersion && installedVersion !== latestVersion) {
       localStorage.setItem("chawp-update-pending", "true");
       showUpdatePrompt();
     } else {
+      // First install: just mark installed silently
+      localStorage.setItem("chawp-installed-version", latestVersion);
       localStorage.removeItem("chawp-update-pending");
     }
   }
 });
+
 
 window.addEventListener('DOMContentLoaded', () => {
   const latestVersion = localStorage.getItem("chawp-version");
