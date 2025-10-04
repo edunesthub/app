@@ -136,16 +136,18 @@
             background: #e0e0e0;
             transform: scale(1.05);
         }
+        
         .welcome-header {
-            padding: 30px 20px;
-            text-align: center;
-            background: linear-gradient(162deg, #0076ff, #16b304);
-            border-radius: 30px;
-            margin: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            position: relative;
-            overflow: hidden;
-        }
+    padding: 10px 20px;
+    text-align: center;
+    background: linear-gradient(162deg, #0076ff, #16b304);
+    border-radius: 30px;
+    margin: 5px 15px 15px;  /* smaller top margin */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
         .welcome-header::before {
             content: '';
             position: absolute;
@@ -723,4 +725,80 @@
 .closed-badge {
     background-color: #dc3545; /* red */
     color: white;
+}
+/* =====================
+   Luxurious Image Slider (Ad Style)
+   ===================== */
+.slider-container {
+  width: 92%;
+  max-width: 700px;
+  margin: 16px auto;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #2c2c2c;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+/* Slider wrapper */
+.image-slider {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Track */
+.slider-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  will-change: transform;
+}
+
+/* Each slide keeps 16:9 ratio */
+.slide {
+  position: relative;
+  min-width: 100%;
+  aspect-ratio: 16 / 9;   /* modern way to fix ratio */
+  overflow: hidden;
+}
+
+.slide img {
+  position: absolute;
+  inset: 0;               /* shorthand for top/left/right/bottom:0 */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;      /* fills container, keeps aspect */
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.slide img:hover {
+  transform: scale(1.01); /* subtle zoom */
+}
+
+/* Dots */
+.slider-dots {
+  position: relative;     /* instead of absolute */
+  bottom: auto;
+  left: auto;
+  transform: none;
+  margin-top: 8px;        /* spacing from the image */
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.slider-dots span {
+  width: 10px;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.slider-dots span.active {
+  background: #00c8ff;
+  transform: scale(1.2);
+  box-shadow: 0 0 4px rgba(0, 247, 255, 0.6);
 }
