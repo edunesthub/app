@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="description" content="Chawp - Sleek Food Delivery">
+    <meta name="description" content="Chawp Test - Prototype for Chawp">
     <meta name="author" content="VON">
     <meta name="theme-color" content="#2c2c2c">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,7 +14,7 @@
     <meta http-equiv="Expires" content="0">
     <link rel="icon" type="image/png" href="img/icon-192x192.png">
     <link rel="apple-touch-icon" href="img/icon-192x192.png">
-    <title>Chawp</title>
+    <title>Chawp Test</title>
     <link rel="preload" href="css/style.css?ver=1.0.1" as="style">
     <link rel="preload" href="img/icon-192x192.png" as="image">
     <link href="vendor/icons/feather.css?ver=1.0.1" rel="stylesheet" type="text/css">
@@ -23,6 +23,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
     <link href="css/style.css?ver=1.0.1" rel="stylesheet">
 <link rel="stylesheet" href="css/index.css">
+<style>
+#app-version-text {
+  display: none !important;
+}
+</style>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BDC6DRT88B"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BDC6DRT88B');
+</script>
 
 </head>
 <body class="fixed-bottom-bar" style="background: #2c2c2c;">
@@ -33,11 +48,63 @@
             </div>
             <p>Abi you dey hung?</p>
         </div>
+
+        <!-- Image Slider -->
+<div class="slider-container">
+  <div class="image-slider">
+    <div class="slider-track">
+
+      <div class="slide">
+        <a href="https://wa.me/233593117766?text=Hi%2C%20I%20want%20to%20advertise%20on%20Chawp."
+           target="_blank"
+           onclick="gtag('event', 'click_ad', { 
+             event_category: 'Ads', 
+             event_label: 'WhatsApp Ad 1' 
+           });">
+          <img src="img/ad2.png" alt="Promo 1">
+        </a>
+      </div>
+
+      <div class="slide">
+        <a href="https://wa.me/233593117766?text=Hi%2C%20I%20want%20to%20advertise%20on%20Chawp."
+           target="_blank"
+           onclick="gtag('event', 'click_ad', { 
+             event_category: 'Ads', 
+             event_label: 'WhatsApp Ad 2' 
+           });">
+          <img src="img/ad2.png" alt="Promo 2">
+        </a>
+      </div>
+
+      <div class="slide">
+        <a href="https://wa.me/233593117766?text=Hi%2C%20I%20want%20to%20advertise%20on%20Chawp."
+           target="_blank"
+           onclick="gtag('event', 'click_ad', { 
+             event_category: 'Ads', 
+             event_label: 'WhatsApp Ad 3' 
+           });"> 
+          <img src="img/ad1.png" alt="Promo 3">
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+  <!-- dots appear beneath images -->
+  <div class="slider-dots"></div>
+<br>
+
+
+    
+        <!-- Banner removed for now
         
 <div class="promo-banner" onclick="refreshRedirect('home.html')">
   <h3>Swift Delivery, At Your Door!</h3>
   <p>Order now and enjoy delicious food in minutes.</p>
 </div>
+-->
+
 
 
 <!-- Banner removed for now
@@ -116,10 +183,10 @@
         <div class="ios-modal">
             <p class="title">Install the app</p>
             <div class="app-info">
-                <img src="https://app.chawp.me/img/icon-192x192.png" alt="App Icon" />
+                <img src="https://apk.chawp.me/img/icon-192x192.png" alt="App Icon" />
                 <div>
                     <p class="name">Chawp</p>
-                    <p class="url">app.chawp.me</p>
+                    <p class="url">apk.chawp.me</p>
                 </div>
             </div>
             <ol>
@@ -134,7 +201,7 @@
                     in the browser menu
                 </li>
                 <li>Scroll down and tap <span class="btn">Add to Home Screen</span></li>
-                <li>Look for the <img src="https://app.chawp.me/img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
+                <li>Look for the <img src="https://apk.chawp.me/img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
             </ol>
             <button onclick="closePrompt()">OK, Got it</button>
         </div>
@@ -144,16 +211,16 @@
         <div class="android-modal">
             <p class="title">Install the app</p>
             <div class="app-info">
-                <img src="https://app.chawp.me/img/icon-192x192.png" alt="App Icon" />
+                <img src="https://apk.chawp.me/img/icon-192x192.png" alt="App Icon" />
                 <div>
                     <p class="name">Chawp</p>
-                    <p class="url">app.chawp.me</p>
+                    <p class="url">apk.chawp.me</p>
                 </div>
             </div>
             <ol>
                 <li>Tap the <span class="btn">Menu</span> button in your browser (usually three dots)</li>
                 <li>Select <span class="btn">Add to Home screen</span> or <span class="btn">Install app</span></li>
-                <li>Look for the <img src="https://app.chawp.me/img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
+                <li>Look for the <img src="https://apk.chawp.me/img/icon-192x192.png" style="height: 16px; vertical-align: middle;" /> icon on your home screen</li>
             </ol>
             <button onclick="closeAndroidPrompt()">OK, Got it</button>
         </div>
@@ -905,6 +972,116 @@ setTimeout(() => {
             }, 10);
         }, 10); // Matches iOS timing
     }
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const track = document.querySelector(".slider-track");
+  const slides = document.querySelectorAll(".slide");
+  const dotsContainer = document.querySelector(".slider-dots");
+
+  // Clone first & last for infinite loop
+  const firstClone = slides[0].cloneNode(true);
+  const lastClone = slides[slides.length - 1].cloneNode(true);
+  track.appendChild(firstClone);
+  track.insertBefore(lastClone, slides[0]);
+
+  const allSlides = document.querySelectorAll(".slide");
+  let currentIndex = 1; // Start at first real slide
+  let isDragging = false;
+  let startX = 0;
+  let autoSlideTimer;
+
+  // Set initial position
+  track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+  // Create dots
+  for (let i = 0; i < slides.length; i++) {
+    const dot = document.createElement("span");
+    if (i === 0) dot.classList.add("active");
+    dot.addEventListener("click", () => goToSlide(i + 1));
+    dotsContainer.appendChild(dot);
+  }
+  const dots = dotsContainer.querySelectorAll("span");
+
+  function updateDots() {
+    let realIndex = currentIndex - 1;
+    if (currentIndex === 0) realIndex = slides.length - 1; // if on lastClone
+    if (currentIndex === allSlides.length - 1) realIndex = 0; // if on firstClone
+    dots.forEach((dot, i) => dot.classList.toggle("active", i === realIndex));
+  }
+
+  function goToSlide(index) {
+    currentIndex = index;
+    normalizeIndex();
+    track.style.transition = "transform 0.35s ease-in-out";
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    updateDots();
+    resetAutoSlide();
+  }
+
+  function autoSlide() {
+    currentIndex++;
+    normalizeIndex();
+    track.style.transition = "transform 0.35s ease-in-out";
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }
+
+  // 👇 Ensure index never breaks range
+  function normalizeIndex() {
+    if (currentIndex < 0) currentIndex = allSlides.length - 1;
+    if (currentIndex >= allSlides.length) currentIndex = 0;
+  }
+
+  track.addEventListener("transitionend", () => {
+    if (allSlides[currentIndex].isEqualNode(firstClone)) {
+      track.style.transition = "none";
+      currentIndex = 1;
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    } else if (allSlides[currentIndex].isEqualNode(lastClone)) {
+      track.style.transition = "none";
+      currentIndex = slides.length;
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    }
+    updateDots();
+  });
+
+  function resetAutoSlide() {
+    clearInterval(autoSlideTimer);
+    autoSlideTimer = setInterval(autoSlide, 5000);
+  }
+
+  // 👉 Swipe handling for mobile
+  track.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+    isDragging = true;
+    clearInterval(autoSlideTimer);
+    track.style.transition = "none";
+  });
+
+  track.addEventListener("touchmove", e => {
+    if (!isDragging) return;
+    const deltaX = e.touches[0].clientX - startX;
+    const movePercent = (deltaX / track.offsetWidth) * 100;
+    track.style.transform = `translateX(${-currentIndex * 100 + movePercent}%)`;
+  });
+
+  track.addEventListener("touchend", e => {
+    if (!isDragging) return;
+    isDragging = false;
+    const deltaX = e.changedTouches[0].clientX - startX;
+
+    if (deltaX > 50) currentIndex--;   // swipe right
+    else if (deltaX < -50) currentIndex++; // swipe left
+
+    normalizeIndex(); // 👈 always wrap before animating
+
+    track.style.transition = "transform 0.35s ease-in-out";
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+    // 👇 always restart autoplay after swipe/tap
+    resetAutoSlide();
+  });
+
+  resetAutoSlide();
 });
 
 </script>
