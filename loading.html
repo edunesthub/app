@@ -46,7 +46,7 @@
       border-top: 4px solid transparent;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      display: none; /* HIDDEN by default */
+      display: none;
     }
     .message {
       margin-top: 15px;
@@ -54,7 +54,7 @@
       font-weight: 500;
       color: #fff;
       text-align: center;
-      display: none; /* HIDDEN by default */
+      display: none;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
@@ -70,9 +70,7 @@
   </div>
 
   <noscript>
-    <style>
-      .message { display: block; }
-    </style>
+    <style>.message { display: block; }</style>
     <p class="message">Please enable JavaScript to continue using Chawp.</p>
   </noscript>
 
@@ -83,25 +81,34 @@
     const firebaseConfig = {
       apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
       authDomain: "von600-7982d.firebaseapp.com",
-     projectId: "von600-7982d",
+      projectId: "von600-7982d",
       storageBucket: "von600-7982d.appspot.com",
-       messagingSenderId: "164591218045",
+      messagingSenderId: "164591218045",
       appId: "1:164591218045:web:afe17512e16573e7903014",
-     measurementId: "G-E69DMPLXBK"
+      measurementId: "G-E69DMPLXBK"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
     window.addEventListener("load", () => {
+      const loader = document.getElementById("loader");
+      const offlineMsg = document.getElementById("offline-msg");
+
       if (!navigator.onLine) {
-        document.getElementById("loader").style.display = "block";
-        document.getElementById("offline-msg").style.display = "block";
+        loader.style.display = "block";
+        offlineMsg.style.display = "block";
         return;
       }
 
+      loader.style.display = "block";
+
       onAuthStateChanged(auth, (user) => {
-        window.location.replace(user ? "/index.html" : "/welcome.html");
+        const timestamp = Date.now();
+        const target = user ? `/index.html?fresh=${timestamp}` : `/welcome.html?fresh=${timestamp}`;
+
+        // Hard reload to bypass cache
+        window.location.replace(target);
       });
     });
 
@@ -110,17 +117,23 @@
 
   <script type="module" src="/register-sw.js"></script>
 
-
-<script>
-  document.querySelectorAll('a.footer-tab').forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const baseUrl = link.getAttribute('href').split('?')[0];
-      const timestamp = Date.now();
-      window.location.href = `${baseUrl}?refresh=${timestamp}`;
+  <script>
+    // Ensures footer tabs always load fresh pages too
+    document.querySelectorAll('a.footer-tab').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const baseUrl = link.getAttribute('href').split('?')[0];
+        const timestamp = Date.now();
+        window.location.href = `${baseUrl}?fresh=${timestamp}`;
+      });
     });
-  });
-</script>
 
+    // Optional: clear old service worker cache for true hard refresh
+    if ('caches' in window) {
+      caches.keys().then(keys => {
+        keys.forEach(key => caches.delete(key));
+      });
+    }
+  </script>
 </body>
 </html>
