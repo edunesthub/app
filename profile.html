@@ -105,7 +105,115 @@
         </div>
     </div>
 
-    <script type="module" src="js/profile.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+  authDomain: "von600-7982d.firebaseapp.com",
+  projectId: "von600-7982d",
+  storageBucket: "von600-7982d.appspot.com",
+  messagingSenderId: "164591218045",
+  appId: "1:164591218045:web:afe17512e16573e7903014",
+  measurementId: "G-E69DMPLXBK"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const userName = document.getElementById("user-name");
+const userEmail = document.getElementById("user-email");
+const userId = document.getElementById("user-id");
+const logoutBtn = document.getElementById("logout-btn");
+
+const CACHE_KEY = "user-profile-cache";
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+function loadCachedProfile(uid) {
+  const cached = localStorage.getItem(`${CACHE_KEY}-${uid}`);
+  const timestamp = localStorage.getItem(`${CACHE_KEY}-${uid}-timestamp`);
+  if (!cached || !timestamp) return null;
+  if (Date.now() - parseInt(timestamp) > CACHE_DURATION) return null;
+  return JSON.parse(cached);
+}
+
+async function updateProfileFromFirestore(user) {
+  try {
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+    const data = userSnap.exists() ? userSnap.data() : {};
+
+    const profile = {
+      name: data.name || user.email.split("@")[0],
+      email: user.email,
+      userId: data.userId || "N/A"
+    };
+
+    userName.textContent = profile.name;
+    userEmail.textContent = profile.email;
+    userId.textContent = `ID: ${profile.userId}`;
+
+    localStorage.setItem(`${CACHE_KEY}-${user.uid}`, JSON.stringify(profile));
+    localStorage.setItem(`${CACHE_KEY}-${user.uid}-timestamp`, Date.now().toString());
+  } catch (err) {
+    console.error("Error fetching profile:", err);
+  }
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // Load cached data fast
+    const cached = loadCachedProfile(user.uid);
+    if (cached) {
+      userName.textContent = cached.name;
+      userEmail.textContent = cached.email;
+      userId.textContent = `ID: ${cached.userId}`;
+    } else {
+      userName.textContent = user.email.split("@")[0];
+      userEmail.textContent = user.email;
+      userId.textContent = "ID: Loading...";
+    }
+
+    updateProfileFromFirestore(user);
+  } else {
+    window.location.href = "login.html";
+  }
+});
+
+// ✨ Logout Button with Spinner Animation
+logoutBtn.addEventListener("click", async () => {
+  try {
+    logoutBtn.disabled = true;
+    logoutBtn.innerHTML = `
+      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      Logging out...
+    `;
+
+    const user = auth.currentUser;
+    if (user) {
+      localStorage.removeItem(`${CACHE_KEY}-${user.uid}`);
+      localStorage.removeItem(`${CACHE_KEY}-${user.uid}-timestamp`);
+    }
+    localStorage.removeItem("current-user");
+
+    await signOut(auth);
+    setTimeout(() => {
+      window.location.href = "welcome.html";
+    }, 800);
+  } catch (error) {
+    console.error("Logout failed:", error);
+    alert("Failed to logout. Please try again.");
+    logoutBtn.disabled = false;
+    logoutBtn.innerHTML = `Logout <i class="feather-log-out"></i>`;
+  }
+});
+</script>
+
+
+
     <script defer src="vendor/jquery/jquery.min.js"></script>
     <script defer src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script defer src="vendor/slick/slick/slick.min.js"></script>
