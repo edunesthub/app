@@ -343,7 +343,10 @@ if (isCollapsible) {
     <div class="menu-item" data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
       <p class="menu-item-name">${item.name}</p>
       <div class="menu-item-right">
-        <p class="menu-item-price">GH₵${finalPrice}</p>
+<p class="menu-item-price">
+  ${item.fakePrice ? `<span class="fake-price">GH₵${parseFloat(item.fakePrice).toFixed(2)}</span>` : ""}
+  <span class="real-price">GH₵${finalPrice}</span>
+</p>
         <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
       </div>
     </div>

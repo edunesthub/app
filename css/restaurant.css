@@ -877,3 +877,14 @@
   position: relative;
   overflow: hidden;
 }
+.fake-price {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 6px;
+  font-size: 0.9em;
+}
+
+.real-price {
+  font-weight: bold;
+  color: #fff; /* match your theme */
+}
