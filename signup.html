@@ -8,7 +8,187 @@
   <link rel="icon" href="img/icon-192x192.png" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.css" rel="stylesheet" />
-  <link rel="stylesheet" href="css/signup.css">
+<style>
+  
+    :root {
+      --primary: #007aff;
+      --bg: #1e1e1e;
+      --card: rgba(255, 255, 255, 0.07);
+      --blur: blur(16px);
+      --radius: 18px;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: white;
+      -webkit-user-select: none;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .signup-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      padding: 1.5rem;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 1.8rem;
+      cursor: pointer;
+      z-index: 99999;
+    }
+
+    .signup-container {
+      width: 100%;
+      background: var(--card);
+      backdrop-filter: var(--blur);
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .signup-heading {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: white;
+    }
+
+    .form-step {
+      display: none;
+    }
+
+    .form-step.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .form-group label {
+      font-size: 15px;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 12px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .password-toggle {
+      position: absolute;
+      top: 65%;
+      right: 1rem;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--primary);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 1.1rem;
+      border-radius: 14px;
+      background-color: var(--primary);
+      color: white;
+      font-weight: 600;
+      font-size: 17px;
+      border: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+
+    .btn-primary.loading .spinner {
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .text-center {
+      margin-top: 1rem;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .text-center a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .notification-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      z-index: 9999;
+      padding: 1rem;
+    }
+
+    .notification {
+      padding: 0.75rem 1.25rem;
+      background: #dc3545;
+      border-radius: 12px;
+      color: white;
+      font-size: 15px;
+      opacity: 0;
+      transform: translateY(-100%);
+      transition: 0.4s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  
+</style>
 </head>
 <body>
   <button class="back-button" id="back-btn"><i data-feather="chevron-left"></i></button>
@@ -36,6 +216,10 @@
               <i data-feather="eye"></i>
             </button>
           </div>
+           <div class="form-group mb-4">
+        <label>Referral Code (optional)</label>
+        <input type="text" id="referralCodeInput" placeholder="Enter referral code">
+      </div>
           <div class="form-group">
             <button type="button" class="btn-primary" id="next-button">
               <span class="button-text">Next</span>
@@ -74,7 +258,162 @@
     </div>
   </div>
  <!-- Your Firebase login logic -->
-  <script type="module" src="js/signup.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDocs, collection, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
+  authDomain: "von600-7982d.firebaseapp.com",
+  projectId: "von600-7982d",
+  storageBucket: "von600-7982d.appspot.com",
+  messagingSenderId: "164591218045",
+  appId: "1:164591218045:web:afe17512e16573e7903014",
+  measurementId: "G-E69DMPLXBK"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const signupForm = document.getElementById("signup-form");
+const notification = document.getElementById("notification");
+const notificationMessage = document.getElementById("notification-message");
+const submitButton = signupForm.querySelector("button[type='submit']");
+const buttonText = submitButton.querySelector(".button-text");
+const nextButton = document.getElementById("next-button");
+const step1 = document.getElementById("step-1");
+const step2 = document.getElementById("step-2");
+
+// 🔹 Generate random referral code
+function generateReferralCode() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+}
+
+function showNotification(message, type = "success") {
+  notification.classList.remove("show", "error", "success", "warning");
+  notificationMessage.textContent = message;
+  notification.className = `notification ${type}`;
+  const icon = type === "error" ? "alert-circle" :
+               type === "warning" ? "alert-triangle" : "check-circle";
+  notification.innerHTML = `<i class="feather-${icon}"></i><span id="notification-message">${message}</span>`;
+  notification.offsetHeight;
+  notification.classList.add("show");
+  setTimeout(() => notification.classList.remove("show"), 3000);
+}
+
+function setLoading(isLoading) {
+  submitButton.classList.toggle("loading", isLoading);
+  buttonText.textContent = isLoading ? "Creating account..." : "Done";
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isValidPhone(phone) {
+  return /^[0-9]{10,15}$/.test(phone.replace(/\D/g, ""));
+}
+
+function generateUserId() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  return Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+}
+
+// Step 1 → Step 2
+nextButton.addEventListener("click", () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const confirmPassword = document.getElementById("confirm-password").value.trim();
+
+  if (!email || !password || !confirmPassword)
+    return showNotification("Please fill in all fields", "error");
+
+  if (!isValidEmail(email))
+    return showNotification("Please enter a valid email", "error");
+
+  if (password.length < 6)
+    return showNotification("Password must be at least 6 characters", "error");
+
+  if (password !== confirmPassword)
+    return showNotification("Passwords do not match", "error");
+
+  step1.classList.remove("active");
+  step2.classList.add("active");
+  document.getElementById("name").focus();
+});
+
+// ✳️ Handle Sign Up + Referral Save
+signupForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const referralUsedInput = document.getElementById("referralCodeInput")?.value.trim().toUpperCase() || "";
+
+  if (!name || !phone)
+    return showNotification("Please fill in all fields", "error");
+
+  if (!isValidPhone(phone))
+    return showNotification("Please enter a valid phone number", "error");
+
+  setLoading(true);
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    const userId = generateUserId();
+    const myReferralCode = generateReferralCode();
+
+    // Save user data
+    await setDoc(doc(db, "users", user.uid), {
+      name,
+      phone,
+      email,
+      userId,
+      referralCode: myReferralCode,
+      referredBy: referralUsedInput || null,
+      referralCount: 0,
+      createdAt: new Date().toISOString()
+    });
+
+    // Increment referrer's count if referral code used
+    if (referralUsedInput) {
+      const q = query(collection(db, "users"), where("referralCode", "==", referralUsedInput));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const referrerDoc = snap.docs[0];
+        const referrerRef = referrerDoc.ref;
+        const current = referrerDoc.data().referralCount || 0;
+        await updateDoc(referrerRef, { referralCount: current + 1 });
+      }
+    }
+
+    showNotification("Account created successfully! Redirecting...", "success");
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("userEmail", email);
+
+    setTimeout(() => (window.location.href = "index.html"), 1000);
+  } catch (error) {
+    setLoading(false);
+    let msg = "An error occurred during signup";
+    switch (error.code) {
+      case "auth/email-already-in-use": msg = "This email is already registered"; break;
+      case "auth/invalid-email": msg = "Invalid email address"; break;
+      case "auth/weak-password": msg = "Password is too weak"; break;
+      case "auth/network-request-failed": msg = "Network error, please check your connection"; break;
+    }
+    showNotification(msg, "error");
+  }
+});
+
+document.getElementById("email").focus();
+</script>
+
   <script src="https://unpkg.com/feather-icons"></script>
   <script>
     feather.replace();

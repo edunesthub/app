@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CHAWP Referral Leaderboard</title>
+  <title>Referral Leaderboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
   <style>
     body {
       background: #121212;
       color: white;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
     }
 
     .container {
@@ -38,7 +42,6 @@
       align-items: center;
       backdrop-filter: blur(16px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-      cursor: pointer;
       transition: transform 0.2s;
     }
 
@@ -92,61 +95,23 @@
       font-weight: 600;
     }
 
-    /* Modal styling */
-    .modal-content {
-      background: rgba(20, 20, 20, 0.95);
-      border-radius: 16px;
-      color: white;
-    }
-
-    .user-item {
-      padding: 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .user-item:last-child {
-      border-bottom: none;
-    }
-
-    .user-item strong {
-      color: #fff;
-    }
-
-    .user-item small {
-      color: #aaa;
-    }
-
   </style>
 </head>
 <body>
   <div class="container">
     <div class="leaderboard-header">
-      <h2>🏆 CHAWP REFERRAL LEADERBOARD</h2>
-      <p class="text-secondary">Click a code to view who used it</p>
+      <h2>🏆 Referral Leaderboard</h2>
+      <p class="text-secondary">Top users ranked by successful referrals</p>
     </div>
-    <button class="refresh-btn" id="refresh">Refresh</button>
-<br>
-    <div id="leaderboard"></div>
-  </div>
 
-  <!-- Modal -->
-  <div class="modal fade" id="userModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header border-0">
-          <h5 class="modal-title" id="modalTitle">Referral Users</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="modalBody">
-          <p class="text-center text-muted">Loading...</p>
-        </div>
-      </div>
-    </div>
+    <div id="leaderboard"></div>
+
+    <button class="refresh-btn" id="refresh">Refresh</button>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyADvpUQWo75ExePGoCRirD2mM-lmfM4Cmc",
@@ -165,72 +130,39 @@
 
     async function loadLeaderboard() {
       leaderboard.innerHTML = `<p class="text-center text-muted">Loading...</p>`;
+
       const snapshot = await getDocs(collection(db, "users"));
-      const codeUsage = {};
+      const data = [];
 
       snapshot.forEach(doc => {
-        const data = doc.data();
-        const refBy = (data.referredBy || "").trim().toUpperCase();
-        if (refBy) {
-          if (!codeUsage[refBy]) codeUsage[refBy] = 0;
-          codeUsage[refBy]++;
+        const d = doc.data();
+        if (d.referralCode) {
+          data.push({
+            name: d.name || "Anonymous",
+            code: d.referralCode,
+            count: d.referralCount || 0
+          });
         }
       });
 
-      const list = Object.keys(codeUsage)
-        .map(code => ({ code, count: codeUsage[code] }))
-        .sort((a, b) => b.count - a.count);
+      data.sort((a, b) => b.count - a.count);
 
-      leaderboard.innerHTML = list.length
-        ? list.map((x, i) => `
-            <div class="leaderboard-card" data-code="${x.code}">
+      leaderboard.innerHTML = data.length
+        ? data.map((x, i) => `
+            <div class="leaderboard-card">
               <div class="rank-badge">${i + 1}</div>
               <div class="leader-info">
-                <strong>${x.code}</strong>
+                <strong>${x.name}</strong>
+                <small>Code: ${x.code}</small>
               </div>
               <div class="referral-count">${x.count}</div>
             </div>
           `).join("")
-        : `<p class="text-center text-muted">No referral codes used yet.</p>`;
-
-      document.querySelectorAll(".leaderboard-card").forEach(card => {
-        card.addEventListener("click", () => showUsersForCode(card.dataset.code));
-      });
-    }
-
-    async function showUsersForCode(code) {
-      const modal = new bootstrap.Modal(document.getElementById("userModal"));
-      const modalTitle = document.getElementById("modalTitle");
-      const modalBody = document.getElementById("modalBody");
-
-      modalTitle.textContent = `Users who used "${code}"`;
-      modalBody.innerHTML = `<p class="text-center text-muted">Loading...</p>`;
-      modal.show();
-
-      const q = query(collection(db, "users"), where("referredBy", "==", code));
-      const snapshot = await getDocs(q);
-
-      if (snapshot.empty) {
-        modalBody.innerHTML = `<p class="text-center text-muted">No users found for this code.</p>`;
-        return;
-      }
-
-      const users = [];
-      snapshot.forEach(doc => {
-        const d = doc.data();
-        users.push(`<div class="user-item">
-                      <strong>${d.name || "Unnamed"}</strong><br>
-                      <small>${d.email || "No email"}</small>
-                    </div>`);
-      });
-
-      modalBody.innerHTML = users.join("");
+        : `<p class="text-center text-muted">No referrals yet.</p>`;
     }
 
     refreshBtn.addEventListener("click", loadLeaderboard);
     loadLeaderboard();
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
