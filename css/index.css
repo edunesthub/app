@@ -802,3 +802,18 @@
   transform: scale(1.2);
   box-shadow: 0 0 4px rgba(0, 247, 255, 0.6);
 }
+.custom-badge {
+  display: inline-block;
+  background-color: #007bff; /* blue */
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 5px;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 5;
+    white-space: nowrap;
+}
