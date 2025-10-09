@@ -220,15 +220,14 @@ rawRestaurants.forEach(data => {
       <a href="restaurant.html?id=${restaurantId}">
           <img alt="${data.name || 'Restaurant'}" src="${data.image || 'img/placeholder.png'}" class="img-fluid item-img" loading="lazy">
           
-          ${data.autoDiscountPercent > 0 ? `<span class="discount-badge">🔥 ${data.autoDiscountPercent}% OFF</span>` : ""}
-          
+${data.autoDiscountPercent > 0 ? `<span class="discount-badge">🔥 ${data.autoDiscountPercent}% OFF</span>` : ""}
+
 <span class="status-badge ${isOpen ? 'open-badge' : 'closed-badge'}">
   ${isOpen ? 'Opened ✅' : 'Closed 🔒'}
 </span>
 
-${data.customBadgeText ? `
-  <span class="custom-badge">${data.customBadgeText}</span>
-` : ""}
+${data.customBadgeText ? `<span class="custom-badge">${data.customBadgeText}</span>` : ""}
+
 
       </a>
   </div>

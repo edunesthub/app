@@ -257,11 +257,16 @@ html {
 }
 .custom-badge {
   display: inline-block;
-  background-color: #007bff; /* Bootstrap blue */
+  background-color: #007bff; /* blue */
   color: #fff;
   font-size: 12px;
   font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
   margin-top: 5px;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 5;
+    white-space: nowrap;
 }
