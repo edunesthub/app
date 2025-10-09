@@ -101,13 +101,10 @@
         return;
       }
 
-      loader.style.display = "block";
-
+      // If online → instantly go to fresh page
       onAuthStateChanged(auth, (user) => {
         const timestamp = Date.now();
         const target = user ? `/index.html?fresh=${timestamp}` : `/welcome.html?fresh=${timestamp}`;
-
-        // Hard reload to bypass cache
         window.location.replace(target);
       });
     });
@@ -118,7 +115,7 @@
   <script type="module" src="/register-sw.js"></script>
 
   <script>
-    // Ensures footer tabs always load fresh pages too
+    // Always open footer tabs fresh
     document.querySelectorAll('a.footer-tab').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -128,11 +125,9 @@
       });
     });
 
-    // Optional: clear old service worker cache for true hard refresh
+    // Optional: wipe old service worker caches for guaranteed fresh load
     if ('caches' in window) {
-      caches.keys().then(keys => {
-        keys.forEach(key => caches.delete(key));
-      });
+      caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
     }
   </script>
 </body>
