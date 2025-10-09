@@ -255,3 +255,13 @@ html {
     border-radius: 6px;
     z-index: 5;
 }
+.custom-badge {
+  display: inline-block;
+  background-color: #007bff; /* Bootstrap blue */
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-top: 5px;
+}

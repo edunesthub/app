@@ -302,13 +302,22 @@ const loadRestaurant = async () => {
     }
 };
 
-const renderMenu = (grouped, categoryMetaMap) => {
+
+const renderMenu = (grouped, categoryMetaMap, announcement = "") => {
     if (!grouped || Object.keys(grouped).length === 0) {
         elements.menuSection.innerHTML = `<div class="error-message">No menu available.</div>`;
         return;
     }
 
-    let menuHTML = '<h2 class="fw-bold">Menu</h2>';
+    let menuHTML = `<h2 class="fw-bold">Menu</h2>`;
+
+    if (announcement && announcement.trim() !== "") {
+        menuHTML += `
+          <div id="restaurant-announcement" class="announcement">
+            ${announcement}
+          </div>
+        `;
+    }
 
     // Sort categories by categoryOrder
     const sortedCategories = Object.entries(grouped).sort((a, b) => {
@@ -320,48 +329,46 @@ const renderMenu = (grouped, categoryMetaMap) => {
     for (const [category, items] of sortedCategories) {
         const isCollapsible = categoryMetaMap[category]?.collapsible === true;
 
-if (isCollapsible) {
-  menuHTML += `
-    <details class="category-group">
-      <summary class="category-title" style="margin: 15px 0 10px; color: #ccc; font-weight: 700; padding-left: 10px; padding-top: 15px;">${category}</summary>
-      <div class="menu-container">
-  `;
-} else {
-  menuHTML += `
-    <h3 class="category-title" style="margin: 15px 0 10px; color: #ccc; font-weight: 700; padding-left: 10px; padding-top: 15px;">${category}</h3>
-    <div class="menu-container">
-  `;
-}
-
+        if (isCollapsible) {
+            menuHTML += `
+              <details class="category-group">
+                <summary class="category-title" style="margin: 15px 0 10px; color: #ccc; font-weight: 700; padding-left: 10px; padding-top: 15px;">${category}</summary>
+                <div class="menu-container">
+            `;
+        } else {
+            menuHTML += `
+              <h3 class="category-title" style="margin: 15px 0 10px; color: #ccc; font-weight: 700; padding-left: 10px; padding-top: 15px;">${category}</h3>
+              <div class="menu-container">
+            `;
+        }
 
         // Sort items within category by orderNumber
         items.sort((a, b) => (a.orderNumber ?? 9999) - (b.orderNumber ?? 9999));
 
-       menuHTML += items.map(item => {
-  const finalPrice = (item.price + markupPrice).toFixed(2);
-  return `
-    <div class="menu-item" data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
-      <p class="menu-item-name">${item.name}</p>
-      <div class="menu-item-right">
-<p class="menu-item-price">
-  ${item.fakePrice ? `<span class="fake-price">GH₵${parseFloat(item.fakePrice).toFixed(2)}</span>` : ""}
-  <span class="real-price">GH₵${finalPrice}</span>
-</p>
-        <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
-      </div>
-    </div>
-  `;
-}).join("");
-
+        menuHTML += items.map(item => {
+            const finalPrice = (item.price + markupPrice).toFixed(2);
+            return `
+              <div class="menu-item" data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
+                <p class="menu-item-name">${item.name}</p>
+                <div class="menu-item-right">
+                  <p class="menu-item-price">
+                    ${item.fakePrice ? `<span class="fake-price">GH₵${parseFloat(item.fakePrice).toFixed(2)}</span>` : ""}
+                    <span class="real-price">GH₵${finalPrice}</span>
+                  </p>
+                  <button class="add-to-cart" ${!isRestaurantOpen ? 'disabled' : ''}>Add</button>
+                </div>
+              </div>
+            `;
+        }).join("");
 
         menuHTML += `</div>`;
-if (isCollapsible) menuHTML += `</details>`;
-
+        if (isCollapsible) menuHTML += `</details>`;
     }
 
-elements.menuSection.innerHTML = menuHTML;
-setupAddToCartButtons(); // <- This is missing in your current code
+    elements.menuSection.innerHTML = menuHTML;
+    setupAddToCartButtons();
 };
+
 
 const setupAddToCartButtons = () => {
     document.querySelectorAll(".menu-item").forEach(itemElement => {
@@ -608,10 +615,12 @@ document.addEventListener("click", function(e) {
 const loadMenuLive = async () => {
     const menuRef = collection(db, "restaurant", restaurantId, "menu");
     const categoriesRef = collection(db, "restaurant", restaurantId, "categories");
+    const restaurantRef = doc(db, "restaurant", restaurantId);
 
-    const [menuSnap, catSnap] = await Promise.all([
+    const [menuSnap, catSnap, restaurantSnap] = await Promise.all([
         getDocs(menuRef),
-        getDocs(categoriesRef)
+        getDocs(categoriesRef),
+        getDoc(restaurantRef)
     ]);
 
     const categoryOrderMap = {};
@@ -621,33 +630,31 @@ const loadMenuLive = async () => {
     });
 
     const categoryMetaMap = {};
-catSnap.forEach(doc => {
-    const data = doc.data();
-    categoryMetaMap[data.name] = {
-        visible: data.visible !== false,
-        order: data.sortOrder ?? 9999,
-        collapsible: data.collapsible === true
-    };
-});
-
+    catSnap.forEach(doc => {
+        const data = doc.data();
+        categoryMetaMap[data.name] = {
+            visible: data.visible !== false,
+            order: data.sortOrder ?? 9999,
+            collapsible: data.collapsible === true
+        };
+    });
 
     const items = menuSnap.docs.map(doc => {
-    const data = doc.data();
-    return {
-        id: doc.id,
-        ...data,
-        price: parseFloat(data.price) || 0,
-        sizes: data.sizes || [],
-        extras: data.extras || [],
-        category: data.category || "",
-        categoryOrder: categoryOrderMap[data.category] ?? 9999,
-        orderNumber: typeof data.orderNumber === "number" ? data.orderNumber : 9999,
-        visible: data.visible !== false // default to true
-    };
-});
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            price: parseFloat(data.price) || 0,
+            sizes: data.sizes || [],
+            extras: data.extras || [],
+            category: data.category || "",
+            categoryOrder: categoryOrderMap[data.category] ?? 9999,
+            orderNumber: typeof data.orderNumber === "number" ? data.orderNumber : 9999,
+            visible: data.visible !== false
+        };
+    });
 
-const visibleItems = items.filter(item => item.visible && categoryMetaMap[item.category]?.visible !== false);
-
+    const visibleItems = items.filter(item => item.visible && categoryMetaMap[item.category]?.visible !== false);
 
     const grouped = {};
     visibleItems.forEach(item => {
@@ -656,7 +663,10 @@ const visibleItems = items.filter(item => item.visible && categoryMetaMap[item.c
         grouped[category].push(item);
     });
 
-renderMenu(grouped, categoryMetaMap);
+    // ✅ announcement from restaurant doc
+    const announcement = restaurantSnap.exists() ? restaurantSnap.data().announcement || "" : "";
+
+    renderMenu(grouped, categoryMetaMap, announcement);
 };
 
 // Load restaurant and menu

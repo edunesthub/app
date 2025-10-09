@@ -222,9 +222,14 @@ rawRestaurants.forEach(data => {
           
           ${data.autoDiscountPercent > 0 ? `<span class="discount-badge">🔥 ${data.autoDiscountPercent}% OFF</span>` : ""}
           
-          <span class="status-badge ${isOpen ? 'open-badge' : 'closed-badge'}">
-              ${isOpen ? 'Opened ✅' : 'Closed 🔒'}
-          </span>
+<span class="status-badge ${isOpen ? 'open-badge' : 'closed-badge'}">
+  ${isOpen ? 'Opened ✅' : 'Closed 🔒'}
+</span>
+
+${data.customBadgeText ? `
+  <span class="custom-badge">${data.customBadgeText}</span>
+` : ""}
+
       </a>
   </div>
   <div class="list-card-body">
