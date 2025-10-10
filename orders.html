@@ -166,9 +166,13 @@ async function loadOrdersForUser(userEmail) {
           <p class="text-white small">Processing Fee: GH₵${processingFee.toFixed(2)}</p>
           <p class="text-white small">Delivery Fee: GH₵${deliveryFee.toFixed(2)}</p>
           <p class="text-white fw-bold">Total: GH₵${total.toFixed(2)}</p>
-          <a href="track.html?id=${order.id}" class="btn btn-sm btn-outline-info mt-2 w-100">Track Order</a>
-        </div>
-      `;
+<div class="d-flex gap-2 mt-2">
+  <a href="track.html?id=${order.id}" class="btn btn-sm btn-outline-info flex-fill">Track</a>
+  <button class="btn btn-sm btn-outline-warning flex-fill reorder-btn" data-cart='${JSON.stringify(cart).replace(/'/g, "&apos;")}'>
+    Reorder
+  </button>
+</div>
+        `;
 
       orderBox.addEventListener("click", e => {
         if (!e.target.closest("a,button")) orderBox.classList.toggle("expanded");
@@ -178,6 +182,58 @@ async function loadOrdersForUser(userEmail) {
 
     ordersList.innerHTML = "";
     ordersList.appendChild(fragment);
+    
+    // Reorder button logic
+ordersList.querySelectorAll(".reorder-btn").forEach(btn => {
+  btn.addEventListener("click", e => {
+    e.stopPropagation();
+    try {
+      const cartData = JSON.parse(btn.getAttribute("data-cart").replace(/&apos;/g, "'"));
+
+      // Grab the order data for form refill
+      const orderBox = btn.closest(".order-box");
+      const orderId = orderBox.querySelector("p.text-white-50")?.textContent?.replace("Order ID: ", "") || "";
+      const order = allOrders.find(o => o.id === orderId) || {};
+
+const reorderPayload = {
+  cart: cartData,
+  deliveryDetails: {
+    // Check nested order.deliveryDetails first, then fall back to older root-level keys
+    contactNumber:
+      order.deliveryDetails?.contactNumber ||
+      order.contactNumber ||
+      order.phone ||
+      "",
+
+    location:
+      order.deliveryDetails?.location ||
+      order.deliveryLocation ||
+      order.address ||
+      "",
+
+    hostel:
+      order.deliveryDetails?.hostel ||
+      order.hostel ||
+      "Hostel A",
+
+    note:
+      order.deliveryDetails?.note ||
+      order.note ||
+      ""
+  }
+};
+
+
+localStorage.setItem("reorderCart", JSON.stringify(reorderPayload));
+window.location.href = "cart.html?reorder=true";
+
+    } catch (err) {
+      console.error("Reorder failed:", err);
+    }
+  });
+});
+
+
 
   } catch (err) {
     console.error("Error loading orders:", err);

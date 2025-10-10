@@ -846,11 +846,39 @@ window.location.href = "successful.html";
     }
   };
 
-document.addEventListener("DOMContentLoaded", async () => {
-  await fetchMarkupPrice();        // ⬅️ fetch markup first
-  renderCart();                    // ⬅️ now prices will reflect it
-  initFooter();
+// 🔁 Reorder logic (improved + correct timing)
+async function checkForReorder() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("reorder") === "true") {
+    const reorderData = JSON.parse(localStorage.getItem("reorderCart") || "{}");
 
+    if (reorderData.cart?.length) {
+      localStorage.setItem("cart", JSON.stringify(reorderData.cart));
+    }
+
+    if (reorderData.deliveryDetails) {
+      const d = reorderData.deliveryDetails;
+      const normalized = {
+        hostel: d.hostel || "Hostel A",
+        location: d.location || d.deliveryLocation || d.address || "",
+        contactNumber: d.contactNumber || d.phone || "",
+        note: d.note || ""
+      };
+      localStorage.setItem("deliveryDetails", JSON.stringify(normalized));
+    }
+
+    localStorage.removeItem("reorderCart");
+
+    // Notify user — no delay required as long as this runs BEFORE renderCart()
+    showNotification("Order details restored! You can edit and checkout again.");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await fetchMarkupPrice();
+  await checkForReorder();   // ⬅️ ensure details are restored *before* rendering
+  renderCart();              // ⬅️ this now correctly reflects restored data
+  initFooter();
 
   const featherObserver = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {
