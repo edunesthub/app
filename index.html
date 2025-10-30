@@ -392,69 +392,61 @@ if (isStandalone) {
         }
     });
     
-        async function fetchTrendingRestaurants() {
-            const trendingList = document.getElementById("trending-list");
-            
-            // Show skeleton UI after 500ms if no data yet
-    let skeletonTimeout = setTimeout(() => {
-        if (elements.trendingList.children.length === 0) {
-            renderSkeletonCards(elements.trendingList);
-        }
-    }, 500);
+async function fetchTrendingRestaurants(forceRefresh = false) {
+  const trendingList = document.getElementById("trending-list");
 
-            // Check for cached restaurants in localStorage
-            const cachedRestaurants = localStorage.getItem("trending-restaurants-cache");
-            if (cachedRestaurants) {
-                const restaurants = JSON.parse(cachedRestaurants);
-                renderRestaurants(restaurants, trendingList);
-            } 
-    
-            // Skip fetching if offline
-            if (!navigator.onLine) return;
-    
-            try {
-              const q = query(
-  collection(db, "restaurant"),
-  where("isTrending", "==", true),
-  orderBy("trendingOrder", "asc"),
-  limit(10)
-);
+  // Show skeleton while loading
+  renderSkeletonCards(trendingList);
 
+  // ✅ Use cached restaurants instantly (if available)
+  const cached = localStorage.getItem("trending-restaurants-cache");
+  if (cached && !forceRefresh) {
+    renderRestaurants(JSON.parse(cached), trendingList);
+  }
 
-                const querySnapshot = await getDocs(q);
-    
-                const restaurants = [];
-
-if (querySnapshot.empty) {
-    trendingList.innerHTML = `
-        <div class="text-wrap text-white text-center py-4">
-            <p class="text-lg font-semibold text-red-400">⚠️ Something went wrong</p>
-            <p class="text-sm text-gray-300">We couldn’t load restaurants. Please try again later.</p>
-        </div>
-    `;
-    console.error("⚠️ Firestore returned an empty result. Possible issue with fetching trending restaurants.");
+  // ✅ Always try to fetch latest Firestore data
+  if (!navigator.onLine) {
+    console.warn("Offline — showing cached restaurants only.");
     return;
-}
+  }
 
-    
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const restaurantId = doc.id;
-                    restaurants.push({ id: restaurantId, ...data });
-                });
-    
-                // Cache the restaurants with timestamp
-                localStorage.setItem("trending-restaurants-cache", JSON.stringify(restaurants));
-                localStorage.setItem("trending-restaurants-cache-time", Date.now());
-                renderRestaurants(restaurants, trendingList);
-    
-            } catch (error) {
-                console.error("Error fetching restaurants:", error);
-                trendingList.innerHTML = `
-                    <div class="text-wrap text-white">Failed to load restaurants. Please try again.</div>
-                `;
-            }
-        }
+  try {
+    const q = query(
+      collection(db, "restaurant"),
+      where("isTrending", "==", true),
+      orderBy("trendingOrder", "asc"),
+      limit(10)
+    );
+
+    const querySnapshot = await getDocs(q);
+    const restaurants = [];
+
+    if (querySnapshot.empty) {
+      trendingList.innerHTML = `
+        <div class="text-wrap text-white text-center py-4">
+          <p class="text-lg font-semibold text-red-400">⚠️ No trending restaurants</p>
+          <p class="text-sm text-gray-300">We couldn’t load new data.</p>
+        </div>
+      `;
+      return;
+    }
+
+    querySnapshot.forEach((doc) => {
+      restaurants.push({ id: doc.id, ...doc.data() });
+    });
+
+    // ✅ Update UI immediately with fresh Firestore data
+    renderRestaurants(restaurants, trendingList);
+
+    // ✅ Update cache for offline fallback
+    localStorage.setItem("trending-restaurants-cache", JSON.stringify(restaurants));
+    localStorage.setItem("trending-restaurants-cache-time", Date.now());
+
+  } catch (error) {
+    console.error("Error fetching restaurants:", error);
+    trendingList.innerHTML = `<div class="text-wrap text-white">Failed to load restaurants.</div>`;
+  }
+}
 
         function renderSkeletonCards(trendingList) {
     trendingList.innerHTML = '';
@@ -675,47 +667,53 @@ async function updateWelcomeMessage() {
                 }
             };
         }
-        document.addEventListener("DOMContentLoaded", () => {
-    const loader = document.getElementById("page-loader");
-    if (loader) {
-        loader.classList.add("hidden");
-        setTimeout(() => loader.remove(), 300);
-    }
+// 🧩 Hide page loader once DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  const loader = document.getElementById("page-loader");
+  if (loader) {
+    loader.classList.add("hidden");
+    setTimeout(() => loader.remove(), 300);
+  }
 });
 
-    
-        document.addEventListener("DOMContentLoaded", () => {
-            const mainContent = document.getElementById("main-content");
-            mainContent.style.display = "block";
-            mainContent.classList.add("loaded");
-            document.querySelector(".welcome-header").classList.add("loaded");
-            document.querySelector(".promo-banner").classList.add("loaded");
-            document.querySelector(".trending-section").classList.add("loaded");
-            document.querySelector(".osahan-menu-fotter").classList.add("loaded");
-            updateWelcomeMessage();
-            monitorNetwork();
-    
-            // Load cached restaurants immediately
-            const cachedRestaurants = localStorage.getItem("trending-restaurants-cache");
-            const trendingList = document.getElementById("trending-list");
-            if (cachedRestaurants) {
-                trendingList.innerHTML = '';
-                renderRestaurants(JSON.parse(cachedRestaurants), trendingList);
-            } else if (!navigator.onLine) {
-                trendingList.innerHTML = `
-                    <div class="text-wrap text-white">You're offline. Please check your connection.</div>
-                `;
-            } 
-    
-            // Fetch fresh data in the background if online and cache is stale
-            const cacheTime = localStorage.getItem("trending-restaurants-cache-time");
-            if (navigator.onLine && (!cacheTime || (Date.now() - cacheTime) > 5 * 60 * 1000)) {
-                fetchTrendingRestaurants();
-            }
-    
-           
-        });
-    
+// 🧩 Load main content and fetch restaurants
+document.addEventListener("DOMContentLoaded", () => {
+  const mainContent = document.getElementById("main-content");
+  const trendingList = document.getElementById("trending-list");
+
+  // Show main content
+  mainContent.style.display = "block";
+  mainContent.classList.add("loaded");
+  document.querySelector(".welcome-header").classList.add("loaded");
+  document.querySelector(".trending-section").classList.add("loaded");
+  document.querySelector(".osahan-menu-fotter").classList.add("loaded");
+
+  updateWelcomeMessage();
+  monitorNetwork();
+
+  // ✅ Show skeleton immediately while fetching
+  renderSkeletonCards(trendingList);
+
+  // ✅ Try to load cached restaurants for instant view
+  const cachedRestaurants = localStorage.getItem("trending-restaurants-cache");
+  if (cachedRestaurants) {
+    renderRestaurants(JSON.parse(cachedRestaurants), trendingList);
+  }
+
+  // ✅ Always fetch fresh data from Firestore right away
+  fetchTrendingRestaurants(true);
+
+  // ✅ Re-fetch every 3 minutes for live updates
+  setInterval(() => {
+    fetchTrendingRestaurants(true);
+  }, 180000);
+
+  // ✅ When user returns to tab — refresh again
+  window.addEventListener("focus", () => {
+    if (navigator.onLine) fetchTrendingRestaurants(true);
+  });
+});
+
     </script>
     <script type="module">
         // update-prompt.js
