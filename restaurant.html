@@ -474,25 +474,18 @@ elements.sizeOptions.innerHTML = item.sizes.map((size, index) => {
     // Extras logic
     if (item.extras && item.extras.length > 0) {
         elements.extraGroup.style.display = "block";
-elements.extraOptions.innerHTML = item.extras.map(extra => {
-    const realPrice = parseFloat(extra.price) || 0;
-    const fakePrice = parseFloat(extra.fakePrice) || null;
-
-    return `
-        <div class="extra-quantity" data-name="${extra.name}" data-price="${realPrice}">
-            <span class="extra-label">${extra.name}</span>
-            <div class="quantity-controls">
-                <button class="extra-quantity-btn minus">−</button>
-                <span class="count">0</span>
-                <button class="extra-quantity-btn plus">+</button>
-            </div>
-            <span class="price">
-                ${fakePrice ? `<span class="fake-price" style="text-decoration:line-through; color:#999; margin-right:5px;">GH₵${fakePrice.toFixed(2)}</span>` : ""}
-                GH₵${realPrice.toFixed(2)}
-            </span>
+elements.extraOptions.innerHTML = item.extras.map(extra => `
+    <div class="extra-quantity" data-name="${extra.name}" data-price="${parseFloat(extra.price)}">
+        <span class="extra-label">${extra.name}</span>
+        <div class="quantity-controls">
+            <button class="extra-quantity-btn minus">−</button>
+            <span class="count">0</span>
+            <button class="extra-quantity-btn plus">+</button>
         </div>
-    `;
-}).join("");
+        <span class="price">GH₵${parseFloat(extra.price).toFixed(2)}</span>
+    </div>
+`).join("");
+
 
 
     } else {
