@@ -450,13 +450,22 @@ elements.modalBackdrop.classList.add("show");
     // Sizes logic
     if (item.sizes && item.sizes.length > 0) {
         elements.sizeGroup.style.display = "block";
-        elements.sizeOptions.innerHTML = item.sizes.map((size, index) => `
-            <label>
-                <input type="radio" name="size" value="${size.name}" data-price="${parseFloat(size.price)}" ${index === 0 ? 'checked' : ''}>
-                <span>${size.name}</span>
-                <span class="price">GH₵${parseFloat(size.price).toFixed(2)}</span>
-            </label>
-        `).join("");
+elements.sizeOptions.innerHTML = item.sizes.map((size, index) => {
+    const realPrice = parseFloat(size.price) || 0;
+    const fakePrice = parseFloat(size.fakePrice) || null;
+
+    return `
+        <label>
+            <input type="radio" name="size" value="${size.name}" data-price="${realPrice}" ${index === 0 ? 'checked' : ''}>
+            <span>${size.name}</span>
+            <span class="price">
+                ${fakePrice ? `<span class="fake-price" style="text-decoration:line-through; color:#999; margin-right:5px;">GH₵${fakePrice.toFixed(2)}</span>` : ""}
+                GH₵${realPrice.toFixed(2)}
+            </span>
+        </label>
+    `;
+}).join("");
+
     } else {
         elements.sizeGroup.style.display = "none";
         elements.sizeOptions.innerHTML = "";
@@ -465,17 +474,26 @@ elements.modalBackdrop.classList.add("show");
     // Extras logic
     if (item.extras && item.extras.length > 0) {
         elements.extraGroup.style.display = "block";
-        elements.extraOptions.innerHTML = item.extras.map(extra => `
-    <div class="extra-quantity" data-name="${extra.name}" data-price="${parseFloat(extra.price)}">
-        <span class="extra-label">${extra.name}</span>
-        <div class="quantity-controls">
-            <button class="extra-quantity-btn minus">−</button>
-            <span class="count">0</span>
-            <button class="extra-quantity-btn plus">+</button>
+elements.extraOptions.innerHTML = item.extras.map(extra => {
+    const realPrice = parseFloat(extra.price) || 0;
+    const fakePrice = parseFloat(extra.fakePrice) || null;
+
+    return `
+        <div class="extra-quantity" data-name="${extra.name}" data-price="${realPrice}">
+            <span class="extra-label">${extra.name}</span>
+            <div class="quantity-controls">
+                <button class="extra-quantity-btn minus">−</button>
+                <span class="count">0</span>
+                <button class="extra-quantity-btn plus">+</button>
+            </div>
+            <span class="price">
+                ${fakePrice ? `<span class="fake-price" style="text-decoration:line-through; color:#999; margin-right:5px;">GH₵${fakePrice.toFixed(2)}</span>` : ""}
+                GH₵${realPrice.toFixed(2)}
+            </span>
         </div>
-        <span class="price">GH₵${parseFloat(extra.price).toFixed(2)}</span>
-    </div>
-`).join("");
+    `;
+}).join("");
+
 
     } else {
         elements.extraGroup.style.display = "none";

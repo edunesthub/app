@@ -224,7 +224,7 @@
         }
         .option-group label .price {
             font-size: 0.85rem;
-            color: #ccc;
+            color: #ffffff;
             width: 60px;
             text-align: right;
         }
@@ -518,7 +518,7 @@
 .option-group label .price {
     font-weight: 500;
     font-size: 0.9rem;
-    color: #aaa;
+    color: #ffffff;
 }
 
 .extra-quantity {
@@ -900,4 +900,10 @@
   max-width: 90%;
   box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15);
   line-height: 1.4;
+}
+.fake-price {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 6px;
+  font-size: 0.9em;
 }
