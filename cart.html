@@ -584,27 +584,29 @@ async function placeOrderPayAfterDelivery(cart, deliveryDetails, totalAmount, di
     const finalTotal = finalsubtotal + finalDeliveryFee + 2.00;
 
     // ✅ Create order document
-    await addDoc(collection(db, "orders"), {
-      cart,
-      deliveryDetails,
-      deliveryFee: getDeliveryFee(deliveryDetails.hostel || "Hostel A"),
-      finalDeliveryFee,
-      finalsubtotal,
-      finalTotal,
-      processingFee: 2.00,
-      totalAmount,
-      status: "pending",
-      paymentMethod: "pay-after-delivery",
-      timestamp: new Date(),
-      discount: discountCode || null,
-      restaurantId,
-      restaurantName: restaurantData.name || "",
-      vendorEmail,
-      deviceId,
-      customerToken: localStorage.getItem("customerToken") || null,
-      userEmail,
-      userName
-    });
+await addDoc(collection(db, "orders"), {
+  cart,
+  deliveryDetails,
+  deliveryFee: getDeliveryFee(deliveryDetails.hostel || "Hostel A"),
+  finalDeliveryFee,
+  finalsubtotal,
+  finalTotal,
+  processingFee: 2.00,
+  totalAmount,
+  status: "pending",
+  smsSent: false, 
+  paymentMethod: "pay-after-delivery",
+  timestamp: new Date(),
+  discount: discountCode || null,
+  restaurantId,
+  restaurantName: restaurantData.name || "",
+  vendorEmail,
+  deviceId,
+  customerToken: localStorage.getItem("customerToken") || null,
+  userEmail,
+  userName
+});
+
 
     localStorage.removeItem("cart");
     localStorage.removeItem("deliveryDetails");
@@ -816,6 +818,7 @@ await addDoc(collection(db, "orders"), {
   deliveryFee: deliveryFee,
   processingFee: 2.00,
   totalAmount: totalAmount,
+  smsSent: false,
   status: "pending",
   paymentMethod: "pay-now",
   timestamp: new Date(),
