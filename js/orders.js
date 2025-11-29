@@ -55,7 +55,7 @@ function getStatusDetails(status) {
     accepted:        { text: "✅ Accepted", class: "status-blue" },
     preparing:       { text: "🍳 Preparing", class: "status-orange" },
     "ready-for-pickup": { text: "📦 Ready for Pickup", class: "status-green" },
-    being_delivered: { text: "🚚 Being Delivered", class: "status-purple" },
+    being_delivered: { text: "🚚 In Transit", class: "status-purple" },
     delivered:       { text: "✅ Delivered", class: "status-green" },
     not_delivered:   { text: "❌ Not Delivered", class: "status-red" },
     cancelled:       { text: "❌ Cancelled", class: "status-darkred" },
